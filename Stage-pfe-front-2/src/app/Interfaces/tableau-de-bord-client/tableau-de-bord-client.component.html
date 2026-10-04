@@ -1,0 +1,287 @@
+<!-- dashboard-client.component.html -->
+<div class="dashboard-container" [ngClass]="{ 'dark-theme': isDarkMode }">
+  <!-- ==================== HEADER SECTION ==================== -->
+  <header class="dashboard-header">
+    <div class="header-content">
+      <h1>Tableau de bord</h1>
+      <div class="user-welcome" *ngIf="userData" [@fadeInOut]>
+        <p>
+          Bienvenue, <strong>{{ userData.prenom }} {{ userData.nom }}</strong>
+        </p>
+        <div class="theme-toggle" (click)="toggleDarkMode()">
+          <i class="fa" [ngClass]="isDarkMode ? 'fa-sun-o' : 'fa-moon-o'"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="notifications-toggle" (click)="toggleNotificationsPanel()">
+      <i class="fa fa-bell"></i>
+      <span class="badge" *ngIf="getUnreadCount() > 0">{{
+        getUnreadCount()
+      }}</span>
+    </div>
+  </header>
+
+  <!-- ==================== NOTIFICATIONS PANEL ==================== -->
+  <div class="notifications-panel" *ngIf="showNotificationsPanel" [@fadeInOut]>
+    <div class="panel-header">
+      <h3>Notifications</h3>
+      <button class="close-btn" (click)="toggleNotificationsPanel()">
+        <i class="fa fa-times"></i>
+      </button>
+    </div>
+
+    <div class="notifications-list" *ngIf="notifications.length > 0">
+      <div
+        class="notification-item"
+        *ngFor="let notification of getNotificationsForPanel()"
+        (click)="markAsRead(notification)"
+        [@fadeInOut]
+        [ngClass]="getNotificationClasses(notification)"
+      >
+        <div class="notification-icon">
+          <i
+            class="fa"
+            [ngClass]="{
+              'fa-info-circle': notification.statut === 'info',
+              'fa-exclamation-triangle': notification.statut === 'warning',
+              'fa-check-circle': notification.statut === 'success'
+            }"
+          ></i>
+        </div>
+        <div class="notification-content">
+          <p>{{ notification.contenu }}</p>
+          <small>{{ notification.dateCreation | date : "short" }}</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="no-items" *ngIf="notifications.length === 0">
+      <p>Vous n'avez aucune notification.</p>
+    </div>
+  </div>
+
+  <!-- ==================== LOADING/ERROR STATES ==================== -->
+  <div class="loading-container" *ngIf="loading" [@fadeInOut]>
+    <div class="spinner"></div>
+    <p>Chargement de vos données...</p>
+  </div>
+
+  <div class="error-container" *ngIf="error && !loading" [@fadeInOut]>
+    <div class="error-message">
+      <i class="fa fa-exclamation-triangle"></i>
+      <p>{{ error }}</p>
+      <button class="btn-retry" (click)="loadUserData()">Réessayer</button>
+    </div>
+  </div>
+
+  <!-- ==================== MAIN CONTENT ==================== -->
+  <div class="dashboard-content" *ngIf="!loading && !error" [@fadeInOut]>
+    <!-- SEARCH AND FILTER BAR -->
+    <div class="search-filter-bar">
+      <div class="search-box">
+        <form [formGroup]="searchForm">
+          <i class="fa fa-search"></i>
+          <input
+            type="text"
+            formControlName="searchTerm"
+            placeholder="Rechercher une formation..."
+          />
+        </form>
+      </div>
+
+      <div class="filter-buttons">
+        <button
+          [ngClass]="{ active: filtreStatut === 'TOUS' }"
+          (click)="setFiltreStatut('TOUS')"
+        >
+          Toutes
+        </button>
+        <button
+          [ngClass]="{ active: filtreStatut === 'EN_COURS' }"
+          (click)="setFiltreStatut('EN_COURS')"
+        >
+          En cours
+        </button>
+        <button
+          [ngClass]="{ active: filtreStatut === 'TERMINEE' }"
+          (click)="setFiltreStatut('TERMINEE')"
+        >
+          Terminées
+        </button>
+        <button
+          [ngClass]="{ active: filtreStatut === 'A_VENIR' }"
+          (click)="setFiltreStatut('A_VENIR')"
+        >
+          À venir
+        </button>
+      </div>
+    </div>
+
+    <!-- ==================== STATS SECTION ==================== -->
+    <section class="stats-section" [@cardAnimation]>
+      <div class="stats-overview">
+        <div class="stats-card" [ngClass]="{ animate: animateStats }">
+          <div class="stats-icon"><i class="fa fa-book"></i></div>
+          <div class="stats-info">
+            <h3 class="counter">{{ formations.length }}</h3>
+            <p>Formations au total</p>
+          </div>
+        </div>
+
+        <div class="stats-card" [ngClass]="{ animate: animateStats }">
+          <div class="stats-icon active-icon">
+            <i class="fa fa-hourglass-half"></i>
+          </div>
+          <div class="stats-info">
+            <h3 class="counter">{{ formationsEnCours }}</h3>
+            <p>En cours</p>
+          </div>
+        </div>
+
+        <div class="stats-card" [ngClass]="{ animate: animateStats }">
+          <div class="stats-icon completed-icon">
+            <i class="fa fa-check-circle"></i>
+          </div>
+          <div class="stats-info">
+            <h3 class="counter">{{ formationsTerminees }}</h3>
+            <p>Terminées</p>
+          </div>
+        </div>
+
+        <div class="stats-card" [ngClass]="{ animate: animateStats }">
+          <div class="stats-icon upcoming-icon">
+            <i class="fa fa-calendar"></i>
+          </div>
+          <div class="stats-info">
+            <h3 class="counter">{{ formationsAVenir }}</h3>
+            <p>À venir</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="global-progress">
+        <h3>Progression globale</h3>
+        <div class="progress-container">
+          <div
+            class="progress-circle"
+            [style.--progress]="progressionGlobale + '%'"
+          >
+            <div class="progress-circle-inner">
+              <span class="progress-value">{{ progressionGlobale }}%</span>
+            </div>
+          </div>
+          <div class="progress-message">
+            <p>{{ getEncouragementMessage() }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="data-visualization-section" [@cardAnimation]>
+      <!-- Progress Chart -->
+      <div class="chart-container">
+        <h3>Progression par formation</h3>
+        <div class="simple-bar-chart">
+          <ng-container *ngFor="let formation of formationsFiltered">
+            <div class="bar-item">
+              <div class="bar-label">{{ truncateTitle(formation.titre) }}</div>
+              <div class="bar-container">
+                <div
+                  class="bar-progress"
+                  [style.width]="formation.progression + '%'"
+                  [ngClass]="{
+                    'progress-low': formation.progression < 30,
+                    'progress-medium':
+                      formation.progression >= 30 && formation.progression < 70,
+                    'progress-high':
+                      formation.progression >= 70 &&
+                      formation.progression < 100,
+                    'progress-complete': formation.progression === 100
+                  }"
+                >
+                  <span class="bar-value">{{ formation.progression }}%</span>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== MAIN GRID ==================== -->
+    <div class="dashboard-grid">
+      <div class="main-column">
+        <!-- TRAININGS SECTION -->
+        <section class="dashboard-section">
+          <div class="section-header">
+            <app-calendrier-tableau-de-bord-client></app-calendrier-tableau-de-bord-client>
+          </div>
+        </section>
+
+        <!-- QUICK LINKS -->
+        <section class="dashboard-section quick-links-section">
+          <h2>Accès rapides</h2>
+          <div class="quick-links">
+            <a class="quick-link-item" routerLink="/etudiant/mes-formations">
+              <i class="fa fa-book"></i>
+              <span>Mes formations</span>
+            </a>
+            <a class="quick-link-item" routerLink="/etudiant/calendrier-client">
+              <i class="fa fa-calendar"></i>
+              <span>Calendrier</span>
+            </a>
+            <a class="quick-link-item" routerLink="/catalogue">
+              <i class="fa fa-list"></i>
+              <span>Catalogue</span>
+            </a>
+            <a class="quick-link-item" routerLink="/etudiant/profil">
+              <i class="fa fa-user"></i>
+              <span>Mon profil</span>
+            </a>
+          </div>
+        </section>
+
+        <!-- RECOMMENDED RESOURCES -->
+        <section class="dashboard-section recommended-section">
+          <h2>Ressources recommandées</h2>
+          <div class="recommended-list">
+            <div class="recommended-item">
+              <i class="fa fa-file-pdf-o"></i>
+              <div class="recommended-content">
+                <h4>Guide Angular 17</h4>
+                <p>Documentation complète pour approfondir vos connaissances</p>
+              </div>
+            </div>
+            <div class="recommended-item">
+              <i class="fa fa-video-camera"></i>
+              <div class="recommended-content">
+                <h4>Webinaire TypeScript</h4>
+                <p>Replay du dernier webinaire sur les nouveautés TypeScript</p>
+              </div>
+            </div>
+            <div class="recommended-item">
+              <i class="fa fa-graduation-cap"></i>
+              <div class="recommended-content">
+                <h4>Certification Angular</h4>
+                <p>Planifiez votre examen de certification</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer class="dashboard-footer">
+      <div class="footer-content">
+        <p>© 2025 - Centre de Formation</p>
+        <div class="footer-links">
+          <a href="#">Aide</a>
+          <a href="#">Contact</a>
+          <a href="#">Mentions légales</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+</div>

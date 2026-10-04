@@ -1,0 +1,337 @@
+<div class="container">
+  <h2>{{ isNewSession ? "Nouvelle Session" : "Modifier la Session" }}</h2>
+
+  <div class="actions">
+    <button type="button" class="btn btn-secondary" (click)="goBack()">
+      <i class="fas fa-arrow-left"></i> Retour
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="loading-indicator">
+    <div class="spinner"></div>
+    <p>Chargement en cours...</p>
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger">
+    <i class="fas fa-exclamation-triangle"></i>
+    <p>{{ errorMessage || "Une erreur est survenue." }}</p>
+  </div>
+
+  <div *ngIf="successMessage" class="alert alert-success">
+    <i class="fas fa-check-circle"></i>
+    <p>{{ successMessage }}</p>
+  </div>
+
+  <form [formGroup]="sessionForm" (ngSubmit)="onSubmit()" *ngIf="!loading">
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label for="formationId">
+          <i class="fas fa-book"></i> Formation *
+        </label>
+        <select
+          id="formationId"
+          class="form-control"
+          formControlName="formationId"
+          [class.is-invalid]="isFieldInvalid('formationId')"
+        >
+          <option value="">Sélectionnez une formation</option>
+
+          <option [ngValue]="null">Sélectionnez une formation</option>
+          <option *ngFor="let formation of formations" [value]="formation.id">
+            {{ formation.titre }}
+          </option>
+        </select>
+        <div *ngIf="isFieldInvalid('formationId')" class="invalid-feedback">
+          {{ getErrorMessage("formationId") }}
+        </div>
+      </div>
+
+      <div class="form-group col-md-6">
+        <label for="salleId"> <i class="fas fa-building"></i> Salle * </label>
+        <select
+          id="salleId"
+          class="form-control"
+          formControlName="salleId"
+          [class.is-invalid]="isFieldInvalid('salleId')"
+        >          <option value="">Sélectionnez une salle</option>
+
+          <option [ngValue]="null">Sélectionnez une salle</option>
+          <option *ngFor="let salle of salles" [value]="salle.id">
+            {{ salle.nom || salle.numero || "Salle " + salle.id }}
+          </option>
+        </select>
+        <div *ngIf="isFieldInvalid('salleId')" class="invalid-feedback">
+          {{ getErrorMessage("salleId") }}
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label for="dateDebut">
+          <i class="fas fa-calendar-alt"></i> Date et heure de début *
+        </label>
+        <input
+          type="datetime-local"
+          id="dateDebut"
+          class="form-control"
+          formControlName="dateDebut"
+          [class.is-invalid]="isFieldInvalid('dateDebut')"
+        />
+        <div *ngIf="isFieldInvalid('dateDebut')" class="invalid-feedback">
+          {{ getErrorMessage("dateDebut") }}
+        </div>
+      </div>
+
+      <div class="form-group col-md-6">
+        <label for="dateFin">
+          <i class="fas fa-calendar-alt"></i> Date et heure de fin *
+        </label>
+        <input
+          type="datetime-local"
+          id="dateFin"
+          class="form-control"
+          formControlName="dateFin"
+          [class.is-invalid]="isFieldInvalid('dateFin')"
+        />
+        <div *ngIf="isFieldInvalid('dateFin')" class="invalid-feedback">
+          {{ getErrorMessage("dateFin") }}
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label for="capacite">
+          <i class="fas fa-users"></i> Capacité totale *
+        </label>
+        <input
+          type="number"
+          id="capacite"
+          class="form-control"
+          formControlName="capacite"
+          [class.is-invalid]="isFieldInvalid('capacite')"
+          (change)="onCapaciteChange()"
+        />
+        <div *ngIf="isFieldInvalid('capacite')" class="invalid-feedback">
+          {{ getErrorMessage("capacite") }}
+        </div>
+      </div>
+
+      <div class="form-group col-md-6">
+        <label for="placesDisponibles">
+          <i class="fas fa-chair"></i> Places disponibles *
+        </label>
+        <input
+          type="number"
+          id="placesDisponibles"
+          class="form-control"
+          formControlName="placesDisponibles"
+          [class.is-invalid]="isFieldInvalid('placesDisponibles')"
+          (change)="validatePlaces()"
+        />
+        <div
+          *ngIf="isFieldInvalid('placesDisponibles')"
+          class="invalid-feedback"
+        >
+          {{ getErrorMessage("placesDisponibles") }}
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group user-selection-group">
+      <label>
+        <i class="fas fa-user-plus"></i> Participants *
+        <span
+          *ngIf="isFieldInvalid('utilisateursIds')"
+          class="text-danger ml-2"
+        >
+          (Veuillez ajouter au moins un participant)
+        </span>
+      </label>
+
+      <div class="selection-tabs">
+        <button
+          type="button"
+          class="tab-button"
+          [class.active]="selectionMode === 'search'"
+          (click)="setSelectionMode('search')"
+        >
+          <i class="fas fa-search"></i> Recherche
+        </button>
+        <button
+          type="button"
+          class="tab-button"
+          [class.active]="selectionMode === 'liste'"
+          (click)="setSelectionMode('liste')"
+        >
+          <i class="fas fa-list"></i> Liste complète
+        </button>
+        <button
+          type="button"
+          class="tab-button"
+          [class.active]="selectionMode === 'role'"
+          (click)="setSelectionMode('role')"
+        >
+          <i class="fas fa-user-tag"></i> Par rôle
+        </button>
+      </div>
+
+      <div
+        class="selected-users-container"
+        [class.is-invalid]="isFieldInvalid('utilisateursIds')"
+        [attr.data-count]="selectedUtilisateurs.length"
+      >
+        <div
+          *ngIf="selectedUtilisateurs.length === 0"
+          class="no-users-selected"
+        >
+          <i class="fas fa-info-circle"></i> Aucun participant sélectionné
+        </div>
+        <div
+          *ngFor="let user of selectedUtilisateurs; let i = index"
+          class="user-tag"
+        >
+          <span class="user-name"> {{ user.prenom }} {{ user.nom }} </span>
+          <button
+            type="button"
+            class="remove-user-btn"
+            (click)="removeUtilisateur(user)"
+            [attr.aria-label]="'Retirer ' + user.prenom + ' ' + user.nom"
+          >
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="selectionMode === 'search'" class="selection-panel">
+        <div class="user-search-container">
+          <div class="search-input-wrapper">
+            <i class="fas fa-search search-icon"></i>
+            <input
+              type="text"
+              id="userSearch"
+              class="form-control"
+              placeholder="Rechercher un participant..."
+              (input)="searchUtilisateurs($event)"
+              [value]="searchUtilisateurText"
+              aria-label="Rechercher des participants"
+            />
+          </div>
+
+          <div
+            *ngIf="searchUtilisateurText && filteredUtilisateurs.length > 0"
+            class="user-search-results"
+          >
+            <div
+              *ngFor="let user of filteredUtilisateurs"
+              class="user-search-item"
+              (click)="addUtilisateur(user)"
+              [attr.title]="'Ajouter ' + user.prenom + ' ' + user.nom"
+            >
+              {{ user.prenom }} {{ user.nom }}
+            </div>
+          </div>
+
+          <div
+            *ngIf="searchUtilisateurText && filteredUtilisateurs.length === 0"
+            class="user-search-no-results"
+          >
+            <i class="fas fa-search"></i> Aucun utilisateur trouvé
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="selectionMode === 'liste'" class="selection-panel">
+        <div class="select-wrapper">
+          <select
+            class="form-control user-select"
+            (change)="onUtilisateurSelect($event)"
+          >
+            <option value="" selected disabled>
+              Sélectionner un participant
+            </option>
+            <optgroup *ngFor="let group of userGroups" [label]="group.name">
+              <option
+                *ngFor="let user of group.users"
+                [value]="user.id"
+                [disabled]="isUserSelected(user.id)"
+              >
+                {{ user.prenom }} {{ user.nom }}
+              </option>
+            </optgroup>
+          </select>
+          <i class="fas fa-chevron-down select-arrow"></i>
+        </div>
+      </div>
+
+      <div *ngIf="selectionMode === 'role'" class="selection-panel">
+        <div class="role-selection">
+          <div class="form-group">
+            <label for="formateurSelect" class="role-label">
+              <i class="fas fa-chalkboard-teacher"></i> Formateur
+            </label>
+            <div class="select-wrapper">
+              <select
+                id="formateurSelect"
+                class="form-control"
+                (change)="onFormateurSelect($event)"
+              >
+                <option value="" selected disabled>
+                  Sélectionner un formateur
+                </option>
+                <option
+                  *ngFor="let formateur of formateurs"
+                  [value]="formateur.id"
+                  [disabled]="isUserSelected(formateur.id)"
+                >
+                  {{ formateur.prenom }} {{ formateur.nom }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="etudiantSelect" class="role-label">
+              <i class="fas fa-user-graduate"></i> Étudiant
+            </label>
+            <div class="select-wrapper">
+              <select
+                id="etudiantSelect"
+                class="form-control"
+                (change)="onEtudiantSelect($event)"
+              >
+                <option value="" selected disabled>
+                  Sélectionner un étudiant
+                </option>
+                <option
+                  *ngFor="let etudiant of etudiants"
+                  [value]="etudiant.id"
+                  [disabled]="isUserSelected(etudiant.id)"
+                >
+                  {{ etudiant.prenom }} {{ etudiant.nom }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary" [disabled]="submitting">
+        <span *ngIf="submitting" class="spinner"></span>
+        <span *ngIf="!submitting"><i class="fas fa-save"></i></span>
+        {{ isNewSession ? "Créer la session" : "Mettre à jour" }}
+      </button>
+      <button
+        type="button"
+        class="btn btn-secondary"
+        (click)="resetForm()"
+        [disabled]="submitting"
+      >
+        <i class="fas fa-undo"></i> Réinitialiser
+      </button>
+    </div>
+  </form>
+</div>

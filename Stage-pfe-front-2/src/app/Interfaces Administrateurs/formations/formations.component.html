@@ -1,0 +1,120 @@
+<div class="catalog-container">
+  <button class="floating-button" (click)="nouvelleformation()">➕</button>
+  <header class="catalog-header">
+    <h1>Catalogue des Formations</h1>
+    <div class="search-bar">
+      <input
+        type="text"
+        [value]="searchInput"
+        (input)="onSearch($event)"
+        placeholder="Rechercher une formation..."
+      />
+      <button><i class="fas fa-search"></i></button>
+    </div>
+  </header>
+
+  <!-- Error message display -->
+  <div *ngIf="errorMsg" class="error-message">
+    {{ errorMsg }}
+  </div>
+
+  <!-- Theme filters -->
+  <div class="filters">
+    <button
+      class="filter-btn"
+      [class.active]="selectedTheme === ''"
+      (click)="applyFilter('Tous')"
+    >
+      Tous
+    </button>
+    <button
+      *ngFor="let theme of themes"
+      class="filter-btn"
+      [class.active]="selectedTheme === theme.nom"
+      (click)="applyFilter(theme.nom || '')"
+    >
+      {{ theme.nom }}
+    </button>
+  </div>
+
+  <!-- Loading state -->
+  <div *ngIf="loading" class="loading">Chargement des formations...</div>
+
+  <!-- Formations grid -->
+  <div class="catalog-grid" *ngIf="formationsAffichees.length && !loading">
+    <div class="formation-card" *ngFor="let formation of formationsAffichees">
+      <app-details-formation-admin
+        [FormationsDto]="formation"
+        (showDeleteConfirmationPopup)="onShowDeleteConfirmation($event)"
+        (showSuccessPopup)="onShowSuccessPopup($event)"
+        (showErrorPopup)="onShowErrorPopup($event)"
+      ></app-details-formation-admin>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <app-pagination
+    *ngIf="formationsAffichees.length"
+    [currentPage]="currentPage"
+    [totalItems]="totalItems"
+    [itemsPerPage]="itemsPerPage"
+    (pageChange)="onPageChange($event)"
+  >
+  </app-pagination>
+  
+  <!-- Global Popups - These will display over the entire screen -->
+  
+  <!-- Popup de confirmation de suppression -->
+  <div class="popup-overlay" *ngIf="showDeleteConfirmation">
+    <div class="popup-content">
+      <div class="popup-header">
+        <h4>Confirmation de suppression</h4>
+        <button class="close-btn" (click)="fermerConfirmationPopup()">×</button>
+      </div>
+      <div class="popup-body">
+        <p>Êtes-vous sûr de vouloir supprimer cette formation ?</p>
+        <p><strong>{{ currentFormation?.titre }}</strong></p>
+        <p>Cette action est irréversible.</p>
+      </div>
+      <div class="popup-footer">
+        <button class="btn btn-secondary" (click)="fermerConfirmationPopup()">Annuler</button>
+        <button class="btn btn-danger" (click)="confirmerSuppression()">Confirmer la suppression</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Popup de succès -->
+  <div class="popup-overlay" *ngIf="showSuccessPopup">
+    <div class="popup-content success-popup">
+      <div class="popup-header">
+        <h4>Opération réussie</h4>
+        <button class="close-btn" (click)="fermerSuccessPopup()">×</button>
+      </div>
+      <div class="popup-body">
+        <div class="success-icon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <p>{{ popupMessage }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Popup d'erreur -->
+  <div class="popup-overlay" *ngIf="showErrorPopup">
+    <div class="popup-content error-popup">
+      <div class="popup-header">
+        <h4>Erreur</h4>
+        <button class="close-btn" (click)="fermerErrorPopup()">×</button>
+      </div>
+      <div class="popup-body">
+        <div class="error-icon">
+          <i class="fas fa-exclamation-circle"></i>
+        </div>
+        <p>{{ popupMessage }}</p>
+      </div>
+      <div class="popup-footer">
+        <button class="btn btn-primary" (click)="fermerErrorPopup()">OK</button>
+      </div>
+    </div>
+  </div>
+</div>

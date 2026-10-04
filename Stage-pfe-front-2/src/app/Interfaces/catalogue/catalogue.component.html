@@ -1,0 +1,55 @@
+<div class="catalog-container">
+  <header class="catalog-header">
+    <h1>Catalogue des Formations</h1>
+    <div class="search-bar">
+      <input
+        type="text"
+        [value]="searchInput"
+        (input)="onSearch($event)"
+        placeholder="Rechercher une formation..."
+      />
+      <button><i class="fas fa-search"></i></button>
+    </div>
+  </header>
+
+  <!-- Error message display -->
+  <div *ngIf="errorMsg" class="error-message">
+    {{ errorMsg }}
+  </div>
+
+  <!-- Theme filters -->
+<!--   <div class="filters">
+    <button
+      *ngFor="let theme of themes"
+      class="filter-btn"
+      [class.active]="selectedTheme === theme.name"
+      (click)="applyFilter(theme.name)"
+    >
+      {{ theme.name }}
+    </button>
+  </div> -->
+
+  <!-- Loading state -->
+  <div *ngIf="!formationsAffichees.length && !errorMsg" class="loading">
+    Chargement des formations...
+  </div>
+
+  <!-- Formations grid -->
+  <div class="catalog-grid" *ngIf="formationsAffichees.length">
+    <div class="formation-card" *ngFor="let formation of formationsAffichees">
+      <app-details-formation
+        [FormationsDto]="formation"
+      ></app-details-formation>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <app-pagination
+    *ngIf="formationsAffichees.length"
+    [currentPage]="currentPage"
+    [totalItems]="totalItems"
+    [itemsPerPage]="itemsPerPage"
+    (pageChange)="onPageChange($event)"
+  >
+  </app-pagination>
+</div>

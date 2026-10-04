@@ -1,0 +1,384 @@
+<div class="theme-management-container">
+  <!-- Header with search and add button -->
+  <div class="theme-header">
+    <h1>Gestion des Thèmes</h1>
+    <div class="actions-container">
+      <div class="search-container">
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          (input)="searchThemes()"
+          placeholder="Rechercher un thème..."
+          class="search-input"
+          [disabled]="loadingSearch"
+        />
+        <button class="search-btn" [disabled]="loadingSearch">
+          <i
+            class="fas"
+            [ngClass]="loadingSearch ? 'fa-spinner fa-spin' : 'fa-search'"
+          ></i>
+        </button>
+      </div>
+      <div class="action-buttons">
+        <button
+          class="btn-primary"
+          (click)="openThemeModal()"
+          [disabled]="loading"
+        >
+          <i class="fas fa-plus"></i> Nouveau Thème
+        </button>
+        <button
+          class="btn-secondary"
+          (click)="openAssignModal()"
+          [disabled]="loading"
+        >
+          <i class="fas fa-link"></i> Assigner à une Formation
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  <div *ngIf="errorMessage" class="alert alert-danger">
+    {{ errorMessage }}
+    <button (click)="errorMessage = ''" class="close-btn">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+  <div *ngIf="successMessage" class="alert alert-success">
+    {{ successMessage }}
+    <button (click)="successMessage = ''" class="close-btn">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+
+  <!-- Loading indicator -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="spinner"></div>
+    <p>Chargement des thèmes en cours...</p>
+  </div>
+
+  <!-- Theme cards grid -->
+  <div *ngIf="!loading" class="theme-grid">
+    <div
+      *ngFor="let theme of filteredThemes"
+      class="theme-card"
+      [style.border-left]="'5px solid ' + theme.color"
+    >
+      <div class="theme-card-header">
+        <h3>{{ theme.nom }}</h3>
+        <div class="theme-actions">
+          <button
+            class="icon-btn view-btn"
+            (click)="viewThemeDetails(theme)"
+            title="Voir les détails"
+          >
+            <i class="fas fa-eye"></i>
+          </button>
+          <button
+            class="icon-btn edit-btn"
+            (click)="openThemeModal(theme)"
+            title="Modifier"
+          >
+            <i class="fas fa-edit"></i>
+          </button>
+          <button
+            class="icon-btn delete-btn"
+            (click)="confirmDelete(theme)"
+            title="Supprimer"
+          >
+            <i class="fas fa-trash-alt"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty state -->
+    <div *ngIf="filteredThemes.length === 0" class="empty-state">
+      <i class="fas fa-folder-open fa-4x"></i>
+      <p>Aucun thème trouvé</p>
+      <button class="btn-primary" (click)="openThemeModal()">
+        Créer un nouveau thème
+      </button>
+    </div>
+  </div>
+
+  <!-- Theme Modal -->
+  <div class="modal-overlay" *ngIf="showThemeModal" (click)="closeThemeModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ isEditMode ? "Modifier le Thème" : "Créer un Thème" }}</h2>
+        <button
+          class="close-btn"
+          (click)="closeThemeModal()"
+          [disabled]="loadingSave"
+        >
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="themeForm" (ngSubmit)="saveTheme()">
+          <input type="hidden" formControlName="id" />
+
+          <div class="form-group">
+            <label for="nom">Nom du thème</label>
+            <input
+              type="text"
+              id="nom"
+              formControlName="nom"
+              (blur)="onThemeNameChange()"
+              class="form-control"
+              [disabled]="loadingSave"
+            />
+            <div
+              *ngIf="
+                themeForm.get('nom')?.invalid && themeForm.get('nom')?.touched
+              "
+              class="error-msg"
+            >
+              Le nom du thème est requis (min. 3 caractères)
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button
+              type="button"
+              class="btn-cancel"
+              (click)="closeThemeModal()"
+              [disabled]="loadingSave"
+            >
+              Annuler
+            </button>
+            <button
+              type="submit"
+              class="btn-save"
+              [disabled]="themeForm.invalid || loadingSave"
+            >
+              <i *ngIf="loadingSave" class="fas fa-spinner fa-spin mr-2"></i>
+              {{ isEditMode ? "Mettre à jour" : "Créer" }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Assign Modal -->
+  <div
+    class="modal-overlay"
+    *ngIf="showAssignModal"
+    (click)="closeAssignModal()"
+  >
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Assigner un Thème à une Formation</h2>
+        <button
+          class="close-btn"
+          (click)="closeAssignModal()"
+          [disabled]="loadingAssign"
+        >
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="assignForm" (ngSubmit)="assignThemeToFormation()">
+          <div class="form-group">
+            <label for="themeId">Thème</label>
+            <select
+              id="themeId"
+              formControlName="themeId"
+              class="form-control"
+              [disabled]="loadingAssign"
+            >
+              <option [ngValue]="null">Veuillez sélectionner un thème</option>
+              <option *ngFor="let theme of themes" [value]="theme.id">
+                {{ theme.nom }}
+              </option>
+            </select>
+            <div
+              *ngIf="
+                assignForm.get('themeId')?.invalid &&
+                assignForm.get('themeId')?.touched
+              "
+              class="error-msg"
+            >
+              Veuillez sélectionner un thème
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="formationId">Formation</label>
+            <div *ngIf="loadingFormations" class="loading-inline">
+              <i class="fas fa-spinner fa-spin"></i> Chargement des
+              formations...
+            </div>
+            <select
+              id="formationId"
+              formControlName="formationId"
+              class="form-control"
+              [disabled]="loadingFormations || loadingAssign"
+            >
+              <option [ngValue]="null">Sélectionner une formation</option>
+              <option
+                *ngFor="let formation of formations"
+                [value]="formation.id"
+              >
+                {{ formation.titre }}
+              </option>
+            </select>
+            <div
+              *ngIf="
+                assignForm.get('formationId')?.invalid &&
+                assignForm.get('formationId')?.touched
+              "
+              class="error-msg"
+            >
+              Veuillez sélectionner une formation
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button
+              type="button"
+              class="btn-cancel"
+              (click)="closeAssignModal()"
+              [disabled]="loadingAssign"
+            >
+              Annuler
+            </button>
+            <button
+              type="submit"
+              class="btn-save"
+              [disabled]="assignForm.invalid || loadingAssign"
+            >
+              <i *ngIf="loadingAssign" class="fas fa-spinner fa-spin mr-2"></i>
+              Assigner
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div
+    class="modal-overlay"
+    *ngIf="showDeleteConfirm"
+    (click)="showDeleteConfirm = false"
+  >
+    <div
+      class="modal-container modal-confirm"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="modal-header">
+        <h2>Confirmer la suppression</h2>
+        <button
+          class="close-btn"
+          (click)="showDeleteConfirm = false"
+          [disabled]="loadingDelete"
+        >
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="confirm-message">
+          <i class="fas fa-exclamation-triangle warning-icon"></i>
+          <p>
+            Êtes-vous sûr de vouloir supprimer le thème
+            <strong>{{ selectedTheme?.nom }}</strong> ?
+          </p>
+          <p class="warning-text">
+            Cette action est irréversible et supprimera toutes les associations
+            avec les formations.
+          </p>
+        </div>
+        <div class="form-actions">
+          <button
+            type="button"
+            class="btn-cancel"
+            (click)="showDeleteConfirm = false"
+            [disabled]="loadingDelete"
+          >
+            Annuler
+          </button>
+          <button
+            type="button"
+            class="btn-danger"
+            (click)="deleteTheme()"
+            [disabled]="loadingDelete"
+          >
+            <i *ngIf="loadingDelete" class="fas fa-spinner fa-spin mr-2"></i>
+            Supprimer
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Theme Details Modal -->
+  <div
+    class="modal-overlay"
+    *ngIf="themeDetailsVisible"
+    (click)="closeThemeDetails()"
+  >
+    <div class="modal-container modal-large" (click)="$event.stopPropagation()">
+      <div class="modal-header" [style.background-color]="selectedTheme?.color">
+        <h2 class="white-text">{{ selectedTheme?.nom }}</h2>
+        <button class="close-btn white-btn" (click)="closeThemeDetails()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="theme-details">
+          <h3>Détails du thème</h3>
+
+          <div class="theme-info">
+            <div class="info-item">
+              <span class="info-label">Identifiant :</span>
+              <span class="info-value">{{ selectedTheme?.id }}</span>
+            </div>
+
+            <h3>Formations associées</h3>
+            <div *ngIf="loading" class="loading-spinner-sm">
+              <i class="fas fa-spinner fa-spin"></i> Chargement des formations
+              associées...
+            </div>
+
+            <div
+              *ngIf="!loading && currentThemeFormations.length > 0"
+              class="associated-formations"
+            >
+              <div
+                *ngFor="let formation of currentThemeFormations"
+                class="formation-item"
+              >
+                <div class="formation-title">{{ formation.titre }}</div>
+                <div class="formation-details">
+                  <span class="duration"
+                    ><i class="fas fa-clock"></i> {{ formation.duree }}</span
+                  >
+                  <span class="price"
+                    ><i class="fas fa-tag"></i> {{ formation.prix }} dt</span
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div
+              *ngIf="!loading && currentThemeFormations.length === 0"
+              class="empty-formations"
+            >
+              <p>Aucune formation n'est associée à ce thème.</p>
+              <button
+                class="btn-primary"
+                (click)="openAssignModal(selectedTheme ?? undefined)"
+              >
+                Assigner une formation
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,84 @@
+<div class="container my-container">
+  <!-- Bulle supplémentaire pour plus de dynamisme -->
+<!--   <div class="bubble-extra"></div>
+ -->  
+  <div class="card shadow-lg">
+    <div class="card-header text-center bg-primary text-white">
+      <h3><i class="fas fa-user-lock me-2"></i>Se connecter</h3>
+    </div>
+    <div class="card-body">
+      <form>
+        <div
+          class="alert alert-danger"
+          *ngIf="errorMessage"
+          style="margin-top: 10px; margin-bottom: 20px;"
+        >
+          {{ errorMessage }}
+        </div>
+
+        <div class="mb-4">
+          <div class="input-group">
+            <span class="input-group-text" style="background-color: #003d73; color: white; border: none;">
+              <i class="fas fa-envelope"></i>
+            </span>
+            <input
+              type="email"
+              class="form-control"
+              placeholder="E-mail"
+              [(ngModel)]="authenticationRequest.login"
+              name="email"
+              required
+            /> 
+          </div>
+          <div class="invalid-feedback">
+            Veuillez entrer une adresse e-mail valide.
+          </div>
+        </div>
+        
+        <div class="mb-4">
+          <div class="input-group">
+            <span class="input-group-text" style="background-color: #003d73; color: white; border: none;">
+              <i class="fas fa-lock"></i>
+            </span>
+            <input
+              type="password"
+              class="form-control"
+              placeholder="Mot de passe"
+              name="password"
+              [(ngModel)]="authenticationRequest.password"
+              required
+            /> 
+          </div>
+          <div class="invalid-feedback">
+            Veuillez entrer votre mot de passe.
+          </div>
+        </div>
+        
+    
+        
+        <div class="mb-3 d-flex justify-content-between align-items-center">
+          <a [routerLink]="['/sign-up']" class="btn btn-link">
+            <i class="fas fa-user-plus me-1"></i> S'inscrire
+          </a>
+
+          <button 
+            type="submit" 
+            class="btn btn-info" 
+            (click)="login()"
+            [disabled]="isLoading"
+          >
+            <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+            <i *ngIf="!isLoading" class="fas fa-sign-in-alt"></i> 
+            {{ isLoading ? 'Connexion...' : 'Se connecter' }}
+          </button>
+        </div>
+        
+        <div class="text-center mt-4">
+          <a href="#" style="color: #38b6ff; text-decoration: none; font-size: 0.9rem;">
+            <i class="fas fa-question-circle me-1"></i> Mot de passe oublié?
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

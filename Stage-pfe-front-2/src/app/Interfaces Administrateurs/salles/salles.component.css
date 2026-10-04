@@ -1,0 +1,618 @@
+/* salles.component.css */
+:root {
+  --primary-color: #2196f3;
+  --primary-light: #e3f2fd;
+  --success-color: #4caf50;
+  --success-light: #e8f5e9;
+  --warning-color: #ff9800;
+  --warning-light: #fff3e0;
+  --danger-color: #f44336;
+  --danger-light: #ffebee;
+  --gray-color: #757575;
+  --gray-light: #f5f5f5;
+  --text-dark: #333333;
+  --text-light: #757575;
+  --border-color: #e0e0e0;
+  --white: #ffffff;
+  --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: #f9f9f9;
+  color: var(--text-dark);
+}
+
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  padding: 15px 0;
+  margin-bottom: 20px;
+}
+
+.header h1 {
+  font-size: 1.8rem;
+  font-weight: 500;
+  color: var(--text-dark);
+  display: flex;
+  align-items: center;
+}
+
+.calendar-icon {
+  font-size: 1.5rem;
+  margin-right: 10px;
+}
+
+.main-content {
+  padding: 10px 0;
+}
+
+.rooms-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.room-card {
+  background-color: var(--white);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  padding: 20px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.room-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.room-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.room-name {
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.room-status {
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.status-disponible {
+  background-color: var(--success-light);
+  color: var(--success-color);
+}
+
+.status-occupee {
+  background-color: var(--danger-light);
+  color: var(--danger-color);
+}
+
+.status-reservee {
+  background-color: var(--warning-light);
+  color: var(--warning-color);
+}
+
+.status-En-maintenance {
+  background-color: var(--gray-light);
+  color: var(--gray-color);
+}
+
+.room-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  color: var(--text-light);
+}
+
+.info-icon {
+  margin-right: 8px;
+}
+
+.floating-button {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  background-color: #00bcd4;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.floating-button:hover {
+  transform: scale(1.05);
+  background-color: #00acc1;
+}
+
+.button-icon {
+  font-size: 1.5rem;
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 1000px) {
+  .rooms-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .rooms-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .app-container {
+    padding: 15px;
+  }
+}
+
+/* Optional: For Angular animations */
+.room-card.ng-enter {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* Style amélioré pour les boutons */
+
+/* Bouton flottant pour ajouter une nouvelle salle */
+.floating-button {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #2196f3; /* Bleu */
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+  z-index: 1000;
+}
+
+.floating-button:hover {
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 6px 16px rgba(33, 150, 243, 0.5);
+  background-color: #1976d2; /* Bleu plus foncé au survol */
+}
+
+.floating-button:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.4);
+}
+
+.button-icon {
+  font-size: 1.8rem;
+}
+
+/* Boutons d'action dans les cartes de salle */
+.room-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 15px;
+  opacity: 0;
+  transform: translateY(5px);
+  transition: all 0.2s ease-in-out;
+}
+
+.room-card:hover .room-actions {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.action-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: #f5f5f5;
+}
+
+.edit-button {
+  color: #2196f3; /* Bleu pour éditer */
+}
+
+.edit-button:hover {
+  background-color: rgba(33, 150, 243, 0.1);
+  transform: translateY(-2px);
+}
+
+.delete-button {
+  color: #f44336; /* Rouge pour supprimer */
+}
+
+.delete-button:hover {
+  background-color: rgba(244, 67, 54, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Style pour le bouton primaire (ajouter une salle dans la section "aucun résultat") */
+.btn-primary {
+  padding: 10px 20px;
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2);
+}
+
+.btn-primary:hover {
+  background-color: #1976d2;
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+  transform: translateY(-2px);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(33, 150, 243, 0.2);
+}
+
+/* Boutons dans la popup de confirmation de suppression */
+
+.btn-secondary,
+.btn-danger {
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.btn-secondary {
+  background-color: #f5f5f5;
+  color: #333;
+  border: 1px solid #e0e0e0;
+}
+
+.btn-secondary:hover {
+  background-color: #eeeeee;
+  transform: translateY(-2px);
+}
+
+.btn-danger {
+  background-color: #f44336;
+  color: white;
+  box-shadow: 0 2px 8px rgba(244, 67, 54, 0.2);
+}
+
+.btn-danger:hover {
+  background-color: #e53935;
+  box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+  transform: translateY(-2px);
+}
+
+.delete-icon {
+  font-size: 1.5rem;
+  margin-right: 10px;
+  color: #ff9800;
+}
+
+.delete-warning {
+  color: #f44336;
+  font-size: 0.9rem;
+  margin-top: 10px;
+}
+
+/* Style pour la barre de recherche */
+.search-bar {
+  margin-bottom: 20px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  font-size: 0.95rem;
+  background-color: #f9f9f9;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #2196f3;
+  background-color: white;
+  box-shadow: 0 3px 8px rgba(33, 150, 243, 0.1);
+}
+
+/* État des salles avec couleurs directes au lieu de variables CSS */
+.status-disponible {
+  background-color: #e8f5e9; /* Vert clair */
+  color: #4caf50; /* Vert */
+}
+
+.status-occupee {
+  background-color: #ffebee; /* Rouge clair */
+  color: #f44336; /* Rouge */
+}
+
+.status-reservee {
+  background-color: #fff3e0; /* Orange clair */
+  color: #ff9800; /* Orange */
+}
+
+.status-maintenance {
+  background-color: #f5f5f5; /* Gris clair */
+  color: #757575; /* Gris */
+}
+
+/* Animation de chargement */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(33, 150, 243, 0.2);
+  border-radius: 50%;
+  border-top-color: #2196f3;
+  animation: spin 1s infinite ease-in-out;
+  margin-bottom: 15px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* État sans données */
+.no-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 0;
+  text-align: center;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 15px;
+  color: #bdbdbd;
+}
+
+.no-data p {
+  color: #757575;
+  margin-bottom: 20px;
+}
+.delete-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(3px);
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Style pour la popup elle-même */
+.delete-popup {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 400px;
+  padding: 0;
+  overflow: hidden;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* En-tête de la popup */
+.delete-popup-header {
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.delete-popup-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #343a40;
+  font-weight: 600;
+}
+
+.delete-icon {
+  font-size: 20px;
+}
+
+/* Contenu de la popup */
+.delete-popup-content {
+  padding: 20px;
+  color: #495057;
+}
+
+.delete-popup-content p {
+  margin: 0 0 10px;
+  line-height: 1.5;
+}
+
+.delete-warning {
+  color: #dc3545;
+  font-weight: 500;
+  font-size: 14px;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.delete-warning::before {
+  content: "⚠️";
+  margin-right: 6px;
+}
+
+/* Actions de la popup */
+.delete-popup-actions {
+  padding: 16px 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  border-top: 1px solid #e9ecef;
+  background-color: #f8f9fa;
+}
+
+/* Styles des boutons */
+.btn-secondary,
+.btn-danger {
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  font-size: 14px;
+}
+
+.btn-secondary {
+  background-color: #f1f3f5;
+  color: #495057;
+}
+
+.btn-secondary:hover {
+  background-color: #e9ecef;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+}
+
+/* Animation pour les boutons */
+.btn-secondary,
+.btn-danger {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-secondary:after,
+.btn-danger:after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.5);
+  opacity: 0;
+  border-radius: 100%;
+  transform: scale(1, 1) translate(-50%);
+  transform-origin: 50% 50%;
+}
+
+.btn-secondary:focus:not(:active)::after,
+.btn-danger:focus:not(:active)::after {
+  animation: ripple 1s ease-out;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0, 0);
+    opacity: 0.5;
+  }
+  20% {
+    transform: scale(25, 25);
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(40, 40);
+  }
+}

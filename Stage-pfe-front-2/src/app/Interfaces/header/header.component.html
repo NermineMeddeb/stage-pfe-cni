@@ -1,0 +1,37 @@
+<header class="dashboard-header">
+  <div class="header-container">
+    <div class="header-actions">
+      <div class="notifications">
+        <i class="fas fa-bell"></i>
+        <span class="notification-badge">3</span>
+      </div>
+
+      <div class="user-profile" *ngIf="userData">
+        <i class="fas fa-user"></i>
+        <div class="user-welcome" [@fadeInOut]>
+          <p>
+          <strong>{{ userData.prenom }} {{ userData.nom }}</strong>
+          </p>
+        </div>
+
+        <div class="dropdown-icon">
+          <i class="fas fa-chevron-down"></i>
+        </div>
+
+        <div class="profile-dropdown">
+          <ul>
+            <li>
+              <a [routerLink]="'/dashboard/profil'"><i class="fas fa-user"></i> Mon Profil</a>
+            </li>
+            <li>
+              <a href="#"><i class="fas fa-cog"></i> Paramètres</a>
+            </li>
+            <li class="logout">
+              <a [routerLink]="'/login'"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>

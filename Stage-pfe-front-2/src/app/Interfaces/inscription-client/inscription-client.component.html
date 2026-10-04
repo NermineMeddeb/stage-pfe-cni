@@ -1,0 +1,329 @@
+<!-- Main Container with modern design -->
+<div class="container-fluid py-5 bg-light">
+  <div class="row justify-content-center">
+    <div class="col-lg-8 col-md-10">
+      <!-- Card with enhanced styling -->
+      <div class="card shadow-lg border-0 rounded-lg overflow-hidden">
+        <!-- Header with gradient background -->
+        <div class="card-header bg-gradient-primary p-4">
+          <h3 class="mb-0 font-weight-bold">Inscription à la formation</h3>
+        </div>
+
+        <!-- Loading state -->
+        <div *ngIf="loading" class="card-body text-center py-5">
+          <div class="spinner-grow text-primary" role="status">
+            <span class="sr-only">Chargement...</span>
+          </div>
+          <p class="mt-3 text-muted">Chargement des informations...</p>
+        </div>
+
+        <!-- Content when loaded -->
+        <div *ngIf="formation && !loading" class="card-body">
+          <!-- Formation details with modern layout -->
+          <div class="formation-details mb-4">
+            <div class="row align-items-center">
+              <!-- Formation image with hover effect -->
+              <div class="col-lg-4 mb-3" *ngIf="formation.photo">
+                <div
+                  class="formation-image-container rounded overflow-hidden shadow-sm"
+                >
+                  <img
+                    [src]="
+                      formation.photo
+                        ? 'assets/affiche_formation/' + formation.photo
+                        : 'assets/affiche_formation/formation.png'
+                    "
+                    class="img-fluid rounded product-image"
+                  />
+                </div>
+              </div>
+
+              <!-- Formation information with better typography -->
+              <div
+                [ngClass]="{
+                  'col-lg-8': formation.photo,
+                  'col-lg-12': !formation.photo
+                }"
+              >
+                <h4 class="text-primary font-weight-bold">
+                  {{ formation.titre }}
+                </h4>
+                <p class="text-muted">{{ formation.description }}</p>
+
+                <!-- Info badges -->
+                <div class="formation-badges d-flex flex-wrap gap-2 mb-3">
+                  <span class="badge bg-primary text-white">
+                    <i class="fas fa-euro-sign me-1"></i>
+                    {{ formation.prix | currency : "EUR" }}
+                  </span>
+                  <span class="badge bg-info text-white">
+                    <i class="fas fa-clock me-1"></i>
+                    {{ formation.duree }} heures
+                  </span>
+                  <span class="badge bg-secondary text-white">
+                    <i class="fas fa-layer-group me-1"></i> Niveau:
+                    {{ formation.niveau }}
+                  </span>
+                  <span class="badge bg-success text-white">
+                    <i class="fas fa-users me-1"></i>
+                    {{ formation.placesMax }} places max
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Additional information in clean cards -->
+            <div class="row mt-4">
+              <div class="col-md-6 mb-3">
+                <div
+                  class="info-card p-3 h-100 border-left border-primary bg-light rounded"
+                >
+                  <h5 class="text-primary">
+                    <i class="fas fa-list-check me-2"></i>Prérequis
+                  </h5>
+                  <p class="mb-0">{{ formation.prerequis }}</p>
+                </div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <div
+                  class="info-card p-3 h-100 border-left border-success bg-light rounded"
+                >
+                  <h5 class="text-success">
+                    <i class="fas fa-bullseye me-2"></i>Objectifs
+                  </h5>
+                  <p class="mb-0">{{ formation.objectifsFormation }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Divider -->
+          <hr class="my-4" />
+
+          <!-- Session selection form with floating labels -->
+          <form
+            [formGroup]="inscriptionForm"
+            (ngSubmit)="openConfirmationModal()"
+            *ngIf="!loading"
+          >
+            <h5 class="text-primary mb-3">
+              <i class="fas fa-calendar-alt me-2"></i>Choisissez une session
+            </h5>
+
+            <!-- Sessions displayed as cards -->
+            <div class="form-group mb-4">
+              <div class="row">
+                <div *ngFor="let session of sessions" class="col-md-6 mb-3">
+                  <div
+                    class="session-card p-3 border rounded-lg"
+                    [ngClass]="{
+                      'session-selected':
+                        f['sessionId'].value == session.sessionId
+                    }"
+                    (click)="
+                      session.sessionId !== undefined &&
+                        selectSession(session.sessionId)
+                    "
+                  >
+                    <div class="d-flex align-items-center">
+                      <div class="form-check me-3">
+                        <input
+                          class="form-check-input"
+                          type="radio"
+                          [value]="session.sessionId"
+                          [id]="'session_' + session.sessionId"
+                          formControlName="sessionId"
+                        />
+                      </div>
+                      <div>
+                        <div class="session-dates fw-bold">
+                          {{ session.dateDebut | date : "dd/MM/yyyy" }} au
+                          {{ session.dateFin | date : "dd/MM/yyyy" }}
+                        </div>
+                        <div class="text-success">
+                          <i class="fas fa-user-group me-1"></i>
+                          {{ session.placesDisponibles }} places disponibles
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Validation error message -->
+              <div
+                *ngIf="submitted && f['sessionId'].errors"
+                class="text-danger mt-2"
+              >
+                <small *ngIf="f['sessionId'].errors['required']"
+                  >Veuillez sélectionner une session</small
+                >
+              </div>
+            </div>
+
+            <!-- No sessions message -->
+            <div *ngIf="sessions.length === 0" class="alert alert-warning">
+              <i class="fas fa-exclamation-triangle me-2"></i>
+              Aucune session disponible pour le moment. Veuillez consulter
+              ultérieurement.
+            </div>
+
+            <!-- Form buttons with better styling -->
+            <div class="form-group d-flex justify-content-between mt-4">
+              <button
+                type="button"
+                class="btn btn-outline-secondary px-4"
+                (click)="annuler()"
+              >
+                <i class="fas fa-arrow-left me-2"></i>Annuler
+              </button>
+              <button
+                type="submit"
+                class="btn btn-primary px-4"
+                [disabled]="
+                  loading || sessions.length === 0 || inscriptionForm.invalid
+                "
+              >
+                <i class="fas fa-check-circle me-2"></i>S'inscrire
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div
+  class="modal fade"
+  id="confirmationModal"
+  tabindex="-1"
+  aria-labelledby="confirmationModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="confirmationModalLabel">
+          Confirmation d'inscription
+        </h5>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="formation && getSelectedSession()">
+          <h5 class="text-center mb-4">Veuillez confirmer votre inscription</h5>
+
+          <div class="confirmation-details p-3 bg-light rounded mb-4">
+            <div class="mb-3">
+              <strong>Formation:</strong> {{ formation.titre }}
+            </div>
+            <div class="mb-3">
+              <strong>Session:</strong> Du
+              {{ getSelectedSession()?.dateDebut | date : "dd/MM/yyyy" }} au
+              {{ getSelectedSession()?.dateFin | date : "dd/MM/yyyy" }}
+            </div>
+            <div class="mb-3">
+              <strong>Prix:</strong> {{ formation.prix | currency : "EUR" }}
+            </div>
+            <div><strong>Durée:</strong> {{ formation.duree }} heures</div>
+          </div>
+
+          <div class="user-details p-3 bg-light rounded">
+            <h6 class="mb-3">Vos informations personnelles:</h6>
+            <div class="mb-2">
+              <strong>Nom:</strong> {{ userService.getConnectedUser().nom }}
+            </div>
+            <div class="mb-2">
+              <strong>Prénom:</strong>
+              {{ userService.getConnectedUser().prenom }}
+            </div>
+            <div>
+              <strong>Email:</strong> {{ userService.getConnectedUser().email }}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-outline-secondary"
+          data-bs-dismiss="modal"
+        >
+          Annuler
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="confirmInscription()"
+        >
+          <span
+            *ngIf="loading"
+            class="spinner-border spinner-border-sm me-1"
+          ></span>
+          Confirmer l'inscription
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Ajoutez ceci à votre fichier HTML (inscription-client.component.html) -->
+<!-- Simple modal sans dépendances Bootstrap -->
+<div id="simpleModal" class="modal-overlay" [class.active]="showModal">
+  <div class="modal-container">
+    <div class="modal-header">
+      <h5 class="modal-title">Confirmation d'inscription</h5>
+      <button type="button" class="close-button" (click)="closeModal()">
+        ×
+      </button>
+    </div>
+    <div class="modal-body">
+      <div *ngIf="formation && getSelectedSession()">
+        <h5 class="text-center mb-4">Veuillez confirmer votre inscription</h5>
+
+        <div class="confirmation-details">
+          <div class="mb-3">
+            <strong>Formation:</strong> {{ formation.titre }}
+          </div>
+          <div class="mb-3">
+            <strong>Session:</strong> Du
+            {{ getSelectedSession()?.dateDebut | date : "dd/MM/yyyy" }} au
+            {{ getSelectedSession()?.dateFin | date : "dd/MM/yyyy" }}
+          </div>
+          <div class="mb-3">
+            <strong>Prix:</strong> {{ formation.prix | currency : "EUR" }}
+          </div>
+          <div><strong>Durée:</strong> {{ formation.duree }} heures</div>
+        </div>
+
+        <div class="user-details">
+          <h6 class="mb-3">Vos informations personnelles:</h6>
+          <div class="mb-2">
+            <strong>Nom:</strong> {{ userService.getConnectedUser().nom }}
+          </div>
+          <div class="mb-2">
+            <strong>Prénom:</strong>
+            {{ userService.getConnectedUser().prenom }}
+          </div>
+          <div>
+            <strong>Email:</strong> {{ userService.getConnectedUser().email }}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-secondary" (click)="closeModal()">
+        Annuler
+      </button>
+      <button type="button" class="btn-primary" (click)="confirmInscription()">
+        <span *ngIf="loading" class="spinner"></span>
+        Confirmer l'inscription
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,275 @@
+<div class="paiements-container">
+  <div class="paiements-header">
+    <div class="title-container">
+      <h1>Gestion des Paiements</h1>
+      <p class="subtitle">
+        Suivez et gérez tous les paiements de la plateforme
+      </p>
+    </div>
+    <div class="action-buttons">
+      <button class="btn-create" (click)="openNewDialog()">
+        <img src="/assets/icons/ajout.png" alt="Modifier" width="20" /> Nouveau
+        Paiement
+      </button>
+    </div>
+  </div>
+
+  <div class="dashboard-cards">
+    <div class="dashboard-card">
+      <div class="dashboard-card-icon blue">
+        <img src="/assets/icons/total.png" alt="Modifier" width="40" />
+      </div>
+      <div class="dashboard-card-content">
+        <h3>Total Paiements</h3>
+        <p class="dashboard-card-value">{{ paiements.length }}</p>
+      </div>
+    </div>
+
+    <div class="dashboard-card">
+      <div class="dashboard-card-icon green">
+        <img
+          src="/assets/icons/paiement_valide.png"
+          alt="Modifier"
+          width="40"
+        />
+        <!-- icône paiement -->
+        {{ paiementsPaid }}
+      </div>
+      <div class="dashboard-card-content">
+        <h3>Payés</h3>
+        <p class="dashboard-card-value"></p>
+      </div>
+    </div>
+
+    <div class="dashboard-card">
+      <div class="dashboard-card-icon yellow">
+        <img src="/assets/icons/en-attente.png" alt="Modifier" width="40" />
+        {{ paiementsPending }}
+      </div>
+      <div class="dashboard-card-content">
+        <h3>En attente</h3>
+        <p class="dashboard-card-value"></p>
+      </div>
+    </div>
+
+    <div class="dashboard-card">
+      <div class="dashboard-card-icon red">
+        <img src="/assets/icons/rejete.png" alt="Modifier" width="40" />
+        {{ paiementsCancelled }}
+      </div>
+      <div class="dashboard-card-content">
+        <h3>Annulés</h3>
+        <p class="dashboard-card-value"></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="paiements-list-container">
+    <div class="search-filter">
+      <div class="search-box">
+        <i class="pi pi-search"></i>
+        <input
+          type="text"
+          placeholder="Rechercher un paiement..."
+          pInputText
+          #searchInput
+        />
+      </div>
+    </div>
+
+    <div class="paiements-table-wrapper" *ngIf="!loading">
+      <table class="paiements-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Montant</th>
+            <th>Date</th>
+            <th>Mode de paiement</th>
+            <th>Statut</th>
+            <th>Utilisateur</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let paiement of paiements">
+            <td>
+              <span class="id-badge">#{{ paiement.id }}</span>
+            </td>
+            <td class="montant-col">
+              {{ paiement.montant | currency : "TND" : "symbol" : "1.2-2" }}
+            </td>
+            <td>{{ paiement.datePaiement | date : "dd/MM/yyyy" }}</td>
+            <td>
+              <div class="payment-mode">
+                <td>
+                  <ng-container [ngSwitch]="paiement.modePaiement">
+                    <ng-container *ngSwitchCase="'CARTE'">
+                      <img
+                        src="assets/icons/carte.png"
+                        alt="Carte"
+                        width="24"
+                        height="24"
+                      />
+                    </ng-container>
+
+                    <ng-container *ngSwitchCase="'ESPECES'">
+                      <img
+                        src="assets/icons/especes.png"
+                        alt="Espèces"
+                        width="24"
+                        height="24"
+                      />
+                    </ng-container>
+
+                    <ng-container *ngSwitchCase="'CHEQUE'">
+                      <img
+                        src="assets/icons/cheque.png"
+                        alt="Chèque"
+                        width="24"
+                        height="24"
+                      />
+                    </ng-container>
+
+                    <ng-container *ngSwitchCase="'Virement'">
+                      <img
+                        src="assets/icons/virement.png"
+                        alt="Virement"
+                        width="24"
+                        height="24"
+                      />
+                    </ng-container>
+
+                    <ng-container *ngSwitchCase="'VIREMENT'">
+                      <img
+                        src="assets/icons/paypal.png"
+                        alt="PayPal"
+                        width="24"
+                        height="24"
+                      />
+                    </ng-container>
+
+                    <ng-container *ngSwitchDefault>
+                      <img
+                        src="assets/icons/default.png"
+                        alt="Autre"
+                        width="24"
+                        height="24"
+                      />
+                    </ng-container>
+                  </ng-container>
+                </td>
+
+                {{ paiement.modePaiement }}
+              </div>
+            </td>
+            <td>
+              <span
+                class="status-badge"
+                [ngClass]="getStatusClass(paiement.statut!)"
+              >
+                {{ paiement.statut }}
+              </span>
+            </td>
+            <td>{{ getUtilisateurName(paiement.utilisateurId!) }}</td>
+            <td class="actions-col">
+              <button class="btn-edit" (click)="editPaiement(paiement)">
+                <img
+                  src="/assets/icons/modifier.png"
+                  alt="Modifier"
+                  width="20"
+                />
+              </button>
+              <button
+                class="btn-delete"
+                (click)="onShowDeleteConfirmation(paiement)"
+              >
+                <img
+                  src="/assets/icons/supprimer.png"
+                  alt="Supprimer"
+                  width="20"
+                />
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="loading-container" *ngIf="loading">
+      <div class="loading-spinner">
+        <i class="pi pi-spin pi-spinner"></i>
+      </div>
+      <p>Chargement des paiements...</p>
+    </div>
+
+    <div class="empty-state" *ngIf="!loading && paiements.length === 0">
+      <div class="empty-icon">
+        <i class="pi pi-inbox"></i>
+      </div>
+      <h3>Aucun paiement trouvé</h3>
+      <p>Créez un nouveau paiement pour commencer</p>
+      <button class="btn-create" (click)="openNewDialog()">
+        <i class="pi pi-plus"></i>
+        Nouveau Paiement
+      </button>
+    </div>
+  </div>
+  <div class="popup-overlay" *ngIf="showDeleteConfirmation">
+    <div class="popup-content">
+      <div class="popup-header">
+        <h4>Confirmation de suppression</h4>
+        <button class="close-btn" (click)="fermerConfirmationPopup()">×</button>
+      </div>
+      <div class="popup-body">
+        <p>Êtes-vous sûr de vouloir supprimer ce paiement ?</p>
+        <p>
+          <strong>{{ currentPaiements?.id }}</strong>
+        </p>
+        <p>Cette action est irréversible.</p>
+      </div>
+      <div class="popup-footer">
+        <button class="btn btn-secondary" (click)="fermerConfirmationPopup()">
+          Annuler
+        </button>
+        <button class="btn btn-danger" (click)="confirmerSuppression()">
+          Confirmer la suppression
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Popup de succès -->
+  <div class="popup-overlay" *ngIf="showSuccessPopup">
+    <div class="popup-content success-popup">
+      <div class="popup-header">
+        <h4>Opération réussie</h4>
+        <button class="close-btn" (click)="fermerSuccessPopup()">×</button>
+      </div>
+      <div class="popup-body">
+        <div class="success-icon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <p>{{ popupMessage }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Popup d'erreur -->
+  <div class="popup-overlay" *ngIf="showErrorPopup">
+    <div class="popup-content error-popup">
+      <div class="popup-header">
+        <h4>Erreur</h4>
+        <button class="close-btn" (click)="fermerErrorPopup()">×</button>
+      </div>
+      <div class="popup-body">
+        <div class="error-icon">
+          <i class="fas fa-exclamation-circle"></i>
+        </div>
+        <p>{{ popupMessage }}</p>
+      </div>
+      <div class="popup-footer">
+        <button class="btn btn-primary" (click)="fermerErrorPopup()">OK</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,329 @@
+<div class="calendar-container">
+  <!-- Barre d'actions -->
+  <section class="actions-bar" aria-label="Actions principales">
+    <div class="view-toggle">
+      <button
+        class="view-btn"
+        [class.active]="currentView === 'calendar'"
+        (click)="setView('calendar')"
+        aria-label="Afficher le calendrier"
+      >
+        <img
+          src="assets/icons/calendrier.png"
+          width="30"
+          height="30"
+          alt="Icône calendrier"
+        />
+        Calendrier
+      </button>
+      <button
+        class="view-btn"
+        [class.active]="currentView === 'list'"
+        (click)="setView('list')"
+        aria-label="Afficher la liste"
+      >
+        <img
+          src="assets/icons/liste.png"
+          width="27"
+          height="27"
+          alt="Icône liste"
+        />
+        Liste
+      </button>
+    </div>
+    <div class="action-buttons">
+      <button
+        class="action-btn"
+        (click)="toggleFilters()"
+        aria-label="Afficher les filtres"
+      >
+        <i class="fa fa-filter" aria-hidden="true"></i> Filtres
+      </button>
+    </div>
+  </section>
+
+  <!-- Formulaire de filtres -->
+  <section
+    class="filters-panel"
+    *ngIf="showFilters"
+    aria-labelledby="filters-heading"
+  >
+    <h3 id="filters-heading">Filtrer les sessions</h3>
+    <form
+      [formGroup]="filterForm"
+      (ngSubmit)="applyFilters()"
+      aria-label="Formulaire de filtrage"
+    >
+      <div class="filter-grid">
+        <div class="form-group">
+          <label for="formationId">Formation</label>
+          <select
+            id="formationId"
+            formControlName="formationId"
+            aria-label="Sélectionner une formation"
+          >
+            <option value="">Toutes les formations</option>
+            <option *ngFor="let formation of formations" [value]="formation.id">
+              {{ formation.titre }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="themeId">Thème</label>
+          <select
+            id="themeId"
+            formControlName="themeId"
+            aria-label="Sélectionner un thème"
+          >
+            <option value="">Tous les thèmes</option>
+            <option *ngFor="let theme of themes" [value]="theme.id">
+              {{ theme.nom }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="formateurId">Formateur</label>
+          <select
+            id="formateurId"
+            formControlName="formateurId"
+            aria-label="Sélectionner un formateur"
+          >
+            <option value="">Tous les formateurs</option>
+            <option *ngFor="let formateur of formateurs" [value]="formateur.id">
+              {{ formateur.nom }} {{ formateur.prenom }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="dateDebut">Date de début</label>
+          <input
+            type="date"
+            id="dateDebut"
+            formControlName="dateDebut"
+            aria-label="Sélectionner la date de début"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="dateFin">Date de fin</label>
+          <input
+            type="date"
+            id="dateFin"
+            formControlName="dateFin"
+            aria-label="Sélectionner la date de fin"
+          />
+        </div>
+      </div>
+
+      <div class="filter-actions">
+        <button type="submit" class="btn btn-primary">Appliquer</button>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="resetFilters()"
+        >
+          Réinitialiser
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <!-- Vue calendrier -->
+  <section class="calendar-view" *ngIf="currentView === 'calendar'">
+    <div class="calendar-header">
+      <button
+        (click)="changeMonth('prev')"
+        class="btn-month"
+        aria-label="Mois précédent"
+      >
+        <i class="fa fa-chevron-left"></i>
+      </button>
+      <h2 class="month-title">{{ getMonthName() }}</h2>
+      <button
+        (click)="changeMonth('next')"
+        class="btn-month"
+        aria-label="Mois suivant"
+      >
+        <i class="fa fa-chevron-right"></i>
+      </button>
+    </div>
+
+    <div class="calendar-grid">
+      <div class="weekday-header" *ngFor="let day of weekDays">{{ day }}</div>
+
+      <div
+        *ngFor="let day of daysInMonth"
+        class="calendar-day"
+        [class.empty]="day.date === null"
+        [class.today]="day.isToday"
+      >
+        <div class="day-number" *ngIf="day.date">{{ day.day }}</div>
+
+        <div class="day-events" *ngIf="day.date">
+          <div
+            *ngFor="let event of getEventsForDate(day.date)"
+            class="event-item"
+            [style.background-color]="event.color"
+            (click)="selectEvent(event, $event)"
+          >
+            <div class="event-time">{{ getEventStartTime(event) }}</div>
+            <div class="event-title">{{ event.title }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Vue liste -->
+  <section class="list-view" *ngIf="currentView === 'list'">
+    <div class="calendar-header">
+      <button
+        (click)="changeMonth('prev')"
+        class="btn-month"
+        aria-label="Mois précédent"
+      >
+        <i class="fa fa-chevron-left"></i>
+      </button>
+      <h2 class="month-title">{{ getMonthName() }}</h2>
+      <button
+        (click)="changeMonth('next')"
+        class="btn-month"
+        aria-label="Mois suivant"
+      >
+        <i class="fa fa-chevron-right"></i>
+      </button>
+    </div>
+
+    <div class="list-container">
+      <div *ngIf="getGroupedEvents().length === 0" class="no-events">
+        <p>Aucune session prévue pour ce mois.</p>
+      </div>
+
+      <div *ngFor="let group of getGroupedEvents()" class="event-group">
+        <h3 class="date-heading">{{ formatListDate(group.date) }}</h3>
+
+        <div
+          *ngFor="let event of group.events"
+          class="list-event-item"
+          [class.active]="selectedEvent?.id === event.id"
+          (click)="selectEvent(event)"
+        >
+          <div
+            class="event-color-indicator"
+            [style.background-color]="event.color"
+          ></div>
+          <div class="event-content">
+            <div class="event-header">
+              <span class="event-time"
+                >{{ getEventStartTime(event) }} -
+                {{ getEventEndTime(event) }}</span
+              >
+              <h4 class="event-title">{{ event.title }}</h4>
+            </div>
+            <div class="event-details">
+              <span class="event-location" *ngIf="event.lieu">
+                <i class="fa fa-map-marker"></i> {{ event.lieu }}
+              </span>
+              <span class="event-instructor" *ngIf="event.formateurNom">
+                <i class="fa fa-user"></i> {{ event.formateurNom }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modal de détails de session -->
+  <div
+    class="event-details-modal"
+    *ngIf="selectedEvent"
+    (click)="closeEventDetails()"
+  >
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <button class="close-btn" (click)="closeEventDetails()">
+        <i class="fa fa-times"></i>
+      </button>
+
+      <div class="event-header" [style.border-color]="selectedEvent.color">
+        <h3 class="event-title">{{ selectedEvent.title }}</h3>
+        <div class="event-dates">
+          <div class="date-range">
+            <i class="fa fa-calendar"></i>
+            <span
+              *ngIf="
+                selectedEvent.startDate?.toDateString() ===
+                selectedEvent.endDate?.toDateString()
+              "
+            >
+              {{ formatDisplayDate(selectedEvent.startDate) }}
+            </span>
+            <span
+              *ngIf="
+                selectedEvent.startDate?.toDateString() !==
+                selectedEvent.endDate?.toDateString()
+              "
+            >
+              Du {{ getEventStartDate(selectedEvent) }} au
+              {{ getEventEndDate(selectedEvent) }}
+            </span>
+          </div>
+          <div class="event-time">
+            <i class="fa fa-clock-o"></i>
+            {{ getEventStartTime(selectedEvent) }} -
+            {{ getEventEndTime(selectedEvent) }}
+          </div>
+        </div>
+      </div>
+
+      <div class="event-body">
+        <div class="info-section">
+          <h4><i class="fa fa-map-marker"></i> Lieu</h4>
+          <p>{{ selectedEvent.lieu || "Non spécifié" }}</p>
+        </div>
+
+        <div class="info-section">
+          <h4><i class="fa fa-user"></i> Formateur</h4>
+          <p>{{ selectedEvent.formateurNom || "Non spécifié" }}</p>
+        </div>
+
+        <div class="info-section">
+          <h4><i class="fa fa-users"></i> Participants</h4>
+          <p>
+            {{ selectedEvent.participants || 0 }} /
+            {{
+              (selectedEvent.participants || 0) +
+                (selectedEvent.availablePlaces || 0)
+            }}
+            places
+          </p>
+        </div>
+
+        <div class="info-section" *ngIf="selectedEvent.description">
+          <h4><i class="fa fa-info-circle"></i> Description</h4>
+          <p>{{ selectedEvent.description }}</p>
+        </div>
+      </div>
+
+      <div class="event-actions">
+        <button
+          class="btn btn-primary"
+          *ngIf="!isUserInscrit(selectedEvent.id)"
+          disabled
+        >
+          Inscription fermée
+        </button>
+        <button
+          class="btn btn-outline-danger"
+          *ngIf="isUserInscrit(selectedEvent.id)"
+          disabled
+        >
+          Désinscription fermée
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

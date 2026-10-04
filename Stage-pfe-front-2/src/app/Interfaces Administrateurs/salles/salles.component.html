@@ -1,0 +1,101 @@
+<!-- salles.component.html -->
+<div class="app-container">
+  <header class="header">
+    <h1>Gestion des Salles</h1>
+  </header>
+
+  <div class="search-bar">
+    <input
+      type="text"
+      [(ngModel)]="searchTerm"
+      placeholder="Rechercher une salle..."
+      class="search-input"
+    />
+  </div>
+
+  <button class="floating-button" (click)="navigateToAdd()">
+    <span class="button-icon">➕</span>
+  </button>
+
+  <main class="main-content">
+    <!-- Chargement -->
+    <div *ngIf="loading" class="loading-container">
+      <div class="loading-spinner"></div>
+      <p>Chargement des salles...</p>
+    </div>
+
+    <!-- Aucun résultat -->
+    <div *ngIf="!loading && getFilteredSalles().length === 0" class="no-data">
+      <div class="empty-icon">🏢</div>
+      <p *ngIf="salles.length === 0">Aucune salle disponible</p>
+      <p *ngIf="salles.length > 0">Aucun résultat pour "{{ searchTerm }}"</p>
+      <button class="btn-primary" (click)="navigateToAdd()">
+        Ajouter une salle
+      </button>
+    </div>
+
+    <!-- Liste des salles -->
+    <div class="rooms-grid">
+      <div *ngFor="let salle of getFilteredSalles()" class="room-card">
+        <div class="room-header">
+          <h2 class="room-name">{{ salle.nom }}</h2>
+          <span class="room-status status-{{ salle.statut?.toLowerCase() }}">
+            {{ salle.statut }}
+          </span>
+        </div>
+
+        <div class="room-info">
+          <div class="info-item">
+            <span class="info-icon">👥</span>
+            <span class="info-text"
+              >Capacité: {{ salle.capacite }} personnes</span
+            >
+          </div>
+          <div class="info-item">
+            <span class="info-icon">💻</span>
+            <span class="info-text">Équipement: {{ salle.equipement }}</span>
+          </div>
+        </div>
+
+        <div class="room-actions">
+          <button
+            class="action-button edit-button"
+            (click)="navigateToEdit(salle.id!)"
+          >
+            <span class="button-icon">✏️</span>
+          </button>
+          <button
+            class="action-button delete-button"
+            (click)="openDeletePopup(salle.id!)"
+          >
+            <span class="button-icon">🗑️</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Pop-up de confirmation de suppression amélioré -->
+  <div class="delete-popup-overlay" *ngIf="showDeletePopup">
+    <div class="delete-popup">
+      <div class="delete-popup-header">
+        <i class="fas fa-exclamation-triangle delete-icon"></i>
+        <h3>Confirmation de suppression</h3>
+      </div>
+      <div class="delete-popup-content">
+        <p>Êtes-vous sûr de vouloir supprimer cette salle ?</p>
+        <p class="delete-warning">
+          Cette action est irréversible et supprimera définitivement la salle.
+        </p>
+      </div>
+      <div class="delete-popup-actions">
+        <button class="btn-secondary" (click)="closeDeletePopup()">
+          Annuler
+        </button>
+        <button class="btn-danger" (click)="confirmDelete()">
+          <i class="fas fa-trash-alt"></i> Supprimer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,108 @@
+<!-- details-formation.component.html -->
+<div class="formation-card compact-card" *ngIf="FormationsDto">
+  <div class="card-image">
+    <img
+      [src]="
+        FormationsDto.photo
+          ? 'assets/affiche_formation/' + FormationsDto.photo
+          : 'assets/affiche_formation/formation.png'
+      "
+      class="img-fluid rounded product-image"
+    />
+    <div class="card-overlay">
+      <button
+        class="preview-btn"
+        (click)="voirApercu(FormationsDto.id)"
+        *ngIf="FormationsDto.id"
+      >
+        Aperçu du programme
+      </button>
+    </div>
+  </div>
+
+  <div class="card-content">
+    <h3 class="formation-title">
+      {{ FormationsDto.titre || "Titre inconnu" }}
+    </h3>
+
+    <div class="formation-details">
+      <div class="detail-item">
+        <img
+          [src]="'assets/duree.png'"
+          alt="Durée"
+          style="width: 20px; height: auto"
+        />
+        <span>{{ FormationsDto.duree }} Jours</span>
+      </div>
+      <div class="detail-item">
+        <img
+          [src]="'assets/niveau.png'"
+          alt="Durée"
+          style="width: 20px; height: auto"
+        />
+        <span>{{ FormationsDto.niveau }}</span>
+      </div>
+      <div class="detail-item">
+        <img
+          [src]="'assets/places.png'"
+          alt="Durée"
+          style="width: 20px; height: auto"
+        />
+        <span>{{ FormationsDto.placesMax }} places</span>
+      </div>
+      <div class="detail-item">
+        <img
+          [src]="'assets/icons/certificat.png'"
+          alt="Durée"
+          style="width: 20px; height: auto"
+        />
+        <span>Certification</span>
+      </div>
+    </div>
+
+    <p class="description">
+      <img
+        [src]="'assets/description.png'"
+        alt="Durée"
+        style="width: 20px; height: auto"
+      />{{ FormationsDto.description }}
+    </p>
+
+    <div class="card-footer">
+      <div class="price-container">
+        <span class="price">
+          <img
+            [src]="'assets/prix.png'"
+            alt="Durée"
+            style="width: 20px; height: auto"
+          />
+          {{ FormationsDto.prix }}DT</span
+        >
+      </div>
+      <div class="action-buttons">
+        <button
+          class="btn-icon enroll-btn"
+          (click)="inscrire(FormationsDto.id ?? 0)"
+          title="S'inscrire"
+        >
+          <i class="fa fa-user-plus"></i>
+        </button>
+
+        <button
+          class="btn-icon btn-primary"
+          (click)="genererDevis()"
+          [disabled]="isGenerating"
+          title="Générer un devis"
+        >
+          <img src="assets/icons/devis.png" width="20px" height="20px" />
+
+          <span
+            *ngIf="isGenerating"
+            class="spinner-border spinner-border-sm"
+          ></span>
+          <i *ngIf="!isGenerating" class="fa fa-file-text-o"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

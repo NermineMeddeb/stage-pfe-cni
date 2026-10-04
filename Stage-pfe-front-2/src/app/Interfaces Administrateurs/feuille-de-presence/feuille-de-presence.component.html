@@ -1,0 +1,340 @@
+<div class="container-fluid p-4">
+  <!-- Section de sélection et génération (visible à l'écran uniquement) -->
+  <div class="card mb-4 no-print screen-only">
+    <div class="card-header bg-primary text-white">
+      <h4 class="mb-0">
+        <i class="fas fa-clipboard-list me-2"></i>
+        Génération de Feuille de Présence
+      </h4>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-8">
+          <div class="mb-3">
+            <label for="sessionSelect" class="form-label"
+              >Sélectionner une session :</label
+            >
+            <select
+              id="sessionSelect"
+              class="form-select"
+              [value]="selectedSessionId"
+              (change)="onSessionChange($event)"
+              [disabled]="isLoading"
+            >
+              <option value="">-- Choisir une session --</option>
+              <option
+                *ngFor="let session of sessions"
+                [value]="session.sessionId"
+              >
+                Session #{{ session.sessionId }} -
+                {{ formatDateForDisplay(session.dateDebut!) }}
+                ({{ session.placesDisponibles }}/{{ session.capacite }} places)
+              </option>
+            </select>
+          </div>
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+          <button
+            type="button"
+            class="btn btn-primary me-2"
+            [disabled]="!selectedSessionId || isLoading"
+            (click)="generateAttendanceSheet()"
+          >
+            <i class="fas fa-file-alt me-2"></i>
+            {{ isLoading ? "Génération..." : "Générer la Feuille" }}
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            (click)="downloadAsPDF()"
+            [disabled]="isLoading"
+          >
+            <i class="fas fa-download me-2"></i>
+            Télécharger PDF
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="resetForm()"
+            [disabled]="isLoading"
+          >
+            <i class="fas fa-undo me-2"></i>
+            Réinitialiser
+          </button>
+        </div>
+      </div>
+
+      <!-- Messages d'erreur -->
+      <div *ngIf="errorMessage" class="alert alert-danger mt-3">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        {{ errorMessage }}
+      </div>
+
+      <!-- Loading -->
+      <div *ngIf="isLoading" class="text-center mt-3">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Chargement...</span>
+        </div>
+        <p class="mt-2">Génération de la feuille de présence...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions d'impression (visible à l'écran uniquement) -->
+  <div class="text-end mb-3 no-print screen-only" *ngIf="showAttendanceSheet">
+    <button
+      type="button"
+      class="btn btn-success btn-lg"
+      (click)="printAttendanceSheet()"
+    >
+      <i class="fas fa-print me-2"></i>
+      Imprimer la Feuille
+    </button>
+  </div>
+
+  <!-- Feuille de présence générée -->
+  <div
+    *ngIf="showAttendanceSheet && sessionCompleteData"
+    class="attendance-sheet"
+  >
+    <!-- En-tête de la feuille -->
+    <div class="sheet-header text-center">
+      <h2>FEUILLE DE PRÉSENCE</h2>
+      <h4 class="text-primary">{{ sessionCompleteData.formation.titre }}</h4>
+    </div>
+
+    <!-- Options de financement -->
+    <div class="checkbox-options">
+      <label>
+        <input type="checkbox" name="creditImpot" />
+        Crédit d'impôt
+      </label>
+      <label>
+        <input type="checkbox" name="droitTirageIndiv" />
+        Droit de tirage (individuel)
+      </label>
+      <label>
+        <input type="checkbox" name="droitTirageCollectif" />
+        Droit de tirage (collectif)
+      </label>
+    </div>
+
+    <!-- Mode de formation -->
+    <div class="checkbox-options">
+      <label>
+        <input type="checkbox" name="modeInter" />
+        Formation INTER-entreprises
+      </label>
+      <label>
+        <input type="checkbox" name="modeIntra" />
+        Formation INTRA-entreprise
+      </label>
+    </div>
+
+    <!-- Informations de la session -->
+    <div class="info-section">
+      <div class="info-grid">
+        <div>
+          <div class="info-item">
+            <span class="info-label">Période de formation :</span>
+            <span class="info-value">{{ getFormationPeriod() }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Horaires :</span>
+            <span class="info-value">{{ getSessionPeriod() }}</span>
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">Lieu de déroulement :</span>
+            <span class="info-value">CNI - Gouvernorat de Tunis</span>
+          </div>
+        </div>
+        <div>
+          <div class="info-item">
+            <span class="info-label">Durée :</span>
+            <span class="info-value"
+              >{{ sessionCompleteData.formation.duree }}h</span
+            >
+          </div>
+          <div class="info-item">
+            <span class="info-label">Niveau :</span>
+            <span class="info-value">{{
+              sessionCompleteData.formation.niveau
+            }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Capacité :</span>
+            <span class="info-value"
+              >{{ sessionCompleteData.session.capacite }} places</span
+            >
+          </div>
+          <div class="info-item">
+            <span class="info-label">Salle :</span>
+            <span class="info-value">{{ sessionCompleteData.salle.nom }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="mt-3">
+        <div class="info-item">
+          <span class="info-label">Thème de formation :</span>
+          <span class="info-value">{{
+            sessionCompleteData.formation.description ||
+              sessionCompleteData.formation.titre
+          }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tableau de présence -->
+    <div class="attendance-table">
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 4%">#</th>
+            <th style="width: 15%">Nom</th>
+            <th style="width: 15%">Prénom</th>
+            <th style="width: 12%">CIN</th>
+            <th style="width: 15%">Établissement</th>
+            <th style="width: 10%">Direction</th>
+            <!-- Colonnes dynamiques pour les dates -->
+            <th
+              *ngFor="let date of sessionCompleteData.datesList"
+              style="width: 6%"
+            >
+              <div class="date-header">
+                <small>{{ getDayName(date) }}</small
+                ><br />
+                <strong>{{ date }}</strong>
+              </div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Participants inscrits -->
+          <tr
+            *ngFor="
+              let participant of sessionCompleteData.participants;
+              let i = index
+            "
+          >
+            <td>{{ i + 1 }}</td>
+            <td>{{ participant.nom }}</td>
+            <td>{{ participant.prenom }}</td>
+            <td>{{ participant.cin }}</td>
+            <td>{{ participant.etablissement }}</td>
+            <td>{{ participant.direction }}</td>
+            <!-- Cases à cocher pour chaque date -->
+            <td *ngFor="let date of sessionCompleteData.datesList">
+              <input
+                type="checkbox"
+                class="attendance-checkbox"
+                [id]="'presence_' + participant.id + '_' + date"
+                [(ngModel)]="participant.presents[date]"
+              />
+            </td>
+          </tr>
+
+          <!-- Lignes vides pour signatures supplémentaires -->
+          <tr *ngFor="let empty of [1, 2, 3, 4, 5]; let i = index">
+            <td>{{ sessionCompleteData.participants.length + i + 1 }}</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td *ngFor="let date of sessionCompleteData.datesList">
+              <input type="checkbox" class="attendance-checkbox" disabled />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Statistiques (visible uniquement à l'écran) -->
+    <div class="attendance-stats mb-4 no-print screen-only">
+      <div class="row">
+        <div class="col-md-4">
+          <div class="card bg-light">
+            <div class="card-body text-center">
+              <h5 class="card-title">Participants Inscrits</h5>
+              <h3 class="text-primary">
+                {{ sessionCompleteData.participants.length }}
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card bg-light">
+            <div class="card-body text-center">
+              <h5 class="card-title">Places Disponibles</h5>
+              <h3 class="text-success">
+                {{ sessionCompleteData.session.placesDisponibles }}
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card bg-light">
+            <div class="card-body text-center">
+              <h5 class="card-title">Durée Totale</h5>
+              <h3 class="text-info">
+                {{ sessionCompleteData.formation.duree }}h
+              </h3>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section signatures -->
+    <div class="signatures-section">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="signature-box">
+            <h6 class="fw-bold mb-3">Nom et prénom du(des) formateur(s) :</h6>
+            <p class="mb-3">
+              {{ sessionCompleteData.formateur.nom }}
+              {{ sessionCompleteData.formateur.prenom }}
+            </p>
+            <div class="signature-line">
+              <div
+                class="border-bottom border-dark"
+                style="height: 50px; margin-bottom: 5px"
+              ></div>
+              <small>Signature et cachet</small>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="signature-box">
+            <div
+              class="alert alert-info print-info p-2 mb-3"
+              style="font-size: 10px"
+            >
+              <strong>Important :</strong> Si le séminaire est co-organisé avec
+              d'autres opérateurs de formation, les indiquer ci-dessous.
+            </div>
+            <div class="signature-line">
+              <div
+                class="border-bottom border-dark"
+                style="height: 30px; margin-bottom: 5px"
+              ></div>
+              <small
+                >Signature et cachet de l'organisme de formation/Entreprise
+                *</small
+              >
+              <br />
+              <small style="font-style: italic"
+                >* si l'action de formation est animée par un formateur
+                interne</small
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pied de page -->
+    <div class="sheet-footer text-center"></div>
+  </div>
+</div>

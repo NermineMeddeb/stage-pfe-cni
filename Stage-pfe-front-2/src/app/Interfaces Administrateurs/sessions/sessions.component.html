@@ -1,0 +1,351 @@
+<!-- sessions.component.html -->
+<div class="sessions-container">
+  <div class="page-header">
+    <h1>Gestion des Sessions de Formation</h1>
+    <div class="action-bar">
+      <button class="btn btn-primary" (click)="refreshData()">
+        🔄 Actualiser
+      </button>
+      <button class="btn btn-success" (click)="navigte()">
+        ➕ Nouvelle Session
+      </button>
+    </div>
+  </div>
+
+  <!-- Message de notification de succès -->
+  <div
+    *ngIf="showSuccessAlert"
+    class="alert alert-success alert-dismissible fade show"
+  >
+    <strong>✅ Succès!</strong> {{ successMessage }}
+    <button type="button" class="close" (click)="hideAlert()">
+      <span>&times;</span>
+    </button>
+  </div>
+
+  <!-- Filtres avancés -->
+  <div class="filters-panel" [formGroup]="searchForm">
+    <div class="row">
+      <div class="col-md-3">
+        <div class="form-group">
+          <label>
+            <img
+              [src]="'assets/icons/recherche.png'"
+              alt="Durée"
+              style="width: 25px; height: auto"
+            />
+            Recherche</label
+          >
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Rechercher une session..."
+              formControlName="searchTerm"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="form-group">
+          <label>
+            <img
+              [src]="'assets/icons/formationsIcon.png'"
+              alt="Durée"
+              style="width: 25px; height: auto"
+            />
+            Formation</label
+          >
+          <select class="form-control" formControlName="formation">
+            <option value="" disabled selected hidden>
+              Sélectionner une formation
+            </option>
+
+            <option *ngFor="let f of formations" [value]="f.id">
+              {{ f.titre }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="col-md-2">
+        <div class="form-group">
+          <label>
+            <img
+              [src]="'assets/icons/calendrier.png'"
+              alt="Durée"
+              style="width: 25px; height: auto"
+            />
+            Date début</label
+          >
+          <input type="date" class="form-control" formControlName="dateStart" />
+        </div>
+      </div>
+
+      <div class="col-md-2">
+        <div class="form-group">
+          <label>
+            <img
+              [src]="'assets/icons/calendrier.png'"
+              alt="Durée"
+              style="width: 25px; height: auto"
+            />
+            Date fin</label
+          >
+          <input type="date" class="form-control" formControlName="dateEnd" />
+        </div>
+      </div>
+
+      <div class="col-md-2">
+        <div class="form-group">
+          <label>
+            <img
+              [src]="'assets/icons/des-places.png'"
+              alt="Durée"
+              style="width: 25px; height: auto"
+            />
+            Places disponibles</label
+          >
+          <div class="col-md-2">
+            <div class="col-md-2">
+              <div class="form-group">
+                <input
+                  type="number"
+                  class="form-control"
+                  formControlName="availablePlacesMin"
+                  min="0"
+                  placeholder="Minimum..."
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button
+      type="button"
+      class="reset-filters"
+      (click)="searchForm.reset(); applyFilters()"
+    >
+      <img
+        [src]="'assets/icons/reset.png'"
+        alt="Durée"
+        style="width: 25px; height: auto"
+      />
+      Réinitialiser
+    </button>
+  </div>
+
+  <!-- État de chargement -->
+  <div *ngIf="loading" class="loading-overlay">
+    <div class="spinner">
+      <span>
+        <img
+          [src]="'assets/icons/des-places.png'"
+          alt="Durée"
+          style="width: 25px; height: auto"
+        />
+        Chargement en cours...</span
+      >
+    </div>
+  </div>
+
+  <!-- Message d'erreur -->
+  <div *ngIf="error" class="alert alert-danger alert-dismissible fade show">
+    🚨
+    {{
+      successMessage ||
+        "Une erreur est survenue lors du chargement des données. Veuillez réessayer."
+    }}
+    <button type="button" class="close" (click)="hideAlert()">
+      <span>&times;</span>
+    </button>
+  </div>
+
+  <!-- Résultats de recherche -->
+  <div class="results-info" *ngIf="!loading && !error">
+    <span>
+      <img
+        [src]="'assets/icons/formationsIcon.png'"
+        alt="Durée"
+        style="width: 25px; height: auto"
+      />
+      {{ filteredSessions.length }} sessions trouvées</span
+    >
+  </div>
+
+  <!-- Grille des sessions -->
+  <div class="sessions-grid" *ngIf="!loading && !error">
+    <div
+      class="session-card"
+      *ngFor="let session of filteredSessions"
+      [ngClass]="'status-' + session.statusClass"
+    >
+      <div class="session-header">
+        <div class="title-area">
+          <span class="formation-name">{{
+            session.formation?.titre || "Formation non spécifiée"
+          }}</span>
+          <span class="session-id">#{{ session.sessionId }}</span>
+        </div>
+        <div class="badge" [ngClass]="'badge-' + session.statusClass">
+          {{
+            session.statusClass === "success"
+              ? "🟢 Presque complet"
+              : session.statusClass === "warning"
+              ? "🟡 Places limitées"
+              : "🔴 Places disponibles"
+          }}
+        </div>
+      </div>
+
+      <div class="session-dates">
+        <div class="date-item">
+          <div class="date-details">
+            <span class="date-label">
+              <img
+                [src]="'assets/icons/calendrier.png'"
+                alt="Durée"
+                style="width: 15px; height: auto"
+              />
+              Début
+            </span>
+            <span class="date-value">{{ formatDate(session.dateDebut) }}</span>
+          </div>
+        </div>
+        <div class="date-divider"></div>
+        <div class="date-item">
+          <div class="date-details">
+            <span class="date-label">
+              <img
+                [src]="'assets/icons/calendrier.png'"
+                alt="Durée"
+                style="width: 15px; height: auto"
+              />
+              Fin
+            </span>
+            <span class="date-value">{{ formatDate(session.dateFin) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="capacity-info">
+        <div class="progress-container">
+          <div class="progress-bar">
+            <div
+              class="progress"
+              [ngClass]="'bg-' + session.statusClass"
+              [style.width.%]="session.capacityPercentage"
+            ></div>
+          </div>
+          <div class="capacity-text">
+            <span>
+              <img
+                [src]="'assets/icons/des-places.png'"
+                alt="Durée"
+                style="width: 25px; height: auto"
+              />
+              {{ session.placesDisponibles }} places disponibles</span
+            >
+            <span>sur {{ session.capacite }} </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="session-footer">
+        <button
+          class="action-btn edit"
+          (click)="editSession(session)"
+          title="Modifier cette session"
+        >
+          <img
+            [src]="'assets/icons/modifier.png'"
+            alt="Durée"
+            style="width: 20px; height: auto"
+          />
+          Modifier
+        </button>
+        <button
+          class="action-btn details"
+          (click)="viewSessionDetails(session)"
+          title="Voir les détails de la session"
+        >
+          <img
+            src="assets/icons/details.png"
+            alt="Icône détails"
+            style="width: 20px; height: auto"
+          />
+          Détails
+        </button>
+
+        <button
+          class="action-btn delete"
+          (click)="delite(session)"
+          title="Supprimer cette session"
+        >
+          <img
+            [src]="'assets/icons/supprimer.png'"
+            alt="Durée"
+            style="width: 20px; height: auto"
+          />
+          Supprimer
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Message quand aucun résultat -->
+  <div
+    class="no-results"
+    *ngIf="!loading && !error && filteredSessions.length === 0"
+  >
+    <p>🚫 Aucune session ne correspond à vos critères</p>
+    <button
+      class="btn btn-outline-primary"
+      (click)="searchForm.reset(); applyFilters()"
+    >
+      <img
+        [src]="'assets/icons/des-places.png'"
+        alt="Durée"
+        style="width: 25px; height: auto"
+      />
+      Réinitialiser les filtres
+    </button>
+  </div>
+</div>
+<div class="modal-overlay" *ngIf="showDeleteModal">
+  <div class="modal-container">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Confirmer la suppression</h5>
+        <button type="button" class="close" (click)="cancelDelete()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>
+          Êtes-vous sûr de vouloir supprimer la session
+          <strong>#{{ sessionToDelete?.sessionId }}</strong> ?
+        </p>
+        <p *ngIf="sessionToDelete?.formation?.titre">
+          Formation : {{ sessionToDelete?.formation?.titre }}
+        </p>
+        <p>Cette action est irréversible.</p>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="cancelDelete()"
+        >
+          Annuler
+        </button>
+        <button type="button" class="btn btn-danger" (click)="confirmDelete()">
+          Supprimer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

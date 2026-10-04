@@ -1,0 +1,132 @@
+<!-- mes-formations.component.html -->
+<div class="formations-container">
+  <h2 class="page-title">Mes Formations</h2>
+
+  <!-- Loading state -->
+  <div class="alert alert-info" *ngIf="loading">
+    <i class="fa fa-spinner fa-spin"></i>
+    <span>Chargement des formations en cours...</span>
+  </div>
+
+  <!-- Error state -->
+  <div class="alert alert-danger" *ngIf="error">
+    <i class="fa fa-exclamation-triangle"></i>
+    <span>{{ error }}</span>
+  </div>
+
+  <!-- Empty state -->
+  <div
+    class="empty-state"
+    *ngIf="!loading && formations.length === 0 && !error"
+  >
+    <p>Vous n'êtes inscrit à aucune formation pour le moment.</p>
+    <button class="btn btn-primary" routerLink="/etudiant/formations">
+      Découvrir nos formations
+    </button>
+  </div>
+
+  <!-- Formations grid -->
+  <div class="formations-grid" *ngIf="formations.length > 0">
+    <div class="formation-card" *ngFor="let formation of formations">
+      <div class="formation-header">
+        <h3>{{ formation.titre }}</h3>
+        <span
+          class="badge"
+          [ngClass]="{
+            'badge-in-progress': formation.statut === 'EN_COURS',
+            'badge-completed': formation.statut === 'TERMINEE',
+            'badge-upcoming': formation.statut === 'A_VENIR'
+          }"
+        >
+        </span>
+      </div>
+
+      <div class="formation-body">
+        <p *ngIf="formation.description?.trim()">
+          {{ formation.description }}
+        </p>
+
+        <div class="card-image">
+          <img
+            [src]="
+              formation.photo
+                ? 'assets/affiche_formation/' + formation.photo
+                : 'assets/affiche_formation/formation.png'
+            "
+            class="img-fluid rounded product-image"
+          />
+          <div class="card-overlay">
+            <button
+              class="preview-btn"
+              (click)="voirApercu(formation.id)"
+              *ngIf="formation.id"
+            >
+              <i class="fa fa-eye"></i>
+            </button>
+          </div>
+        </div>
+      
+        <div class="card-content">
+          <div class="formation-details">
+            <div class="detail-item">
+              <img
+                [src]="'assets/duree.png'"
+                alt="Durée"
+                style="width: 20px; height: auto"
+              />
+              <span>{{ formation.duree }} Jours</span>
+            </div>
+            <div class="detail-item">
+              <img
+                [src]="'assets/niveau.png'"
+                alt="Niveau"
+                style="width: 20px; height: auto"
+              />
+              <span>{{ formation.niveau }}</span>
+            </div>
+            <div class="detail-item">
+              <img
+                [src]="'assets/places.png'"
+                alt="Places"
+                style="width: 20px; height: auto"
+              />
+              <span>{{ formation.placesMax }} places</span>
+            </div>
+            <div class="detail-item">
+              <img
+                [src]="'assets/icons/certificat.png'"
+                alt="Certification"
+                style="width: 20px; height: auto"
+              />
+              <span>Certification</span>
+            </div>
+          </div>
+      
+          <div class="card-footer">
+            <div class="price-container">
+              <span class="price">
+                <img
+                  [src]="'assets/prix.png'"
+                  alt="Prix"
+                  style="width: 20px; height: auto"
+                />
+                {{ formation.prix }}DT
+              </span>
+            </div>
+            
+            <div class="action-buttons">
+              <button
+                *ngIf="getSessionsForFormation(formation.id).length > 0"
+                class="btn-icon btn-review"
+                [routerLink]="['/etudiant/avis', getSessionsForFormation(formation.id)[0].sessionId]"
+                title="Laisser un avis"
+              >
+                <i class="fa fa-star"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

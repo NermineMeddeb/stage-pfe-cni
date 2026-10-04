@@ -1,0 +1,140 @@
+<div class="container">
+  <h2>{{ isEditMode ? 'Modifier l\'inscription' : 'Nouvelle inscription' }}</h2>
+  
+  <form [formGroup]="inscriptionForm" (ngSubmit)="onSubmit()">
+    <!-- Champ caché pour l'ID -->
+    <input type="hidden" formControlName="id">
+    
+    <div class="form-group">
+      <label for="utilisateurId">Utilisateur*</label>
+      <select 
+        id="utilisateurId" 
+        formControlName="utilisateurId" 
+        class="form-control"
+        [class.is-invalid]="estInvalide('utilisateurId')"
+      >
+        <option [ngValue]="null">Sélectionner un utilisateur</option>
+        <option 
+          *ngFor="let utilisateur of utilisateurs" 
+          [ngValue]="utilisateur.id"
+        >
+          {{ utilisateur.prenom }} {{ utilisateur.nom }}
+        </option>
+      </select>
+      <div class="invalid-feedback" *ngIf="estInvalide('utilisateurId')">
+        {{ getErrorMessage('utilisateurId') }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="sessionId">Session*</label>
+      <select 
+        id="sessionId" 
+        formControlName="sessionId" 
+        class="form-control"
+        [class.is-invalid]="estInvalide('sessionId')"
+      >
+        <option [ngValue]="null">Sélectionner une session</option>
+        <option 
+          *ngFor="let session of sessions" 
+          [ngValue]="session.sessionId"
+        >
+          {{ session.formationId }} ({{ session.dateDebut | date:'dd/MM/yyyy' }} - {{ session.dateFin | date:'dd/MM/yyyy' }})
+        </option>
+      </select>
+      <div class="invalid-feedback" *ngIf="estInvalide('sessionId')">
+        {{ getErrorMessage('sessionId') }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="dateInscription">Date d'Inscription*</label>
+      <input 
+        type="date" 
+        id="dateInscription" 
+        formControlName="dateInscription" 
+        class="form-control"
+        [class.is-invalid]="estInvalide('dateInscription')"
+      >
+      <div class="invalid-feedback" *ngIf="estInvalide('dateInscription')">
+        {{ getErrorMessage('dateInscription') }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="statut">Statut*</label>
+      <select 
+        id="statut" 
+        formControlName="statut" 
+        class="form-control"
+        [class.is-invalid]="estInvalide('statut')"
+      >
+        <option 
+          *ngFor="let option of statutOptions" 
+          [value]="option.value"
+        >
+          {{ option.label }}
+        </option>
+      </select>
+      <div class="invalid-feedback" *ngIf="estInvalide('statut')">
+        {{ getErrorMessage('statut') }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="certificatGenere">Certificat Généré*</label>
+      <select 
+        id="certificatGenere" 
+        formControlName="certificatGenere" 
+        class="form-control"
+        [class.is-invalid]="estInvalide('certificatGenere')"
+      >
+        <option [ngValue]="true">Oui</option>
+        <option [ngValue]="false">Non</option>
+      </select>
+      <div class="invalid-feedback" *ngIf="estInvalide('certificatGenere')">
+        {{ getErrorMessage('certificatGenere') }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="dateDebut">Date Début*</label>
+      <input 
+        type="date" 
+        id="dateDebut" 
+        formControlName="dateDebut" 
+        class="form-control"
+        [class.is-invalid]="estInvalide('dateDebut')"
+      >
+      <div class="invalid-feedback" *ngIf="estInvalide('dateDebut')">
+        {{ getErrorMessage('dateDebut') }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="dateFin">Date Fin*</label>
+      <input 
+        type="date" 
+        id="dateFin" 
+        formControlName="dateFin" 
+        class="form-control"
+        [class.is-invalid]="estInvalide('dateFin')"
+      >
+      <div class="invalid-feedback" *ngIf="estInvalide('dateFin')">
+        {{ getErrorMessage('dateFin') }}
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary" [disabled]="inscriptionForm.invalid">
+        {{ isEditMode ? 'Mettre à Jour' : 'Ajouter' }}
+      </button>
+      <button type="button" class="btn btn-secondary" (click)="resetForm()">
+        Réinitialiser
+      </button>
+      <button type="button" class="btn btn-outline-dark" routerLink="/inscriptions">
+        Retour
+      </button>
+    </div>
+  </form>
+</div>

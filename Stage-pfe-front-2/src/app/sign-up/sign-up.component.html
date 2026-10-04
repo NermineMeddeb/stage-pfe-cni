@@ -1,0 +1,242 @@
+<div class="container my-container">
+  <div class="card shadow-lg">
+    <div class="card-header text-center bg-primary text-white">
+      <h3><i class="fas fa-user-plus me-2"></i>Créer un compte</h3>
+    </div>
+    <div class="card-body">
+      <form>
+        <div
+          class="alert alert-danger"
+          *ngIf="errorMessage"
+          style="margin-top: 10px; margin-bottom: 20px"
+        >
+          {{ errorMessage }}
+        </div>
+
+        <div class="form-grid">
+          <!-- Nom -->
+          <div class="mb-3">
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="fas fa-user"></i>
+              </span>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Nom"
+                [(ngModel)]="user.nom"
+                name="nom"
+                required
+              />
+            </div>
+          </div>
+
+          <!-- Prénom -->
+          <div class="mb-3">
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="fas fa-user"></i>
+              </span>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Prénom"
+                [(ngModel)]="user.prenom"
+                name="prenom"
+                required
+              />
+            </div>
+          </div>
+
+          <!-- Email -->
+          <div class="mb-3 full-width">
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="fas fa-envelope"></i>
+              </span>
+              <input
+                type="email"
+                class="form-control"
+                placeholder="Email"
+                [(ngModel)]="user.email"
+                name="email"
+                required
+              />
+            </div>
+          </div>
+
+          <!-- Téléphone -->
+          <div class="mb-3">
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="fas fa-phone"></i>
+              </span>
+              <input
+                type="tel"
+                class="form-control"
+                placeholder="Téléphone"
+                [(ngModel)]="user.telephone"
+                name="telephone"
+                required
+              />
+            </div>
+          </div>
+
+          <!-- CIN -->
+          <div class="mb-3">
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="fas fa-id-card"></i>
+              </span>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="CIN"
+                [(ngModel)]="user.cin"
+                name="cin"
+                required
+              />
+            </div>
+          </div>
+
+          <!-- Date de naissance -->
+          <div class="mb-3">
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="fas fa-calendar-alt"></i>
+              </span>
+              <input
+                type="date"
+                class="form-control"
+                [(ngModel)]="user.dateNaissance"
+                name="dateNaissance"
+                required
+              />
+            </div>
+          </div>
+
+          <!-- Établissement -->
+          <div class="mb-3">
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="fas fa-building"></i>
+              </span>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Établissement"
+                [(ngModel)]="user.etablissement"
+                name="etablissement"
+              />
+            </div>
+          </div>
+
+          <!-- Rôle -->
+          <div class="mb-3">
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="fas fa-user-tag"></i>
+              </span>
+              <select
+                class="form-control"
+                [(ngModel)]="user.role"
+                name="role"
+                required
+              >
+                <option value="" disabled>Sélectionnez un rôle</option>
+                <option value="EXTERNE">Externe</option>
+                <option value="INTERNE">Interne</option>
+                <option value="ETUDIANT">Étudiant</option>
+                <option value="ADMIN">Administrateur</option>
+                <option value="EMPLOYEE">Employé</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Mot de passe -->
+          <div class="mb-3 full-width">
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="fas fa-lock"></i>
+              </span>
+              <input
+                type="password"
+                class="form-control"
+                placeholder="Mot de passe"
+                [(ngModel)]="user.motDePasse"
+                name="motDePasse"
+                required
+              />
+            </div>
+          </div>
+
+          <!-- Confirmer mot de passe -->
+          <div class="mb-3 full-width">
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="fas fa-lock"></i>
+              </span>
+              <input
+                type="password"
+                class="form-control"
+                placeholder="Confirmer le mot de passe"
+                [(ngModel)]="confirmPassword"
+                name="confirmPassword"
+                required
+              />
+            </div>
+          </div>
+
+          <!-- Photo de profil -->
+          <div class="mb-4 full-width">
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="fas fa-image"></i>
+              </span>
+              <input
+                type="file"
+                class="form-control"
+                accept="image/jpeg, image/png, image/gif"
+                (change)="onFileSelected($event)"
+                name="photo"
+              />
+            </div>
+            <!-- Prévisualisation de l'image -->
+            <div *ngIf="imagePreview" class="mt-2 text-center">
+              <img
+                [src]="imagePreview"
+                alt="Aperçu"
+                style="max-height: 150px; max-width: 100%"
+                class="img-thumbnail"
+              />
+              <div class="small text-muted mt-1">Aperçu de la photo</div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="mb-3 d-flex justify-content-between align-items-center mt-4"
+        >
+          <a [routerLink]="['/login']" class="btn btn-link">
+            <i class="fas fa-sign-in-alt me-1"></i> Se connecter
+          </a>
+
+          <button
+            type="submit"
+            class="btn btn-info"
+            (click)="register()"
+            [disabled]="isLoading"
+          >
+            <span
+              *ngIf="isLoading"
+              class="spinner-border spinner-border-sm me-2"
+              role="status"
+            ></span>
+            <i *ngIf="!isLoading" class="fas fa-user-plus"></i>
+            {{ isLoading ? "Création..." : "Créer un compte" }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

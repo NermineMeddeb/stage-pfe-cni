@@ -1,0 +1,46 @@
+<div class="container">
+  <h1>Générateur de Certificat</h1>
+
+  <!-- Formulaire de saisie -->
+  <div class="form-container">
+    <div class="form-group">
+      <label for="recipient">Nom du bénéficiaire :</label>
+      <input
+        type="text"
+        id="recipient"
+        placeholder="Ex: Jean Dupont"
+        [(ngModel)]="formData.recipient"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="title">Titre du certificat :</label>
+      <input
+        type="text"
+        id="title"
+        placeholder="Ex: Formation en Développement Web"
+        [(ngModel)]="formData.title"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="date">Date debut de formation :</label>
+      <input type="date" id="date" [(ngModel)]="formData.dateDebut" />
+    </div>
+    <div class="form-group">
+      <label for="date">Date fin de formation :</label>
+      <input type="date" id="date" [(ngModel)]="formData.dateFin" />
+    </div>
+
+    <div class="form-group">
+      <label for="date">Date d'émission :</label>
+      <input type="date" id="date" [(ngModel)]="formData.dateEmission" />
+    </div>
+
+    <div class="buttons">
+      <button class="generate-btn" (click)="generateCertificate()">
+        Générer et Télécharger le Certificat
+      </button>
+    </div>
+  </div>
+</div>

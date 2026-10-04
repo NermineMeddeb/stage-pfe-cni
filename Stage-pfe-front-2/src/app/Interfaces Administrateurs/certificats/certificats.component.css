@@ -1,0 +1,253 @@
+/* Styles généraux */
+.certification-history-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: Arial, sans-serif;
+}
+
+.page-title {
+  color: #333;
+  margin-bottom: 30px;
+  font-size: 24px;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 10px;
+}
+
+/* Section de recherche et filtres */
+.search-filter-section {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  background-color: #f5f7fa;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.search-bar {
+  position: relative;
+  flex: 1;
+  margin-right: 20px;
+  min-width: 250px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px 15px 10px 35px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #aaa;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  align-items: center;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+}
+
+.filter-group label {
+  margin-right: 8px;
+  font-size: 14px;
+  color: #555;
+}
+
+.filter-group select,
+.filter-group input[type="date"] {
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.btn-reset {
+  background-color: #f0f0f0;
+  color: #333;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 8px 15px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.btn-reset:hover {
+  background-color: #e0e0e0;
+}
+
+/* Tableau de résultats */
+.table-container {
+  overflow-x: auto;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.certifications-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+}
+
+.certifications-table th {
+  background-color: #3498db;
+  color: white;
+  text-align: left;
+  padding: 12px 15px;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.certifications-table th:first-child {
+  border-top-left-radius: 8px;
+}
+
+.certifications-table th:last-child {
+  border-top-right-radius: 8px;
+}
+
+.certifications-table td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+}
+
+.certifications-table tr:last-child td {
+  border-bottom: none;
+}
+
+.certifications-table tr:hover {
+  background-color: #f9f9f9;
+}
+
+/* Style pour les informations utilisateur */
+.user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-weight: 500;
+}
+
+.user-email {
+  font-size: 12px;
+  color: #777;
+}
+
+/* Badges pour le statut */
+.status-badge {
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.status-badge.valide {
+  background-color: #e6f7e9;
+  color: #27ae60;
+}
+
+.status-badge.en_attente {
+  background-color: #fff7e0;
+  color: #f39c12;
+}
+
+.status-badge.expire {
+  background-color: #ffeeee;
+  color: #e74c3c;
+}
+
+/* Boutons d'action */
+.actions-cell {
+  white-space: nowrap;
+}
+
+.btn-action {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-right: 5px;
+  padding: 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.btn-action:hover {
+  background-color: #f0f0f0;
+}
+
+.btn-action:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-action.view {
+  color: #3498db;
+}
+
+.btn-action.download {
+  color: #27ae60;
+}
+
+.btn-action.delete {
+  color: #e74c3c;
+}
+
+/* Messages */
+.loading-message,
+.error-message,
+.no-results {
+  text-align: center;
+  padding: 20px;
+  color: #777;
+  font-size: 14px;
+}
+
+.error-message {
+  color: #e74c3c;
+  background-color: #ffeeee;
+  border-radius: 5px;
+}
+
+.no-results {
+  color: #777;
+  background-color: #f9f9f9;
+}
+
+/* Media queries pour la responsivité */
+@media (max-width: 768px) {
+  .search-filter-section {
+    flex-direction: column;
+  }
+
+  .search-bar {
+    margin-right: 0;
+    margin-bottom: 15px;
+  }
+
+  .filters {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .filter-group {
+    margin-bottom: 10px;
+  }
+}

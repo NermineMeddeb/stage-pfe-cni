@@ -1,0 +1,140 @@
+/* Style général pour les cartes avec ombres plus douces */
+.card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Effet au survol de la carte */
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 102, 204, 0.15);
+}
+
+/* Espacement entre les cartes */
+.profile-card {
+  background-color: #f8faff;
+  margin-right: 24px;
+}
+
+.details-card {
+  background-color: #ffffff;
+}
+
+/* Photo de profil avec bordure et effet */
+.profile-card img.rounded-circle {
+  border: 4px solid white;
+  box-shadow: 0 4px 12px rgba(0, 61, 115, 0.2);
+  transition: transform 0.3s ease;
+  object-fit: cover;
+}
+
+.profile-card img.rounded-circle:hover {
+  transform: scale(1.05);
+  cursor: pointer;
+}
+
+/* Stylisation du nom et du rôle */
+.profile-name {
+  color: #003d73;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.profile-role {
+  color: #0066cc;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* Boutons avec couleurs du logo et effet dégradé */
+.btn {
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 0;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  margin-bottom: 12px;
+}
+
+.btn-modifier {
+  background: linear-gradient(135deg, #0066cc, #003d73);
+  color: white;
+}
+
+.btn-changer-mot-de-passe {
+  background: linear-gradient(135deg, #003d73, #002a57);
+  color: white;
+}
+
+/* Effet au survol des boutons */
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 61, 115, 0.3);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+/* Stylisation des titres et des labels dans la section détails */
+.details-title {
+  color: #003d73;
+  font-size: 1.4rem;
+  border-bottom: 2px solid #f0f5ff;
+  padding-bottom: 12px;
+}
+
+.details-label {
+  color: #0066cc;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+/* Style pour la table des détails */
+.table-borderless td {
+  color: #333;
+  font-weight: 400;
+  padding: 12px 8px;
+}
+
+.table-borderless tr {
+  border-bottom: 1px solid #f0f5ff;
+}
+
+.table-borderless tr:last-child {
+  border-bottom: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .profile-card,
+  .details-card {
+    margin-right: 0;
+    margin-bottom: 20px;
+  }
+
+  .profile-card img.rounded-circle {
+    width: 150px;
+    height: 150px;
+  }
+}
+
+/* Animations douces */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.row {
+  animation: fadeIn 0.6s ease-out;
+}

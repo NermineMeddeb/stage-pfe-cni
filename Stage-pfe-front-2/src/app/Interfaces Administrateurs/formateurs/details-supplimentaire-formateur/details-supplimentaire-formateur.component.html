@@ -1,0 +1,132 @@
+<!-- details-supplimentaire-formateur.component.html -->
+<div class="client-details-container" [@fadeInOut]>
+    <div class="header" *ngIf="client$ | async as client">
+      <div class="back-button">
+        <button (click)="goBack()">
+          <i class="fas fa-arrow-left"></i> Retour
+        </button>
+      </div>
+      <h1>Détails du formateur</h1>
+      <div class="actions">
+        <button class="btn-edit" (click)="onEdit(client.id)">
+          <i class="fas fa-edit"></i> Modifier
+        </button>
+        <button class="btn-delete" (click)="onDelete(client.id)">
+          <i class="fas fa-trash"></i> Supprimer
+        </button>
+      </div>
+    </div>
+  
+    <div class="loading-container" *ngIf="loading$ | async" [@fadeInOut]>
+      <div class="spinner"></div>
+      <p>Chargement des détails du formateur...</p>
+    </div>
+  
+    <div class="error-message" *ngIf="error$ | async as error" [@slideInOut]>
+      <i class="fas fa-exclamation-circle"></i>
+      <p>{{ error }}</p>
+      <button (click)="refreshData()">Réessayer</button>
+    </div>
+  
+    <div class="client-info" *ngIf="(client$ | async) && !(loading$ | async)" [@fadeInOut]>
+      <ng-container *ngIf="client$ | async as client">
+        <div class="profile-section">
+          <div class="profile-image">
+            <img
+              [src]="client?.photo ? 'assets/' + client.photo : 'assets/images/default-profile.png'"
+              alt="Photo de profil"
+            />
+          </div>
+          
+          <div class="profile-details">
+            <h2>{{ client.prenom }} {{ client.nom }}</h2>
+            <p class="status" [ngClass]="client.status">
+              {{ getStatusLabel(client.status) }}
+            </p>
+            <p class="id">ID: {{ client.id }}</p>
+            <p class="creation-date">
+              <i class="fas fa-calendar"></i>
+              Inscrit le {{ client.dateCreation | date : "dd/MM/yyyy" }}
+            </p>
+          </div>
+        </div>
+  
+        <div class="info-sections">
+          <div class="info-section">
+            <h3>Informations personnelles</h3>
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="label">CIN</span>
+                <span class="value">{{ client.cin || "-" }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Date de naissance</span>
+                <span class="value">{{
+                  client.dateNaissance
+                    ? (client.dateNaissance | date : "dd/MM/yyyy")
+                    : "-"
+                }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Rôle</span>
+                <span class="value">{{ getRoleLabel(client.role) }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Établissement</span>
+                <span class="value">{{ client.etablissement || "-" }}</span>
+              </div>
+            </div>
+          </div>
+  
+          <div class="info-section">
+            <h3>Coordonnées</h3>
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="label">Email</span>
+                <span class="value">
+                  <a [href]="'mailto:' + client.email">{{ client.email }}</a>
+                </span>
+              </div>
+              <div class="info-item">
+                <span class="label">Téléphone</span>
+                <span class="value">
+                  <a [href]="'tel:' + client.telephone">{{
+                    client.telephone || "-"
+                  }}</a>
+                </span>
+              </div>
+            </div>
+          </div>
+  
+          <div class="info-section">
+            <h3>Activité du compte</h3>
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="label">Dernière connexion</span>
+                <span class="value">{{
+                  client.derniereConnexion
+                    ? (client.derniereConnexion | date : "dd/MM/yyyy HH:mm")
+                    : "-"
+                }}</span>
+              </div>
+            </div>
+          </div>
+  
+          
+        </div>
+      </ng-container>
+    </div>
+  
+    <div
+      class="no-data-message"
+      *ngIf="
+        (client$ | async) === null && !(loading$ | async) && !(error$ | async)
+      "
+      [@fadeInOut]
+    >
+      <i class="fas fa-user-slash"></i>
+      <h2>Formateur introuvable</h2>
+      <p>Le formateur demandé n'existe pas ou a été supprimé.</p>
+      <button (click)="goBack()">Retourner à la liste</button>
+    </div>
+  </div>

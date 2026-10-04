@@ -1,0 +1,136 @@
+<div class="certifications-container">
+  <header class="certifications-header">
+    <h1>Mes Certifications</h1>
+    <p class="subtitle">Visualisez et gérez vos certifications obtenues</p>
+  </header>
+
+  <!-- Filtres et recherche -->
+  <div class="controls-container">
+    <div class="search-box">
+      <input
+        type="text"
+        placeholder="Rechercher une certification..."
+        [(ngModel)]="searchTerm"
+        (input)="onSearchChange(searchTerm)"
+        class="search-input"
+      />
+      <span class="search-icon">🔍</span>
+    </div>
+
+    <div class="filter-tabs">
+      <button
+        [class.active]="filterStatus === 'all'"
+        (click)="filterCertifications('all')"
+        class="filter-btn"
+      >
+        Toutes ({{ certifications.length }})
+      </button>
+      <button
+        [class.active]="filterStatus === 'valid'"
+        (click)="filterCertifications('valid')"
+        class="filter-btn"
+      >
+        Valides
+      </button>
+      <button
+        [class.active]="filterStatus === 'expired'"
+        (click)="filterCertifications('expired')"
+        class="filter-btn"
+      >
+        Expirées
+      </button>
+    </div>
+  </div>
+
+  <!-- État de chargement -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="spinner"></div>
+    <p>Chargement de vos certifications...</p>
+  </div>
+
+  <!-- Message d'erreur -->
+  <div *ngIf="!isLoading && error" class="error-container">
+    <div class="error-message">
+      <span class="error-icon">⚠️</span>
+      <p>{{ error }}</p>
+      <button *ngIf="userId" (click)="loadCertifications()" class="retry-btn">
+        Réessayer
+      </button>
+    </div>
+  </div>
+
+  <!-- Message si aucun résultat -->
+  <div
+    *ngIf="!isLoading && !error && filteredCertifications.length === 0"
+    class="no-results"
+  >
+    <div class="empty-state">
+      <!-- Correction : utiliser directement le chemin default-logo.png sans ajouter assets/certifications/ -->
+      <img
+        src="/assets/certifications/default-logo.png"
+        class="cert-logo"
+        alt="Logo de la certification"
+      />
+      <h3>Aucune certification trouvée</h3>
+      <p *ngIf="searchTerm || filterStatus !== 'all'">
+        Essayez de modifier vos critères de recherche ou de filtrage.
+      </p>
+      <p *ngIf="!searchTerm && filterStatus === 'all'">
+        Vous n'avez pas encore obtenu de certification.
+      </p>
+    </div>
+  </div>
+
+  <!-- Liste des certifications -->
+  <div
+    *ngIf="!isLoading && !error && filteredCertifications.length > 0"
+    class="certifications-grid"
+  >
+    <div
+      *ngFor="let cert of filteredCertifications"
+      class="certification-card"
+      [ngClass]="cert.statut"
+    >
+      <div class="cert-header">
+        <!-- Correction : utiliser directement le chemin contenu dans file_url sans ajouter de préfixe -->
+        <iframe [src]="getSafeUrl(cert.file_url ?? '')"></iframe>
+        <div class="cert-badge" [ngClass]="cert.statut">
+          <span *ngIf="cert.statut === 'valid'">Valide</span>
+          <span *ngIf="cert.statut === 'expired'">Expirée</span>
+          <span *ngIf="cert.statut === 'pending'">En attente</span>
+        </div>
+        <div *ngIf="isExpiringSoon(cert)" class="expiry-warning">
+          Expire bientôt
+        </div>
+      </div>
+
+      <div class="cert-body">
+        <h3 class="cert-title">{{ cert.inscriptionId }}</h3>
+        <p class="cert-org">
+          {{ cert.numeroSerie }}
+        </p>
+        <p class="cert-date">
+          Obtenue le: {{ cert.dateGeneration | date : "dd/MM/yyyy" }}
+        </p>
+      </div>
+
+      <div class="cert-actions">
+        <button class="btn-view" (click)="viewCertification(cert.file_url)">
+          <i class="fa fa-eye"></i> Visualiser
+        </button>
+        <button
+          class="btn-download"
+          (click)="downloadCertification(cert.file_url)"
+        >
+          <i class="fa fa-download"></i> Télécharger
+        </button>
+        <!-- <button class="btn-print" (click)="printCertification(cert)">
+          <i class="fa fa-print"></i> Imprimer
+        </button> -->
+        <!--   <button class="btn-share" (click)="shareCertification(cert)">
+          <i class="fa fa-share-alt"></i> Partager
+        </button> -->
+      </div>
+    </div>
+  </div>
+</div>

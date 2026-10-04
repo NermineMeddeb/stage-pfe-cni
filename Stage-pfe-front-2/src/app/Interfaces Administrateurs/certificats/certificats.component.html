@@ -1,0 +1,126 @@
+<div class="certification-history-container">
+    <h1 class="page-title">Historique des Certifications</h1>
+  
+    <!-- Section de recherche et filtres -->
+    <div class="search-filter-section">
+      <div class="search-bar">
+        <input 
+          type="text" 
+          [formControl]="searchControl" 
+          placeholder="Rechercher par numéro, nom ou email..."
+          class="search-input">
+        <i class="fa fa-search search-icon"></i>
+      </div>
+  
+      <div class="filters">
+        <div class="filter-group">
+          <label for="statut">Statut:</label>
+          <select id="statut" [(ngModel)]="selectedStatut" (change)="applyFilters()">
+            <option value="">Tous</option>
+            <option value="VALIDÉ">Validé</option>
+            <option value="EN_ATTENTE">En attente</option>
+            <option value="REJETÉ">Rejeté</option>
+          </select>
+        </div>
+  
+        <div class="filter-group">
+          <label for="dateDebut">De:</label>
+          <input 
+            type="date" 
+            id="dateDebut" 
+            [(ngModel)]="dateDebut" 
+            (change)="applyFilters()">
+        </div>
+  
+        <div class="filter-group">
+          <label for="dateFin">À:</label>
+          <input 
+            type="date" 
+            id="dateFin" 
+            [(ngModel)]="dateFin" 
+            (change)="applyFilters()">
+        </div>
+  
+        <button class="btn-reset" (click)="resetFilters()">
+          Réinitialiser
+        </button>
+      </div>
+    </div>
+  
+    <!-- Message de chargement ou d'erreur -->
+    <div *ngIf="isLoading" class="loading-message">
+      <i class="fa fa-spinner fa-spin"></i> Chargement des certifications...
+    </div>
+  
+    <div *ngIf="error" class="error-message">
+      <i class="fa fa-exclamation-triangle"></i> {{ error }}
+    </div>
+  
+    <!-- Tableau des résultats -->
+    <div class="table-container" *ngIf="!isLoading && !error">
+      <table class="certifications-table">
+        <thead>
+          <tr>
+            <th>Numéro de série</th>
+            <th>Participant</th>
+            <th>Date de génération</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of filteredCertifications">
+            <td>{{ item.certification.numeroSerie || 'N/A' }}</td>
+            <td>
+              <div class="user-info" *ngIf="item.utilisateur">
+                <div class="user-name">{{ item.utilisateur.nom }} {{ item.utilisateur.prenom }}</div>
+                <div class="user-email">{{ item.utilisateur.email }}</div>
+              </div>
+              <div *ngIf="!item.utilisateur">Information non disponible</div>
+            </td>
+            <td>{{ item.certification.dateGeneration | date:'dd/MM/yyyy' }}</td>
+            <td>
+                <span class="status-badge" [ngClass]="item.certification.statut?.toLowerCase()">
+                  {{ item.certification.statut }}
+                </span>
+              </td> 
+            <td class="actions-cell">
+                <button 
+                class="btn-action view" 
+                title="Voir le certificat"
+                (click)="voirCertificat(item.certification.file_url)"
+                >
+                <i class="fa fa-eye"></i>
+              </button>
+              
+              <button 
+                class="btn-action download" 
+                title="Télécharger le certificat"
+                (click)="telechargerCertificat(item.certification.file_url)"
+                [disabled]="!item.certification.file_url">
+                <i class="fa fa-download"></i>
+              </button>
+             <button 
+                class="btn-action delete" 
+                title="Supprimer le certificat"
+                (click)="supprimerCertificat(item.certification.numeroSerie)"
+                [disabled]="!item.utilisateur?.id">
+                <i class="fa fa-trash"></i>
+              </button> 
+            </td>
+          </tr>
+          <tr *ngIf="filteredCertifications.length === 0">
+            <td colspan="5" class="no-results">
+              Aucune certification trouvée.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  
+    <!-- Pagination (optionnelle - à implémenter si nécessaire) -->
+    <div class="pagination-controls" *ngIf="filteredCertifications.length > 0">
+      <!-- Composant de pagination ici si nécessaire -->
+    </div>
+    
+  </div>

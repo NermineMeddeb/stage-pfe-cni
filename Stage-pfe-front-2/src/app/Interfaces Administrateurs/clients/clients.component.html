@@ -1,0 +1,307 @@
+<!-- clients.component.html -->
+<div class="dashboard-container" [@fadeInOut]>
+  <div class="dashboard-header">
+    <div class="header-content">
+      <h1>Liste des clients</h1>
+      <div class="header-actions">
+        <div class="search-container">
+          <div
+            class="search-box"
+            [class.active]="filterForm.get('searchTerm')?.value"
+            (input)="onSearch(searchInput.value)"
+          >
+            <i class="fas fa-search"></i>
+            <input
+              #searchInput
+              type="text"
+              placeholder="Rechercher un client..."
+              aria-label="Search students"
+            />
+            <button
+              *ngIf="filterForm.get('searchTerm')?.value"
+              class="clear-search"
+              (click)="onSearch('')"
+              aria-label="Effacer la recherche"
+            >
+              <i class="fas fa-times-circle"></i>
+            </button>
+          </div>
+          <button
+            class="btn-icon"
+            (click)="toggleFilterPanel()"
+            [class.active]="isFilterExpanded"
+            aria-label="Filtres avancés"
+          >
+            <i class="fas fa-filter"></i>
+          </button>
+        </div>
+
+        <div class="actions-group">
+          <button
+            class="btn btn-outline"
+            (click)="refreshData()"
+            aria-label="Actualiser"
+          >
+            <i class="fas fa-sync-alt"></i>
+            <span>Refresh</span>
+          </button>
+
+          <button
+            class="btn btn-outline"
+            (click)="exportToCSV()"
+            aria-label="Exporter"
+          >
+            <i class="fas fa-file-export"></i>
+            <span>Export</span>
+          </button>
+
+          <ng-container *ngIf="selectedStudents.size > 0">
+            <button
+              class="btn btn-danger"
+              (click)="onBulkDelete()"
+              aria-label="Supprimer la sélection"
+            >
+              <i class="fas fa-trash-alt"></i>
+              <span>Delete ({{ selectedStudents.size }})</span>
+            </button>
+          </ng-container>
+
+          <app-action-button
+            label="Add Student"
+            icon="fa-user-plus"
+            (click)="NouveauClient()"
+          ></app-action-button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Advanced Filters Panel -->
+  <div class="filters-panel" *ngIf="isFilterExpanded" [@slideInOut]>
+    <form [formGroup]="filterForm" class="filters-form">
+      <div class="filters-row">
+        <div class="filter-group">
+          <label for="sortByFilter">Sort By</label>
+          <select id="sortByFilter" formControlName="sortBy">
+            <option
+              *ngFor="let option of filterOptions.sortFields"
+              [value]="option.value"
+            >
+              {{ option.label }}
+            </option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="sortDirectionFilter">Direction</label>
+          <select id="sortDirectionFilter" formControlName="sortDirection">
+            <option value="asc">trier de A-Z</option>
+            <option value="desc">trier de Z-A</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="pageSizeFilter">Items Per Page</label>
+          <select id="pageSizeFilter" formControlName="pageSize">
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="filters-actions">
+        <button
+          type="button"
+          class="btn btn-outline"
+          (click)="
+            filterForm.reset({
+              searchTerm: '',
+              sortBy: 'nom',
+              sortDirection: 'asc',
+              page: 1,
+              pageSize: 10
+            })
+          "
+        >
+          Reset
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Error Alert -->
+  <div
+    class="alert alert-danger alert-dismissible fade show"
+    *ngIf="error$ | async as errorMsg"
+    [@fadeInOut]
+    role="alert"
+  >
+    <i class="fas fa-exclamation-circle me-2"></i>
+    {{ errorMsg }}
+    <button
+      type="button"
+      class="btn-close"
+      (click)="error$.next(null)"
+      aria-label="Fermer"
+    ></button>
+  </div>
+
+  <!-- Loading State -->
+  <div
+    class="loading-state"
+    *ngIf="loading$ | async"
+    aria-label="Chargement"
+    [@fadeInOut]
+  >
+    <div class="loading-card" *ngFor="let i of [1, 2, 3, 4, 5]">
+      <div class="loading-avatar"></div>
+      <div class="loading-content">
+        <div class="loading-line"></div>
+        <div class="loading-line"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Student Table View -->
+  <ng-container
+    *ngIf="!(loading$ | async) && (paginatedStudents$ | async) as students"
+  >
+    <div class="table-responsive" *ngIf="students.length > 0" [@fadeInOut]>
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th class="select-column">
+              <div class="form-check">
+                <input
+                  type="checkbox"
+                  class="form-check-input"
+                  id="selectAll"
+                  [checked]="isAllSelected"
+                  (change)="onToggleSelectAll(students)"
+                  aria-label="Sélectionner tous les étudiants"
+                />
+              </div>
+            </th>
+            <th
+              *ngFor="let field of filterOptions.sortFields"
+              [class.active]="filterForm.get('sortBy')?.value === field.value"
+              [class.asc]="
+                filterForm.get('sortBy')?.value === field.value &&
+                filterForm.get('sortDirection')?.value === 'asc'
+              "
+              [class.desc]="
+                filterForm.get('sortBy')?.value === field.value &&
+                filterForm.get('sortDirection')?.value === 'desc'
+              "
+              (click)="onSortChange(field.value)"
+            >
+              {{ field.label }}
+              <i
+                class="fas"
+                [ngClass]="{
+                  'fa-sort': filterForm.get('sortBy')?.value !== field.value,
+                  'fa-sort-up':
+                    filterForm.get('sortBy')?.value === field.value &&
+                    filterForm.get('sortDirection')?.value === 'asc',
+                  'fa-sort-down':
+                    filterForm.get('sortBy')?.value === field.value &&
+                    filterForm.get('sortDirection')?.value === 'desc'
+                }"
+              ></i>
+            </th>
+            <th class="actions-column">CIN</th>
+
+            <th class="actions-column">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="let student of students"
+            [class.selected]="selectedStudents.has(student.id || 0)"
+          >
+            <td>
+              <div class="form-check">
+                <input
+                  type="checkbox"
+                  class="form-check-input"
+                  [id]="'select-' + student.id"
+                  [checked]="selectedStudents.has(student.id || 0)"
+                  (change)="onToggleSelection(student.id || 0)"
+                  [attr.aria-label]="
+                    'Sélectionner ' + student.prenom + ' ' + student.nom
+                  "
+                />
+              </div>
+            </td>
+            <td>{{ student.nom }}</td>
+            <td>{{ student.prenom }}</td>
+            <td>{{ student.email }}</td>
+            <td>{{ student.cin }}</td>
+
+            <td class="actions-cell">
+              <button
+                class="btn-icon"
+                (click)="gotodetailsclient(student)"
+                aria-label="Voir détails"
+              >
+                <i class="fas fa-eye"></i>
+              </button>
+
+              <button
+                class="btn-icon"
+                [routerLink]="['nouveau-client', student.id]"
+                aria-label="Modifier"
+              >
+                <i class="fas fa-edit"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Alternatively display cards on mobile -->
+    <div
+      class="students-grid d-md-none"
+      *ngIf="students.length > 0"
+      [@fadeInOut]
+      role="list"
+    >
+      <app-details-clients
+        *ngFor="let student of students"
+        [UtilisateursDto]="student"
+        (onSelect)="onToggleSelection(student.id || 0)"
+        (suppressionResult)="handleSuppression($event)"
+        role="listitem"
+      >
+      </app-details-clients>
+    </div>
+  </ng-container>
+
+  <!-- Empty State -->
+  <div
+    class="empty-state"
+    *ngIf="!(loading$ | async) && (filteredStudents$ | async)?.length === 0"
+    [@fadeInOut]
+  >
+    <i class="fas fa-user-graduate"></i>
+    <h3>No Students Found</h3>
+    <p>There are no students matching your search criteria.</p>
+  </div>
+
+  <!-- Pagination -->
+  <div
+    class="pagination-container"
+    *ngIf="!(loading$ | async) && (totalItems$ | async) as totalItems"
+    [@fadeInOut]
+  >
+    <app-pagination
+      [currentPage]="filterForm.get('page')?.value"
+      [totalItems]="totalItems"
+      [itemsPerPage]="filterForm.get('pageSize')?.value"
+      (pageChange)="onPageChange($event)"
+    ></app-pagination>
+  </div>
+</div>

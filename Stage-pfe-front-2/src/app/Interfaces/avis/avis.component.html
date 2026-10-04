@@ -1,0 +1,394 @@
+<div class="appreciation-container">
+  <!-- Indicateur de chargement -->
+  <div class="loading-overlay" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Chargement des données...</p>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h2 class="text-center">Fiche d'Appréciation Qualitative</h2>
+    </div>
+    <div class="card-body">
+      <form [formGroup]="appreciationForm" (ngSubmit)="onSubmit()">
+        <!-- Informations générales -->
+        <div class="section general-info">
+          <h3>Informations de la Formation</h3>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="intitule">Intitulé de la Formation</label>
+              <input
+                type="text"
+                id="intitule"
+                class="form-control"
+                formControlName="intitule"
+              />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label>Formateurs</label>
+              <div formArrayName="formateurIds" class="formateurs-list">
+                <div
+                  *ngFor="let formateur of formateurs; let i = index"
+                  class="formateur-item"
+                >
+                  <label class="custom-checkbox">
+                    {{ formateur.nom }} {{ formateur.prenom }}
+                    <input
+                      type="checkbox"
+                      [formControlName]="i"
+                      [id]="'formateur-' + formateur.id"
+                    />
+                    <span class="checkmark"></span>
+                  </label>
+                </div>
+              </div>
+              <div
+                *ngIf="
+                  appreciationForm.get('formateurIds')?.invalid &&
+                  appreciationForm.get('formateurIds')?.touched
+                "
+                class="text-danger"
+              >
+                Veuillez sélectionner au moins un formateur
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="dateFormation">Date de la Formation</label>
+            <input
+              type="date"
+              id="dateFormation"
+              class="form-control"
+              formControlName="dateFormation"
+            />
+            <div
+              *ngIf="
+                appreciationForm.get('dateFormation')?.invalid &&
+                appreciationForm.get('dateFormation')?.touched
+              "
+              class="text-danger"
+            >
+              Veuillez sélectionner une date
+            </div>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="lieuFormation">Lieu de la Formation</label>
+            <input
+              type="text"
+              id="lieuFormation"
+              class="form-control"
+              formControlName="lieuFormation"
+            />
+            <div
+              *ngIf="
+                appreciationForm.get('lieuFormation')?.invalid &&
+                appreciationForm.get('lieuFormation')?.touched
+              "
+              class="text-danger"
+            >
+              Veuillez indiquer le lieu
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="participant">Nom du Participant</label>
+            <input
+              type="text"
+              id="participant"
+              class="form-control"
+              formControlName="participant"
+              [value]="userData ? userData.nom + ' ' + userData.prenom : ''"
+              [disabled]="userData !== null"
+            />
+          </div>
+        </div>
+
+        <!-- Évaluation du formateur -->
+        <div class="section formateur-evaluation">
+          <h3>Évaluation du Formateur</h3>
+          <p>
+            Maîtrise du sujet, qualité pédagogique (rythme, communication),
+            gestion du temps, conformité au programme
+          </p>
+          <div class="rating-container">
+            <div class="rating">
+              <ng-container *ngFor="let rating of ratingOptions">
+                <span
+                  class="emoji-rating"
+                  [ngClass]="{
+                    selected: appreciation.evaluationFormateur === rating.value
+                  }"
+                  (click)="setRating('evaluationFormateur', rating.value)"
+                >
+                  {{ rating.emoji }}
+                </span>
+              </ng-container>
+            </div>
+            <div class="rating-labels">
+              <span>Non satisfait (0)</span>
+              <span>Moyen (3)</span>
+              <span>Bien (4)</span>
+              <span>Très bien (5)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Évaluation de l'environnement -->
+        <div class="section environnement-evaluation">
+          <h3>Évaluation de l'Environnement</h3>
+          <p>Accueil, salle de formation, pauses</p>
+          <div class="rating-container">
+            <div class="rating">
+              <ng-container *ngFor="let rating of ratingOptions">
+                <span
+                  class="emoji-rating"
+                  [ngClass]="{
+                    selected:
+                      appreciation.evaluationEnvironnement === rating.value
+                  }"
+                  (click)="setRating('evaluationEnvironnement', rating.value)"
+                >
+                  {{ rating.emoji }}
+                </span>
+              </ng-container>
+            </div>
+            <div class="rating-labels">
+              <span>Non satisfait (0)</span>
+              <span>Moyen (3)</span>
+              <span>Bien (4)</span>
+              <span>Très bien (5)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Évaluation des moyens pédagogiques -->
+        <div class="section moyens-evaluation">
+          <h3>Évaluation des Moyens Pédagogiques</h3>
+          <p>Matériel informatique, support du cours, connexion</p>
+          <div class="rating-container">
+            <div class="rating">
+              <ng-container *ngFor="let rating of ratingOptions">
+                <span
+                  class="emoji-rating"
+                  [ngClass]="{
+                    selected: appreciation.evaluationMoyens === rating.value
+                  }"
+                  (click)="setRating('evaluationMoyens', rating.value)"
+                >
+                  {{ rating.emoji }}
+                </span>
+              </ng-container>
+            </div>
+            <div class="rating-labels">
+              <span>Non satisfait (0)</span>
+              <span>Moyen (3)</span>
+              <span>Bien (4)</span>
+              <span>Très bien (5)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Évaluation de la formation -->
+        <div class="section formation-evaluation">
+          <h3>Évaluation de la Formation</h3>
+          <p>Objectifs atteints</p>
+          <div class="rating-container">
+            <div class="rating">
+              <ng-container *ngFor="let rating of ratingOptions">
+                <span
+                  class="emoji-rating"
+                  [ngClass]="{
+                    selected: appreciation.evaluationFormation === rating.value
+                  }"
+                  (click)="setRating('evaluationFormation', rating.value)"
+                >
+                  {{ rating.emoji }}
+                </span>
+              </ng-container>
+            </div>
+            <div class="rating-labels">
+              <span>Non satisfait (0)</span>
+              <span>Moyen (3)</span>
+              <span>Bien (4)</span>
+              <span>Très bien (5)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Note globale de satisfaction -->
+        <div class="section global-rating">
+          <h3>Note Globale de Satisfaction</h3>
+          <div class="global-score">
+            <div class="score-circle">
+              {{ calculateGlobalScore() }}
+            </div>
+            <p class="score-text">/ 20</p>
+          </div>
+        </div>
+
+        <!-- Nouveaux besoins de formation -->
+        <div class="section new-needs">
+          <h3>Nouveaux Besoins de Formation</h3>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="nouveauxBesoinFormation"
+              formControlName="nouveauxBesoinFormation"
+            />
+            <label class="form-check-label" for="nouveauxBesoinFormation">
+              Cette formation a-t-elle fait naître de nouveaux besoins de
+              formation ?
+            </label>
+          </div>
+          <div
+            *ngIf="appreciationForm.get('nouveauxBesoinFormation')?.value"
+            class="mt-3"
+          >
+            <label for="besoinsFormation">Si oui, lesquels ?</label>
+            <textarea
+              id="besoinsFormation"
+              class="form-control"
+              formControlName="besoinsFormation"
+              rows="3"
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Coordonnées du responsable -->
+        <div class="section responsable-info">
+          <h3>Coordonnées du Responsable à Contacter</h3>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="responsableNom">Nom du Responsable</label>
+              <input
+                type="text"
+                id="responsableNom"
+                class="form-control"
+                formControlName="responsableNom"
+              />
+              <div
+                *ngIf="
+                  appreciationForm.get('responsableNom')?.invalid &&
+                  appreciationForm.get('responsableNom')?.touched
+                "
+                class="text-danger"
+              >
+                Veuillez indiquer le nom du responsable
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="responsableTel">Téléphone</label>
+              <input
+                type="tel"
+                id="responsableTel"
+                class="form-control"
+                formControlName="responsableTel"
+              />
+              <div
+                *ngIf="
+                  appreciationForm.get('responsableTel')?.invalid &&
+                  appreciationForm.get('responsableTel')?.touched
+                "
+                class="text-danger"
+              >
+                Veuillez indiquer le téléphone du responsable
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12 mb-3">
+              <label for="responsableEmail">Email</label>
+              <input
+                type="email"
+                id="responsableEmail"
+                class="form-control"
+                formControlName="responsableEmail"
+              />
+              <div
+                *ngIf="
+                  appreciationForm.get('responsableEmail')?.invalid &&
+                  appreciationForm.get('responsableEmail')?.touched
+                "
+                class="text-danger"
+              >
+                Veuillez indiquer une adresse email valide
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Suggestions et recommendations -->
+        <div class="section suggestions">
+          <h3>Suggestions et Recommandations d'Amélioration</h3>
+          <textarea
+            id="suggestions"
+            class="form-control"
+            formControlName="suggestions"
+            rows="4"
+          ></textarea>
+        </div>
+
+        <div class="d-flex justify-content-center mt-4">
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="appreciationForm.invalid || isSubmitting"
+          >
+            <span
+              class="spinner-border spinner-border-sm"
+              role="status"
+              aria-hidden="true"
+              *ngIf="isSubmitting"
+            ></span>
+            {{ isSubmitting ? "Envoi en cours..." : "Soumettre l'évaluation" }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Popup de confirmation -->
+<div
+  class="modal"
+  tabindex="-1"
+  role="dialog"
+  [ngClass]="{ 'd-block show': showConfirmation }"
+  [ngStyle]="{ display: showConfirmation ? 'block' : 'none' }"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header success-header">
+        <h5 class="modal-title">Évaluation Soumise avec Succès</h5>
+        <button
+          type="button"
+          class="close"
+          (click)="closeConfirmation()"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body text-center">
+        <div class="success-icon">
+          <i class="fa fa-check-circle"></i>
+        </div>
+        <p>Merci pour votre évaluation !</p>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="closeConfirmation()"
+        >
+          Fermer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade show" *ngIf="showConfirmation"></div>

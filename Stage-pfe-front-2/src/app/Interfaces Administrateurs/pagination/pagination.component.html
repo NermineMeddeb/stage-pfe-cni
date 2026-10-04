@@ -1,0 +1,50 @@
+<!-- pagination.component.html -->
+<nav aria-label="Pagination">
+    <ul class="pagination">
+      <!-- Previous button -->
+      <li class="page-item" [class.disabled]="currentPage === 1">
+        <button class="page-link" 
+                (click)="changePage(currentPage - 1)"
+                [disabled]="currentPage === 1"
+                aria-label="Previous">
+          <span aria-hidden="true">&laquo;</span>
+        </button>
+      </li>
+  
+      <!-- First page -->
+      <li class="page-item" *ngIf="pages[0] > 1">
+        <button class="page-link" (click)="changePage(1)">1</button>
+      </li>
+  
+      <!-- Ellipsis if needed -->
+      <li class="page-item disabled" *ngIf="pages[0] > 2">
+        <span class="page-link">...</span>
+      </li>
+  
+      <!-- Page numbers -->
+      <li class="page-item" *ngFor="let page of pages"
+          [class.active]="page === currentPage">
+        <button class="page-link" (click)="changePage(page)">{{ page }}</button>
+      </li>
+  
+      <!-- Ellipsis if needed -->
+      <li class="page-item disabled" *ngIf="pages[pages.length - 1] < totalPages - 1">
+        <span class="page-link">...</span>
+      </li>
+  
+      <!-- Last page -->
+      <li class="page-item" *ngIf="pages[pages.length - 1] < totalPages">
+        <button class="page-link" (click)="changePage(totalPages)">{{ totalPages }}</button>
+      </li>
+  
+      <!-- Next button -->
+      <li class="page-item" [class.disabled]="currentPage === totalPages">
+        <button class="page-link"
+                (click)="changePage(currentPage + 1)"
+                [disabled]="currentPage === totalPages"
+                aria-label="Next">
+          <span aria-hidden="true">&raquo;</span>
+        </button>
+      </li>
+    </ul>
+  </nav>

@@ -1,0 +1,317 @@
+<!-- Section des données financières améliorée -->
+<section
+  *ngIf="!loading && !error && visibleSections.finances"
+  class="dashboard-section"
+>
+  <div class="section-header">
+    <h2>Analyse Financière</h2>
+    <i
+      class="fas"
+      [ngClass]="visibleSections.finances ? 'fa-chevron-up' : 'fa-chevron-down'"
+    ></i>
+  </div>
+  <div class="section-content" *ngIf="visibleSections.finances">
+    <!-- KPIs financiers améliorés -->
+    <div class="kpi-cards">
+      <div class="kpi-card">
+        <div class="kpi-icon">
+          <i class="fas fa-chart-bar"></i>
+        </div>
+        <div class="kpi-data">
+          <h3>{{ financialStats.chiffreAffaireTotal }}</h3>
+          <p>Chiffre d'affaires total</p>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon">
+          <i class="fas fa-chart-line"></i>
+        </div>
+        <div class="kpi-data">
+          <h3>{{ financialStats.revenuMoyenFormation }}</h3>
+          <p>Revenu moyen par sessions de formation</p>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon">
+          <i class="fas fa-user-graduate"></i>
+        </div>
+        <div class="kpi-data">
+          <h3>{{ financialStats.revenuParParticipant }}</h3>
+          <p>Revenu moyen par participant</p>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon">
+          <i class="fas fa-percentage"></i>
+        </div>
+        <div class="kpi-data">
+          <h3>{{ financialStats.tauxRentabilite | number : "1.1-1" }}%</h3>
+          <p>Taux de rentabilité</p>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon">
+          <i class="fas fa-money-bill-wave"></i>
+        </div>
+        <div class="kpi-data">
+          <h3>{{ financialStats.coutTotalFormateurs }}</h3>
+          <p>Coût total formateurs</p>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="kpi-data">
+          <h3>{{ financialStats.coutTotalEmployes }}</h3>
+          <p>Coût total employés</p>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon">
+          <i class="fas fa-hand-holding-usd"></i>
+        </div>
+        <div class="kpi-data">
+          <h3>{{ financialStats.montantImpaye }}</h3>
+          <p>Montant impayé</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Extrait à ajouter/vérifier dans votre fichier tableau-de-bord-finance.component.html -->
+
+    <!-- Section d'évolution combinée -->
+    <div
+      class="row mt-4"
+      *ngIf="!loading && !error && visibleSections.finances"
+    >
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title">
+              Analyse de l'Évolution du Chiffre d'Affaires et des Dépenses
+            </h4>
+          </div>
+          <div class="card-body">
+            <div
+              *ngIf="evolutionCombineeData && evolutionCombineeData.length > 0"
+            >
+              <ngx-charts-line-chart
+                [view]="viewLine"
+                [scheme]="RGB"
+                [legend]="true"
+                [showXAxisLabel]="true"
+                [showYAxisLabel]="true"
+                [xAxis]="true"
+                [yAxis]="true"
+                [xAxisLabel]="'Période'"
+                [yAxisLabel]="'Montant (TND)'"
+                [timeline]="false"
+                [results]="evolutionCombineeData"
+                [gradient]="gradient"
+                [animations]="true"
+              ></ngx-charts-line-chart>
+            </div>
+            <div
+              *ngIf="
+                !evolutionCombineeData || evolutionCombineeData.length === 0
+              "
+              class="alert alert-info"
+            >
+              Aucune donnée disponible pour l'évolution combinée.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Affichage d'un message d'errTND en cas de problème -->
+    <div class="row mt-4" *ngIf="error">
+      <div class="col-12">
+        <div class="alert alert-danger">
+          Une errTND est survenue lors du chargement des données financières.
+          Veuillez réessayer ultériTNDement.
+        </div>
+      </div>
+    </div>
+
+    <!-- Affichage d'un spinner pendant le chargement -->
+    <div class="row mt-4" *ngIf="loading">
+      <div class="col-12 text-center">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Chargement...</span>
+        </div>
+        <p class="mt-2">Chargement des données financières...</p>
+      </div>
+    </div>
+    <div
+      class="row mt-4"
+      *ngIf="!loading && !error && visibleSections.finances"
+    >
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title">Évolution des paiements</h5>
+          </div>
+          <div class="card-body">
+            <div *ngIf="evolutionPaiements && evolutionPaiements.length > 0">
+              <ngx-charts-area-chart
+                [view]="viewBar1"
+                [scheme]="colorSchemeMulti"
+                [results]="evolutionPaiements"
+                [gradient]="gradient"
+                [xAxis]="showXAxis"
+                [yAxis]="showYAxis"
+                [legend]="false"
+                [showXAxisLabel]="showXAxisLabel"
+                [showYAxisLabel]="showYAxisLabel"
+                [xAxisLabel]="'Mois'"
+                [yAxisLabel]="'Montant des paiements (TND)'"
+                [autoScale]="true"
+              >
+              </ngx-charts-area-chart>
+            </div>
+            <div
+              *ngIf="!evolutionPaiements || evolutionPaiements.length === 0"
+              class="alert alert-info"
+            >
+              Aucune donnée disponible pour l'évolution des paiements.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Statuts et modes de paiement dans une section avec le même style -->
+    <div
+      class="row mt-4"
+      *ngIf="!loading && !error && visibleSections.finances"
+    >
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title">Statuts des paiements</h4>
+          </div>
+          <div class="card-body">
+            <div *ngIf="paiementsByStatus && paiementsByStatus.length > 0">
+              <ngx-charts-bar-vertical
+                [view]="viewBar"
+                [scheme]="colorSchemeMulti"
+                [results]="paiementsByStatus"
+                [gradient]="gradient"
+                [xAxis]="true"
+                [yAxis]="true"
+                [legend]="true"
+                [showXAxisLabel]="true"
+                [showYAxisLabel]="true"
+                [xAxisLabel]="'Statut'"
+                [yAxisLabel]="'Montant'"
+                [showDataLabel]="true"
+              ></ngx-charts-bar-vertical>
+            </div>
+            <div
+              *ngIf="!paiementsByStatus || paiementsByStatus.length === 0"
+              class="alert alert-info"
+            >
+              Aucune donnée disponible pour les statuts de paiement.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title">Modes de paiement</h4>
+          </div>
+          <div class="card-body">
+            <div *ngIf="paiementsByMode && paiementsByMode.length > 0">
+              <ngx-charts-bar-horizontal
+                [view]="viewBar"
+                [scheme]="colorSchemeMulti"
+                [results]="paiementsByMode"
+                [gradient]="gradient"
+                [xAxis]="true"
+                [yAxis]="true"
+                [legend]="true"
+                [showXAxisLabel]="true"
+                [showYAxisLabel]="true"
+                [xAxisLabel]="'Montant'"
+                [yAxisLabel]="'Mode'"
+                [showDataLabel]="true"
+              ></ngx-charts-bar-horizontal>
+            </div>
+            <div
+              *ngIf="!paiementsByMode || paiementsByMode.length === 0"
+              class="alert alert-info"
+            >
+              Aucune donnée disponible pour les modes de paiement.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tableau d'analyse financière détaillée -->
+  <!-- <div class="table-section wide">
+    <div class="table-header">
+      <h3>Analyse financière par formation</h3>
+      <button
+        class="export-button"
+        (click)="exportToCSV(financialAnalysisData, 'analyse_financiere')"
+      >
+        <i class="fas fa-download"></i> Exporter
+      </button>
+    </div>
+    <div class="table-container">
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Référence</th>
+              <th>Titre</th>
+              <th>Type</th>
+              <th>Tarif (TND)</th>
+              <th>Coût total (TND)</th>
+              <th>Revenu total (TND)</th>
+              <th>Marge (TND)</th>
+              <th>Marge (%)</th>
+              <th>Nombre min. participants</th>
+              <th>ROI (%)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of financialAnalysisData">
+              <td>{{ item.reference }}</td>
+              <td>{{ item.titre }}</td>
+              <td>{{ item.type }}</td>
+              <td>{{ item.tarif | number : "1.2-2" }}</td>
+              <td>{{ item.coutTotal | number : "1.2-2" }}</td>
+              <td>{{ item.revenuTotal | number : "1.2-2" }}</td>
+              <td [ngClass]="item.marge < 0 ? 'negative' : 'positive'">
+                {{ item.marge | number : "1.2-2" }}
+              </td>
+              <td [ngClass]="item.margePct < 0 ? 'negative' : 'positive'">
+                {{ item.margePct | number : "1.1-1" }}%
+              </td>
+              <td>{{ item.seuilRentabilite }}</td>
+              <td [ngClass]="item.roi < 0 ? 'negative' : 'positive'">
+                {{ item.roi | number : "1.1-1" }}%
+              </td>
+            </tr>
+            <tr *ngIf="financialAnalysisData.length === 0">
+              <td colspan="10" class="no-data">Aucune donnée disponible</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div> -->
+</section>

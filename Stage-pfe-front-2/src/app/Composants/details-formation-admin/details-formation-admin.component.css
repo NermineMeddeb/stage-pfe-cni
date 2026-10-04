@@ -1,0 +1,341 @@
+/* Variables et thème */
+:root {
+  --primary: #2563eb;
+  --primary-dark: #1e40af;
+  --text: #1f2937;
+  --text-light: #64748b;
+  --bg-light: #f3f4f6;
+  --bg-white: #ffffff;
+  --shadow: 0 4px 25px rgba(0, 0, 0, 0.1);
+  --shadow-hover: 0 6px 30px rgba(0, 0, 0, 0.15);
+  --radius-lg: 15px;
+  --radius-full: 25px;
+  --transition: all 0.3s ease;
+}
+
+/* Carte de formation */
+.formation-card {
+  background: var(--bg-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: var(--transition);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  max-width: 320px; /* Limite la largeur maximale */
+  margin: 0 auto; /* Centre la carte */
+}
+
+.formation-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-hover);
+}
+
+/* Section image */
+.card-image {
+  /*height: 200px; */
+
+  position: relative;
+
+} 
+
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: var(--transition);
+}
+
+.card-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: var(--transition);
+}
+
+.formation-card:hover .card-overlay {
+  opacity: 1;
+}
+
+.preview-btn {
+  background: var(--bg-white);
+  color: var(--primary);
+  padding: 0.5rem 1rem; /* Réduit */
+  border: none;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  font-size: 12px; /* Plus petit */
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.preview-btn:hover {
+  background: var(--primary);
+  color: var(--bg-white);
+  transform: scale(1.05);
+}
+
+.card-badge {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: #22c55e;
+  color: var(--bg-white);
+  padding: 0.35rem 0.7rem; /* Réduit */
+  border-radius: var(--radius-full);
+  font-size: 0.8rem; /* Plus petit */
+  font-weight: 500;
+  animation: pulse 2s infinite;
+}
+
+/* Section contenu */
+.card-content {
+  padding: 1rem; /* Moins d'espace intérieur */
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem; /* Moins d'espace entre les éléments */
+}
+
+.formation-title {
+  font-size: 1.2rem; /* Police plus petite */
+  color: var(--text);
+  font-weight: 600;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.formation-details {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem; /* Réduit */
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* Moins d'espace entre les éléments */
+  color: var(--text-light);
+  font-size: 0.85rem; /* Plus petit */
+}
+
+.detail-item i {
+  color: var(--primary);
+  font-size: 1rem; /* Plus petit */
+  width: 1.2rem;
+  text-align: center;
+}
+
+.description {
+  color: var(--text-light);
+  line-height: 1.5;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 0.85rem; /* Plus petit */
+}
+
+/* Section pied de carte */
+.card-footer {
+  padding: 0.75rem 1rem; /* Réduit */
+  background: var(--bg-light);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+}
+
+.price-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.price {
+  font-size: 2rem; /* Taille du prix réduite */
+  font-weight: 1000;
+  color: var(--primary);
+}
+
+.price-info {
+  font-size: 0.8rem; /* Plus petit */
+  color: var(--text-light);
+}
+
+.enroll-btn {
+  background: var(--primary);
+  color: var(--bg-white);
+  padding: 0.6rem 1rem; /* Réduit */
+  border: none;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  font-size: 0.85rem; /* Plus petit */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: var(--transition);
+}
+
+.enroll-btn:hover {
+  background: var(--primary-dark);
+}
+
+/* Animation badge */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Media queries */
+@media (max-width: 768px) {
+  .formation-card {
+    margin: 0;
+  }
+
+  .card-content {
+    padding: 1rem;
+  }
+
+  .formation-details {
+    grid-template-columns: 1fr;
+  }
+
+  .card-footer {
+    flex-direction: column;
+    gap: 0.75rem;
+    text-align: center;
+  }
+
+  .enroll-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+.d-flex {
+  display: flex;
+  justify-content: center; /* Centrer les boutons */
+  align-items: center;
+  gap: 3px; /* Réduit l'espace entre les boutons */
+  flex-wrap: wrap; /* Permet de passer à la ligne si nécessaire */
+}
+
+/* Styles des boutons */
+button {
+  padding: 6px 10px; /* Réduit l'espace interne */
+  font-size: 12px; /* Réduit la taille du texte */
+  font-weight: 500; /* Légèrement moins gras */
+  border-radius: 4px; /* Coins moins arrondis */
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 3px; /* Espace entre l'icône et le texte réduit */
+}
+
+button i {
+  font-size: 14px; /* Réduit la taille des icônes */
+}
+
+button:hover {
+  transform: scale(1.1); /* Effet d'agrandissement plus subtil */
+}
+
+/* Styles spécifiques aux boutons */
+.btn-warning {
+  background-color: #ffc107;
+  color: white;
+}
+
+.btn-warning:hover {
+  background-color: #eeddaa;
+}
+
+.btn-success {
+  background-color: #28a745;
+  color: white;
+}
+
+.btn-success:hover {
+  background-color: #218838;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+}
+
+/* Classes utilitaires pour les boutons */
+.btn-sm {
+  padding: 5px 8px;
+  font-size: 11px;
+}
+
+.mb-1 {
+  margin-bottom: 0.25rem !important;
+}
+
+.w-40 {
+  width: 40% !important;
+}
+
+/* Pour les boutons dans le card-footer */
+.card-footer .btn {
+  margin: 2px 0;
+}/* Modification pour l'alignement horizontal des boutons */
+.card-footer.d-flex {
+  flex-direction: row !important; /* Force l'alignement horizontal */
+  justify-content: center; /* Centre les boutons horizontalement */
+  flex-wrap: wrap; /* Permet le passage à la ligne si nécessaire */
+  gap: 5px; /* Espace entre les boutons */
+}
+
+/* Ajuster la largeur des boutons pour l'alignement horizontal */
+.card-footer .btn-sm {
+  width: auto !important; /* Remplace la classe w-40 fixe */
+  min-width: 50px; /* Largeur minimale pour l'uniformité */
+  margin: 0 3px; /* Marge horizontale */
+}
+
+/* Assurez-vous que les boutons ont la même hauteur */
+.btn-sm {
+  padding: 6px 10px;
+  font-size: 11px;
+  display: inline-flex; /* Pour maintenir l'alignement des icônes */
+  align-items: center;
+  justify-content: center;
+}
+
+/* Suppression de la classe mb-1 qui ajoute des marges en bas */
+.card-footer .btn {
+  margin: 0 !important;
+}

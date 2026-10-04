@@ -1,0 +1,307 @@
+/* Main Container */
+.client-form-container {
+  padding: 2rem 0;
+  background: #f8f9fa;
+  min-height: 100vh;
+}
+
+/* Card Style */
+.form-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+/* Header with Avatar */
+.form-header {
+    background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%);
+    color: white;
+  padding: 2rem;
+  text-align: center;
+  position: relative;
+}
+
+.form-header h2 {
+  margin: 1rem 0 0.5rem;
+  font-weight: 600;
+}
+
+.form-header p {
+  opacity: 0.9;
+  margin-bottom: 0;
+}
+
+/* Avatar Upload */
+.avatar-upload {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto;
+  position: relative;
+  cursor: pointer;
+}
+
+.avatar-preview {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  border: 4px solid white;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s;
+}
+
+.upload-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.avatar-upload:hover .upload-overlay {
+  opacity: 1;
+}
+
+.avatar-upload:hover .avatar-preview {
+  transform: scale(1.05);
+}
+
+/* Alert Message */
+.alert-message {
+  padding: 1rem;
+  margin: 0 2rem;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: -1rem;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.alert-success {
+  background: #d4edda;
+  color: #155724;
+}
+
+.alert-danger {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.alert-message button {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+/* Form Grid Layout */
+.form-grid {
+  display: flex;
+  padding: 2rem;
+  gap: 2rem;
+}
+
+.form-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Form Group Styles */
+.form-group {
+  position: relative;
+}
+
+.floating-label input,
+.floating-label select {
+  width: 100%;
+  padding: 1rem 1rem 0.5rem;
+  border: none;
+  border-bottom: 2px solid #e0e0e0;
+  font-size: 1rem;
+  transition: all 0.3s;
+  background: transparent;
+}
+
+.floating-label input:focus,
+.floating-label select:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.floating-label label {
+  position: absolute;
+  left: 1rem;
+  top: 1rem;
+  color: #999;
+  transition: all 0.3s;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.floating-label input:focus + label,
+.floating-label input:not(:placeholder-shown) + label,
+.floating-label select:focus + label,
+.floating-label select:not(:placeholder-shown) + label {
+  top: 0;
+  font-size: 0.8rem;
+  color: #667eea;
+}
+
+/* Error States */
+.has-error {
+  border-color: #dc3545 !important;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+}
+
+/* Password Field */
+.password-field {
+  margin: 1.5rem 2rem 0;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #999;
+  cursor: pointer;
+}
+
+.password-strength {
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.strength-bar {
+  height: 4px;
+  border-radius: 2px;
+  flex-grow: 1;
+  transition: all 0.3s;
+}
+
+.strength-weak {
+  background: #dc3545;
+  width: 33%;
+}
+
+.strength-medium {
+  background: #ffc107;
+  width: 66%;
+}
+
+.strength-strong {
+  background: #28a745;
+  width: 100%;
+}
+
+.strength-text {
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+/* Form Actions */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding: 2rem;
+  border-top: 1px solid #f0f0f0;
+}
+
+.submit-btn,
+.cancel-btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s;
+  border: none;
+  cursor: pointer;
+}
+
+.submit-btn {
+  background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%);
+  color: white;
+}
+
+.submit-btn:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+}
+
+.submit-btn:not(:disabled):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.cancel-btn {
+  background: #f8f9fa;
+  color: #495057;
+}
+
+.cancel-btn:hover {
+  background: #e9ecef;
+}
+/* Ajoutez ces styles à votre fichier CSS */
+.password-note {
+  margin-top: 5px;
+  color: #666;
+  font-size: 0.8rem;
+}
+
+.disabled-field {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.avatar-preview {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.upload-overlay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.5);
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.avatar-upload:hover .upload-overlay {
+  opacity: 1;
+}

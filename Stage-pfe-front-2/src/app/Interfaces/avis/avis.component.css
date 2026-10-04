@@ -1,0 +1,275 @@
+.appreciation-container {
+  max-width: 900px;
+  margin: 30px auto;
+  font-family: "Roboto", sans-serif;
+}
+
+.card {
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  background-color: #fff;
+}
+
+.card-header {
+  background-color: #3f51b5;
+  color: white;
+  padding: 20px;
+  border-bottom: none;
+}
+
+.card-body {
+  padding: 30px;
+}
+
+.section {
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eaeaea;
+
+  h3 {
+    color: #3f51b5;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    font-weight: 500;
+  }
+
+  p {
+    color: #666;
+    margin-bottom: 15px;
+  }
+}
+
+.rating-container {
+  margin-top: 15px;
+}
+
+.rating {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.emoji-rating {
+  font-size: 2rem;
+  cursor: pointer;
+  transition: transform 0.2s, opacity 0.2s;
+  opacity: 0.5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 20px;
+  border-radius: 10px;
+
+  &:hover {
+    transform: scale(1.1);
+    opacity: 0.9;
+  }
+
+  &.selected {
+    opacity: 1;
+    transform: scale(1.15);
+    background-color: #f0f6ff;
+    border: 2px solid #4a7eff;
+  }
+}
+
+.rating-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.global-rating {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.global-score {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.score-circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: #3f51b5;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.score-text {
+  font-size: 1.2rem;
+  color: #555;
+  margin: 0;
+}
+
+.btn-primary {
+  background-color: #3f51b5;
+  border-color: #3f51b5;
+  padding: 10px 30px;
+  font-weight: 500;
+
+  &:hover {
+    background-color: #303f9f;
+    border-color: #303f9f;
+  }
+
+  &:disabled {
+    background-color: #bdbdbd;
+    border-color: #bdbdbd;
+  }
+}
+
+.success-header {
+  background-color: #4caf50;
+  color: white;
+}
+
+.success-icon {
+  font-size: 3rem;
+  color: #4caf50;
+  margin-bottom: 15px;
+}
+
+.modal-dialog {
+  margin-top: 100px;
+}
+
+.form-check {
+  margin-top: 15px;
+}
+
+textarea {
+  resize: none;
+}/* Styles améliorés pour les checkboxes */
+.custom-checkbox {
+    position: relative;
+    padding-left: 35px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    font-size: 16px;
+    user-select: none;
+    display: flex;
+    align-items: center;
+  }
+  
+  /* Cacher la checkbox par défaut */
+  .custom-checkbox input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+  }
+  
+  /* Créer un indicateur personnalisé */
+  .checkmark {
+    position: absolute;
+    left: 0;
+    height: 22px;
+    width: 22px;
+    background-color: #f8f9fa;
+    border: 2px solid #ced4da;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+  }
+  
+  /* Style quand la souris passe sur la checkbox */
+  .custom-checkbox:hover input ~ .checkmark {
+    background-color: #e9ecef;
+    border-color: #007bff;
+  }
+  
+  /* Style quand la checkbox est cochée */
+  .custom-checkbox input:checked ~ .checkmark {
+    background-color: #007bff;
+    border-color: #007bff;
+  }
+  
+  /* Créer l'indicateur de vérification (caché quand non coché) */
+  .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+  }
+  
+  /* Afficher l'indicateur quand coché */
+  .custom-checkbox input:checked ~ .checkmark:after {
+    display: block;
+  }
+  
+  /* Style de l'indicateur */
+  .custom-checkbox .checkmark:after {
+    left: 7px;
+    top: 3px;
+    width: 6px;
+    height: 12px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  
+  /* Améliorations pour l'accessibilité */
+  .custom-checkbox input:focus ~ .checkmark {
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    outline: none;
+  }
+  
+  /* Styles spécifiques pour les formateurs */
+  .formateurs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 5px;
+  }
+  
+  .formateur-item {
+    margin-bottom: 0;
+  }
+  
+  /* Style pour la case à cocher des nouveaux besoins */
+  .needs-checkbox .checkmark {
+    background-color: #f0f8ff;
+    border-color: #4dabf7;
+  }
+  
+  .needs-checkbox:hover input ~ .checkmark {
+    background-color: #e1f5fe;
+    border-color: #2196f3;
+  }
+  
+  .needs-checkbox input:checked ~ .checkmark {
+    background-color: #2196f3;
+    border-color: #1976d2;
+  }
+
+@media (max-width: 768px) {
+  .card-body {
+    padding: 15px;
+  }
+
+  .emoji-rating {
+    font-size: 1.5rem;
+    padding: 5px 10px;
+  }
+
+  .score-circle {
+    width: 60px;
+    height: 60px;
+    font-size: 1.4rem;
+  }
+
+  .rating-labels {
+    font-size: 0.7rem;
+  }
+}

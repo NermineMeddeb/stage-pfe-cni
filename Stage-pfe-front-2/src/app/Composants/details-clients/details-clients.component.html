@@ -1,0 +1,18 @@
+<div class="student-card">
+  <div class="card-header">
+    <div class="student-avatar"></div>
+    <div class="student-info">
+      <h3>{{ UtilisateursDto.prenom }} {{ UtilisateursDto.nom }}</h3>
+      <p class="email">
+        <i class="fas fa-envelope"></i> {{ UtilisateursDto.email }}
+      </p>
+      <p class="telephone">
+        <i class="fas fa-phone"></i>
+        {{ UtilisateursDto.telephone || "Not provided" }}
+      </p>
+    </div>
+    <div class="role-badge">
+      <i class="fas fa-user-shield"></i> Role: {{ UtilisateursDto.role }}
+    </div>
+  </div>
+</div>

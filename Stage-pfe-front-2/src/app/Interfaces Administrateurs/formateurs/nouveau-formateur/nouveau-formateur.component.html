@@ -1,0 +1,334 @@
+<div class="container-fluid client-form-container">
+  <div class="row justify-content-center">
+    <div class="col-xl-8">
+      <div class="form-card">
+        <!-- Header avec dégradé -->
+        <div class="form-header">
+          <div class="avatar-upload" (click)="triggerFileInput()">
+            <div
+              class="avatar-preview"
+              [style.backgroundImage]="
+                'url(' + (photoPreview || 'assets/default-avatar.png') + ')'
+              "
+            >
+              <div class="upload-overlay">
+                <i class="fas fa-camera"></i>
+                <span>Ajouter photo</span>
+              </div>
+            </div>
+            <input
+              #fileInput
+              type="file"
+              id="photoUpload"
+              (change)="handleFileInput($event)"
+              accept="image/*"
+              style="display: none"
+            />
+          </div>
+          <h2>
+            {{ isUpdateMode ? "Modifier Formateur" : "Nouveau Formateur" }}
+          </h2>
+          <p>
+            {{
+              isUpdateMode
+                ? "Modifiez les informations du client"
+                : "Remplissez les informations du client"
+            }}
+          </p>
+        </div>
+
+        <!-- Message d'alerte -->
+        <div
+          *ngIf="message"
+          class="alert-message"
+          [ngClass]="'alert-' + messageType"
+        >
+          <span>{{ message }}</span>
+          <button (click)="message = ''"><i class="fas fa-times"></i></button>
+        </div>
+
+        <!-- Formulaire principal -->
+        <form [formGroup]="nouveauClientForm" (ngSubmit)="onSubmit()">
+          <div class="form-grid">
+            <!-- Colonne gauche -->
+            <div class="form-column">
+              <!-- Nom et Prénom -->
+              <div class="form-group floating-label">
+                <input
+                  id="nom"
+                  formControlName="nom"
+                  [ngClass]="{
+                    'has-error':
+                      nouveauClientForm.get('nom')?.invalid &&
+                      nouveauClientForm.get('nom')?.touched
+                  }"
+                />
+                <label for="nom"><i class="fas fa-user"></i> Nom</label>
+                <div
+                  class="error-message"
+                  *ngIf="
+                    nouveauClientForm.get('nom')?.invalid &&
+                    nouveauClientForm.get('nom')?.touched
+                  "
+                >
+                  Le nom est requis
+                </div>
+              </div>
+
+              <div class="form-group floating-label">
+                <input
+                  id="prenom"
+                  formControlName="prenom"
+                  [ngClass]="{
+                    'has-error':
+                      nouveauClientForm.get('prenom')?.invalid &&
+                      nouveauClientForm.get('prenom')?.touched
+                  }"
+                />
+                <label for="prenom"><i class="fas fa-user"></i> Prénom</label>
+                <div
+                  class="error-message"
+                  *ngIf="
+                    nouveauClientForm.get('prenom')?.invalid &&
+                    nouveauClientForm.get('prenom')?.touched
+                  "
+                >
+                  Le prénom est requis
+                </div>
+              </div>
+
+              <!-- Email et Téléphone -->
+              <div class="form-group floating-label">
+                <input
+                  id="email"
+                  type="email"
+                  formControlName="email"
+                  [ngClass]="{
+                    'has-error':
+                      nouveauClientForm.get('email')?.invalid &&
+                      nouveauClientForm.get('email')?.touched
+                  }"
+                />
+                <label for="email"><i class="fas fa-envelope"></i> Email</label>
+                <div
+                  class="error-message"
+                  *ngIf="
+                    nouveauClientForm.get('email')?.invalid &&
+                    nouveauClientForm.get('email')?.touched
+                  "
+                >
+                  Email invalide
+                </div>
+              </div>
+
+              <div class="form-group floating-label">
+                <input
+                  id="telephone"
+                  formControlName="telephone"
+                  [ngClass]="{
+                    'has-error':
+                      nouveauClientForm.get('telephone')?.invalid &&
+                      nouveauClientForm.get('telephone')?.touched
+                  }"
+                />
+                <label for="telephone"
+                  ><i class="fas fa-phone"></i> Téléphone</label
+                >
+                <div
+                  class="error-message"
+                  *ngIf="
+                    nouveauClientForm.get('telephone')?.invalid &&
+                    nouveauClientForm.get('telephone')?.touched
+                  "
+                >
+                  8 chiffres requis
+                </div>
+              </div>
+            </div>
+
+            <!-- Colonne droite -->
+            <div class="form-column">
+              <!-- Afficher seulement le rôle (désactivé) -->
+              <!-- Rôle -->
+              <div class="form-group floating-label">
+                <select
+                  id="role"
+                  formControlName="role"
+                  [ngClass]="{
+                    'has-error':
+                      nouveauClientForm.get('role')?.invalid &&
+                      nouveauClientForm.get('role')?.touched
+                  }"
+                >
+                  <option value="" disabled selected>Choisir un rôle</option>
+                  <option value="INTERNE">INTERNE</option>
+                  <option value="EXTERNE">EXTERNE</option>
+                </select>
+                <label for="role"><i class="fas fa-user-tag"></i> Rôle</label>
+                <div
+                  class="error-message"
+                  *ngIf="
+                    nouveauClientForm.get('role')?.invalid &&
+                    nouveauClientForm.get('role')?.touched
+                  "
+                >
+                  Le rôle est requis
+                </div>
+              </div>
+
+              <!-- Date de naissance -->
+              <div class="form-group floating-label">
+                <input
+                  id="dateNaissance"
+                  type="date"
+                  formControlName="dateNaissance"
+                  [ngClass]="{
+                    'has-error':
+                      nouveauClientForm.get('dateNaissance')?.invalid &&
+                      nouveauClientForm.get('dateNaissance')?.touched
+                  }"
+                />
+                <label for="dateNaissance"
+                  ><i class="fas fa-calendar"></i> Date de naissance</label
+                >
+                <div
+                  class="error-message"
+                  *ngIf="
+                    nouveauClientForm.get('dateNaissance')?.invalid &&
+                    nouveauClientForm.get('dateNaissance')?.touched
+                  "
+                >
+                  Date de naissance requise
+                </div>
+              </div>
+
+              <!-- Établissement et CIN -->
+              <div class="form-group floating-label">
+                <input
+                  id="etablissement"
+                  formControlName="etablissement"
+                  [ngClass]="{
+                    'has-error':
+                      nouveauClientForm.get('etablissement')?.invalid &&
+                      nouveauClientForm.get('etablissement')?.touched
+                  }"
+                />
+                <label for="etablissement"
+                  ><i class="fas fa-university"></i> Établissement</label
+                >
+                <div
+                  class="error-message"
+                  *ngIf="
+                    nouveauClientForm.get('etablissement')?.invalid &&
+                    nouveauClientForm.get('etablissement')?.touched
+                  "
+                >
+                  Établissement requis
+                </div>
+              </div>
+
+              <div class="form-group floating-label">
+                <input
+                  id="cin"
+                  formControlName="cin"
+                  [ngClass]="{
+                    'has-error':
+                      nouveauClientForm.get('cin')?.invalid &&
+                      nouveauClientForm.get('cin')?.touched
+                  }"
+                />
+                <label for="cin"><i class="fas fa-id-card"></i> CIN</label>
+                <div
+                  class="error-message"
+                  *ngIf="
+                    nouveauClientForm.get('cin')?.invalid &&
+                    nouveauClientForm.get('cin')?.touched
+                  "
+                >
+                  8 chiffres requis
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group floating-label password-field">
+            <input
+              id="motDePasse"
+              type="{{ showPassword ? 'text' : 'password' }}"
+              formControlName="motDePasse"
+              [placeholder]="
+                isUpdateMode
+                  ? 'Laisser vide pour conserver le mot de passe actuel'
+                  : ''
+              "
+              [ngClass]="{
+                'has-error':
+                  nouveauClientForm.get('motDePasse')?.invalid &&
+                  nouveauClientForm.get('motDePasse')?.touched &&
+                  (!isUpdateMode ||
+                    nouveauClientForm.get('motDePasse')?.value !== '********')
+              }"
+            />
+            <label for="motDePasse"
+              ><i class="fas fa-lock"></i> Mot de passe</label
+            >
+            <button
+              type="button"
+              class="toggle-password"
+              (click)="showPassword = !showPassword"
+              *ngIf="
+                !isUpdateMode ||
+                nouveauClientForm.get('motDePasse')?.value !== '********'
+              "
+            >
+              <i class="fas {{ showPassword ? 'fa-eye-slash' : 'fa-eye' }}"></i>
+            </button>
+            <div
+              class="password-strength"
+              *ngIf="
+                nouveauClientForm.get('motDePasse')?.value &&
+                (!isUpdateMode ||
+                  nouveauClientForm.get('motDePasse')?.value !== '********')
+              "
+            >
+              <div
+                class="strength-bar"
+                [ngClass]="getPasswordStrengthClass()"
+              ></div>
+              <span class="strength-text">{{ getPasswordStrengthText() }}</span>
+            </div>
+            <div
+              class="error-message"
+              *ngIf="
+                nouveauClientForm.get('motDePasse')?.invalid &&
+                nouveauClientForm.get('motDePasse')?.touched &&
+                (!isUpdateMode ||
+                  nouveauClientForm.get('motDePasse')?.value !== '********')
+              "
+            >
+              Mot de passe trop court (minimum 6 caractères)
+            </div>
+            <div class="password-note" *ngIf="isUpdateMode">
+              <small>Laissez vide pour conserver le mot de passe actuel</small>
+            </div>
+          </div>
+
+          <!-- Boutons d'action -->
+          <div class="form-actions">
+            <button
+              type="submit"
+              class="submit-btn"
+              [disabled]="nouveauClientForm.invalid"
+            >
+              <i class="fas fa-save"></i>
+              {{ isUpdateMode ? "Mettre à jour" : "Enregistrer" }}
+            </button>
+            <button type="button" class="cancel-btn">
+              <i class="fas fa-times"></i> Annuler
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,120 @@
+<!-- Formation Details Component -->
+<div class="container" *ngIf="formation">
+  <div class="formation-card animate-in">
+    <div class="row g-0">
+      <!-- Image Column -->
+      <div class="col-lg-4">
+        <div class="img-container">
+          <div class="img-background"></div>
+          <img
+            [src]="
+              formation.photo
+                ? 'assets/affiche_formation/' + formation.photo
+                : 'assets/affiche_formation/formation.png'
+            "
+            class="formation-image"
+            alt="{{ formation.titre }}"
+          />
+        </div>
+      </div>
+
+      <!-- Content Column -->
+      <div class="col-lg-8">
+        <div class="formation-details">
+          <h1 class="formation-title">{{ formation.titre }}</h1>
+
+          <div class="formation-meta">
+            <div class="meta-item">
+              <i class="fas fa-signal"></i>
+              <span>Niveau: {{ formation.niveau }}</span>
+            </div>
+            <div class="meta-item">
+              <i class="fas fa-clock"></i>
+              <span>Durée: {{ formation.duree }} heures</span>
+            </div>
+            <div class="meta-item">
+              <i class="fas fa-users"></i>
+              <span>Places: {{ formation.placesMax }}</span>
+              <span class="availability"> </span>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="info-section">
+            <h2 class="section-title">
+              <i class="fas fa-info-circle"></i>Description
+            </h2>
+            <div class="section-content">{{ formation.description }}</div>
+          </div>
+
+          <!-- Objectifs -->
+          <div class="info-section expandable-section">
+            <h2 class="section-title">
+              <i class="fas fa-bullseye"></i>Objectifs
+            </h2>
+            <div class="section-content">
+              {{ formation.objectifsFormation }}
+            </div>
+          </div>
+
+          <!-- Prérequis -->
+          <div class="info-section expandable-section">
+            <h2 class="section-title">
+              <i class="fas fa-clipboard-check"></i>Prérequis
+            </h2>
+            <div class="section-content">{{ formation.prerequis }}</div>
+          </div>
+
+          <!-- Programme détaillé -->
+          <div class="info-section expandable-section expanded">
+            <h2 class="section-title">
+              <i class="fas fa-list-check"></i>Programme détaillé
+            </h2>
+            <div class="programme-detaille">
+              {{ formation.programmeDetaille }}
+            </div>
+          </div>
+
+          <!-- Footer with price and actions -->
+          <div class="formation-footer">
+            <div class="price-block">
+              <div class="price-tag">
+                {{ formation.prix }}
+              </div>
+            </div>
+            <div class="actions">
+             <!--  <button
+                class="btn btn-inscription"
+                (click)="sInscrire()"
+                [disabled]="formation.placesMax === 0"
+              >
+                <i class="fas fa-graduation-cap me-2"></i>S'inscrire
+              </button> -->
+              <button class="btn btn-retour" (click)="retour()">
+                <i class="fas fa-arrow-left me-2"></i>Retour
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Loading State -->
+<div class="loader-container" *ngIf="!formation && loading">
+  <div class="fancy-loader"></div>
+  <p class="mt-4 text-primary fw-bold">Chargement de la formation...</p>
+</div>
+
+<!-- Error State -->
+<div class="container" *ngIf="error">
+  <div class="error-container animate-in">
+    <i class="fas fa-exclamation-triangle"></i>
+    <h3>Oups ! Une erreur est survenue</h3>
+    <p>{{ error }}</p>
+    <button class="btn btn-outline-danger mt-3" (click)="retour()">
+      <i class="fas fa-home me-2"></i>Retour à l'accueil
+    </button>
+  </div>
+</div>

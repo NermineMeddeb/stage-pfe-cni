@@ -1,0 +1,265 @@
+   /* Arrière-plan avec bulles inspirées du logo */
+   body {
+    background: linear-gradient(to right, #87e0ff, #38b6ff);
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+    font-family: "Poppins", sans-serif;
+  }
+
+  /* Bulle supplémentaire pour plus de dynamisme */
+  .my-container .bubble-extra {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    background: rgba(135, 224, 255, 0.3);
+    border-radius: 50%;
+    top: 40%;
+    right: -70px;
+    z-index: -1;
+    animation: float 7s infinite ease-in-out;
+    animation-delay: 2s;
+  }
+
+  /* Formulaire stylé */
+  .my-container {
+    background: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 15px 35px rgba(0, 61, 115, 0.35);
+    padding: 30px;
+    max-width: 600px;
+    margin: 5% auto;
+    position: relative;
+    z-index: 10;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    animation: fadeIn 0.6s ease-out;
+  }
+
+  .my-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 61, 115, 0.4);
+  }
+
+  /* Card header amélioré */
+  .card-header {
+    background: linear-gradient(135deg, #003d73, #0077c2) !important;
+    border-radius: 10px 10px 0 0 !important;
+    padding: 1.2rem !important;
+    border: none !important;
+  }
+
+  .card-header h3 {
+    margin: 0;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    font-size: 1.4rem;
+  }
+
+  .card {
+    border: none;
+    border-radius: 15px;
+    overflow: hidden;
+  }
+
+  .card-body {
+    padding: 2rem;
+  }
+
+  /* Champs de formulaire */
+  .form-control {
+    border: 2px solid #38b6ff;
+    border-radius: 10px;
+    padding: 12px 15px;
+    font-size: 1rem;
+    transition: all 0.3s ease-in-out;
+    height: auto;
+    margin-bottom: 0.5rem;
+  }
+
+  .form-control:focus {
+    border-color: #003d73;
+    box-shadow: 0 0 10px rgba(56, 182, 255, 0.5);
+    transform: translateY(-2px);
+  }
+
+  .form-control:hover {
+    border-color: #0077c2;
+  }
+
+  .form-control::placeholder {
+    color: #aab0b7;
+    font-size: 0.95rem;
+  }
+
+  /* Boutons stylés */
+  .btn-info {
+    background: linear-gradient(to right, #003d73, #38b6ff);
+    color: #fff;
+    border: none;
+    border-radius: 25px;
+    padding: 10px 25px;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 10px rgba(56, 182, 255, 0.3);
+  }
+
+  .btn-info:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 61, 115, 0.4);
+    background: linear-gradient(to right, #0050a0, #38b6ff);
+    color: white;
+  }
+
+  .btn-info:active {
+    transform: translateY(1px);
+  }
+
+  .btn-info:focus {
+    animation: pulse 1.5s infinite;
+  }
+
+  .btn-info i {
+    margin-right: 8px;
+  }
+
+  /* Bouton se connecter amélioré */
+  .btn-link {
+    color: #38b6ff;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    padding: 8px 15px;
+    border-radius: 20px;
+  }
+
+  .btn-link:hover {
+    color: #003d73;
+    background-color: rgba(56, 182, 255, 0.1);
+    text-decoration: none;
+  }
+
+  /* Message d'erreur */
+  .alert-danger {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+    border: 1px solid rgba(220, 53, 69, 0.15);
+    border-radius: 8px;
+    padding: 12px 15px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+  }
+
+  .alert-danger::before {
+    content: "\f071";
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    margin-right: 10px;
+    color: #dc3545;
+  }
+
+  /* Animation de secousse pour les erreurs */
+  @keyframes shake {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    10%,
+    30%,
+    50%,
+    70%,
+    90% {
+      transform: translateX(-5px);
+    }
+    20%,
+    40%,
+    60%,
+    80% {
+      transform: translateX(5px);
+    }
+  }
+
+  .shake-animation {
+    animation: shake 0.5s;
+  }
+
+  /* Animation de chargement personnalisée */
+  .spinner-border {
+    border-width: 2px;
+  }
+
+  /* Animation d'apparition au chargement */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Animation du bouton */
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(56, 182, 255, 0.7);
+    }
+    70% {
+      box-shadow: 0 0 0 10px rgba(56, 182, 255, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(56, 182, 255, 0);
+    }
+  }
+
+  /* Stylisation spécifique pour la grille du formulaire d'inscription */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+  }
+
+  .form-grid .full-width {
+    grid-column: span 2;
+  }
+
+  .input-group-text {
+    background-color: #003d73;
+    color: white;
+    border: none;
+  }
+
+  /* Media Queries */
+  @media (max-width: 768px) {
+    .form-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .form-grid .full-width {
+      grid-column: span 1;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .my-container {
+      margin: 10% 15px;
+      padding: 20px;
+    }
+
+    .card-body {
+      padding: 1.5rem;
+    }
+
+    .mb-3.d-flex {
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .mb-3.d-flex .btn-link,
+    .mb-3.d-flex .btn-info {
+      width: 100%;
+      text-align: center;
+    }
+  }

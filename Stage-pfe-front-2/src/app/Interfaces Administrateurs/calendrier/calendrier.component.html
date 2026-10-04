@@ -1,0 +1,496 @@
+<div class="calendar-container">
+  <!-- Barre d'actions -->
+  <section class="actions-bar" aria-label="Actions principales">
+    <div class="view-toggle">
+      <button
+        class="view-btn"
+        [class.active]="currentView === 'calendar'"
+        (click)="setView('calendar')"
+        aria-label="Afficher le calendrier"
+      >
+        <img src="assets/icons/calendrier.png" width="30" height="30" />
+        Calendrier
+      </button>
+      <button
+        class="view-btn"
+        [class.active]="currentView === 'list'"
+        (click)="setView('list')"
+        aria-label="Afficher la liste"
+      >
+        <img src="assets/icons/liste.png" width="27" height="27" /> Liste
+      </button>
+    </div>
+    <div class="action-buttons">
+      <button
+        class="action-btn"
+        (click)="toggleFilters()"
+        aria-label="Afficher les filtres"
+      >
+        <i class="fa fa-filter" aria-hidden="true"></i> Filtres
+      </button>
+      <button class="floating-button" (click)="toggleAddSessionForm()">
+        ➕
+      </button>
+
+      <button
+        class="action-btn"
+        (click)="toggleSessionsList()"
+        aria-label="Afficher la liste des sessions"
+      >
+        <i class="fa fa-table" aria-hidden="true"></i> Toutes les sessions
+      </button>
+    </div>
+  </section>
+
+  <!-- Formulaire de filtres -->
+  <section
+    class="filters-panel"
+    *ngIf="showFilters"
+    aria-labelledby="filters-heading"
+  >
+    <h3 id="filters-heading">Filtrer les sessions</h3>
+    <form
+      [formGroup]="filterForm"
+      (ngSubmit)="applyFilters()"
+      aria-label="Formulaire de filtrage"
+    >
+      <div class="filter-grid">
+        <div class="form-group">
+          <label for="formationId">Formation</label>
+          <select
+            id="formationId"
+            formControlName="formationId"
+            aria-label="Sélectionner une formation"
+          >
+            <option value="">Toutes les formations</option>
+            <option *ngFor="let formation of formations" [value]="formation.id">
+              {{ formation.titre }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="themeId">Thème</label>
+          <select
+            id="themeId"
+            formControlName="themeId"
+            aria-label="Sélectionner un thème"
+          >
+            <option value="">Tous les thèmes</option>
+            <option *ngFor="let theme of themes" [value]="theme.id">
+              {{ theme.nom }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="formateurId">Formateur</label>
+          <select
+            id="formateurId"
+            formControlName="formateurId"
+            aria-label="Sélectionner un formateur"
+          >
+            <option value="">Tous les formateurs</option>
+            <option *ngFor="let formateur of formateurs" [value]="formateur.id">
+              {{ formateur.nom }} {{ formateur.prenom }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="dateDebut">Date début</label>
+          <input
+            type="date"
+            id="dateDebut"
+            formControlName="dateDebut"
+            aria-label="Sélectionner une date de début"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="dateFin">Date fin</label>
+          <input
+            type="date"
+            id="dateFin"
+            formControlName="dateFin"
+            aria-label="Sélectionner une date de fin"
+          />
+        </div>
+      </div>
+
+      <div class="filter-actions">
+        <button type="submit" class="btn btn-primary">Appliquer</button>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="resetFilters()"
+        >
+          Réinitialiser
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <!-- Liste des sessions -->
+  <section
+    class="sessions-list-panel"
+    *ngIf="showSessionsList"
+    aria-labelledby="sessions-list-heading"
+  >
+    <h3 id="sessions-list-heading">Liste des sessions</h3>
+    <div class="table-container">
+      <table class="sessions-table" aria-label="Liste des sessions">
+        <thead>
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Formation</th>
+            <th scope="col">Formateur</th>
+            <th scope="col">Date début</th>
+            <th scope="col">Date fin</th>
+            <th scope="col">Capacité</th>
+            <th scope="col">Participants</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let session of sessions">
+            <td>{{ session.sessionId }}</td>
+            <td>{{ getFormationTitle(session.formationId!) }}</td>
+            <td>{{ getFormateurName(session.utilisateursIds?.[0]) }}</td>
+            <td>{{ session.dateDebut | date : "dd/MM/yyyy" }}</td>
+            <td>{{ session.dateFin | date : "dd/MM/yyyy" }}</td>
+            <td>{{ session.capacite }}</td>
+            <td>
+              <button
+                class="btn btn-sm btn-info"
+                *ngIf="session.sessionId"
+                (click)="viewParticipants(session.sessionId)"
+                aria-label="Voir les participants"
+              >
+                Voir
+              </button>
+            </td>
+
+            <td class="actions-cell">
+              <button
+                class="btn btn-sm btn-primary"
+                (click)="editSession(session)"
+                aria-label="Modifier la session"
+              >
+                <i class="fa fa-edit" aria-hidden="true"></i>
+              </button>
+              <button
+                class="btn btn-sm btn-danger"
+                (click)="deleteSession(session.sessionId!)"
+                aria-label="Supprimer la session"
+              >
+                <i class="fa fa-trash" aria-hidden="true"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Navigation et vues de calendrier -->
+  <section class="calendar-section">
+    <div class="calendar-header">
+      <div class="date-navigation">
+        <button
+          class="month-nav-btn"
+          (click)="changeMonth('prev')"
+          aria-label="Mois précédent"
+        >
+          <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        </button>
+        <h2 id="calendar-heading" class="month-title">{{ getMonthName() }}</h2>
+        <button
+          class="month-nav-btn"
+          (click)="changeMonth('next')"
+          aria-label="Mois suivant"
+        >
+          <i class="fa fa-chevron-right" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="calendar-views">
+      <!-- Vue Calendrier -->
+      <div
+        class="calendar-view grid-view"
+        [class.active]="currentView === 'calendar'"
+      >
+        <div class="calendar-grid">
+          <div class="weekday-header" *ngFor="let day of weekDays">
+            {{ day }}
+          </div>
+
+          <ng-container *ngFor="let day of daysInMonth">
+            <div
+              class="calendar-day"
+              [class.empty-day]="day.day === 0"
+              [class.today]="day.isToday"
+              aria-label="Jour du calendrier"
+            >
+              <div class="day-number" *ngIf="day.day !== 0">{{ day.day }}</div>
+              <div class="session-list" *ngIf="day.date !== null">
+                <ng-container *ngFor="let event of getEventsForDate(day.date)">
+                  <div
+                    class="formation-session"
+                    [style.background-color]="event.color"
+                    (click)="selectEvent(event, $event)"
+                    aria-label="Session de formation"
+                  >
+                    {{ event.title }}
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+
+      <!-- Vue Liste -->
+      <div
+        class="calendar-view list-view"
+        [class.active]="currentView === 'list'"
+      >
+        <div *ngIf="getGroupedEvents().length === 0" class="empty-state">
+          <div class="empty-state-icon">
+            <i class="fa fa-calendar-times" aria-hidden="true"></i>
+          </div>
+          <div class="empty-state-text">
+            Aucun événement trouvé pour cette période
+          </div>
+        </div>
+        <div *ngFor="let group of getGroupedEvents()" class="list-group">
+          <div class="list-group-header">
+            {{ formatListDate(group.date) }}
+          </div>
+          <div class="list-items">
+            <div
+              *ngFor="let event of group.events"
+              class="list-item"
+              (click)="selectEvent(event, $event)"
+            >
+              <div
+                class="list-item-color"
+                [style.backgroundColor]="event.color"
+              ></div>
+              <div class="list-item-content">
+                <div class="list-item-title">{{ event.title }}</div>
+                <div class="list-item-details">
+                  <div class="list-item-detail">
+                    <i class="fa fa-clock-o" aria-hidden="true"></i>
+                    {{ formatEventTime(event) }}
+                  </div>
+                  <div class="list-item-detail">
+                    <i class="fa fa-users" aria-hidden="true"></i>
+                    {{ event.participants || 0 }} participants
+                  </div>
+                  <div class="list-item-detail">
+                    <i class="fa fa-user" aria-hidden="true"></i>
+                    {{ event.formateurNom || "Non assigné" }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modal pour les détails d'un événement -->
+  <div
+    class="event-details-modal"
+    *ngIf="selectedEvent"
+    (click)="closeEventDetails()"
+  >
+    <div class="event-details-content" (click)="$event.stopPropagation()">
+      <div class="event-header" [style.backgroundColor]="selectedEvent.color">
+        <h3>{{ selectedEvent.title }}</h3>
+        <button class="close-btn" (click)="closeEventDetails()">❌</button>
+      </div>
+      <div class="event-body">
+        <div class="event-details-grid">
+          <div class="event-detail-item">
+            <div class="detail-label">📅 Date de début</div>
+            <div class="detail-value">
+              {{ formatDisplayDate(selectedEvent.startDate) }}
+            </div>
+          </div>
+
+          <div class="event-detail-item">
+            <div class="detail-label">📅 Date de fin</div>
+            <div class="detail-value">
+              {{ formatDisplayDate(selectedEvent.endDate) }}
+            </div>
+          </div>
+          <div class="event-detail-item">
+            <div class="detail-label">⏰Horaires</div>
+            <div class="time-display">
+              <div class="time-block">
+                <div class="time-label">Début</div>
+                <div class="time-value">
+                  {{ getEventStartTime(selectedEvent) }}
+                  <span class="time-date">{{
+                    getEventStartDate(selectedEvent)
+                  }}</span>
+                </div>
+              </div>
+              <div class="time-separator">
+                <i class="fas fa-arrow-right"></i>
+              </div>
+              <div class="time-block">
+                <div class="time-label">Fin</div>
+                <div class="time-value">
+                  {{ getEventEndTime(selectedEvent) }}
+                  <span class="time-date">{{
+                    getEventEndDate(selectedEvent)
+                  }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="event-detail-item formateurs-container">
+            <div class="detail-label">
+              <i class="fas fa-chalkboard-teacher"></i> Formateur(s)
+            </div>
+            <div class="detail-value">
+              <ng-container
+                *ngIf="selectedEvent?.formateurs?.length; else noFormateur"
+              >
+                <div class="formateurs-list">
+                  <div
+                    *ngFor="let formateur of selectedEvent.formateurs"
+                    class="formateur-badge"
+                  >
+                    <div class="formateur-avatar">
+                      {{ formateur.prenom?.charAt(0) || ""
+                      }}{{ formateur.nom?.charAt(0) || "" }}
+                    </div>
+                    <div class="formateur-info">
+                      <div class="formateur-name">
+                        {{ formateur.prenom }} {{ formateur.nom }}
+                      </div>
+                      <div class="formateur-role">{{ formateur.role }}</div>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+              <ng-template #noFormateur>
+                <div class="no-formateur">
+                  <i class="fas fa-user-slash"></i>
+                  <span>Aucun formateur assigné</span>
+                </div>
+              </ng-template>
+            </div>
+          </div>
+
+          <div class="event-detail-item" *ngIf="selectedEvent.participants">
+            <div class="detail-label">👥 Participants</div>
+            <div class="detail-value">
+              {{ selectedEvent.participants }} inscrits
+            </div>
+          </div>
+          <div class="event-detail-item" *ngIf="selectedEvent.lieu">
+            <div class="detail-label">📍 Lieu</div>
+            <div class="detail-value">{{ selectedEvent.lieu }}</div>
+          </div>
+        </div>
+        <div class="event-description" *ngIf="selectedEvent.description">
+          <div class="detail-label">📝 Description</div>
+          <div class="detail-value">{{ selectedEvent.description }}</div>
+        </div>
+        <div class="event-actions">
+          <button class="btn btn-primary" (click)="editEvent(selectedEvent)">
+            Modifier
+          </button>
+          <button class="btn btn-danger" (click)="deleteEvent(selectedEvent)">
+            Supprimer
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal pour afficher les participants -->
+  <div
+    class="participants-modal"
+    *ngIf="showParticipantsModal"
+    (click)="closeParticipantsModal()"
+  >
+    <div class="participants-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Liste des participants</h3>
+        <button class="btn btn-secondary" (click)="closeParticipantsModal()">❌</button>
+
+      </div>
+      <div class="modal-body">
+        <div *ngIf="selectedParticipants && selectedParticipants.length > 0">
+          <table class="participants-table">
+            <thead>
+              <tr>
+                <th>id</th>
+                <th>cin</th>
+                <th>nom</th>
+                <th>prénom</th>
+                <th>role</th>
+                <th>email</th>
+                <th>etablissement</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let participant of selectedParticipants">
+                <td>{{ participant.id }}</td>
+                <td>{{ participant.cin }}</td>
+                <td>{{ participant.nom }}</td>
+                <td>{{ participant.prenom }}</td>
+                <td>{{ participant.role }}</td>
+                <td>{{ participant.email }}</td>
+                <td>{{ participant.etablissement }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div
+          *ngIf="!selectedParticipants || selectedParticipants.length === 0"
+          class="empty-state"
+        >
+          <p>Aucun participant inscrit à cette session.</p>
+        </div>
+      </div>
+     
+    </div>
+  </div>
+  <!-- Modal de confirmation de suppression -->
+  <div class="delete-confirm-modal" *ngIf="showDeleteConfirmModal">
+    <div class="modal-overlay" (click)="closeDeleteConfirmModal()"></div>
+    <div class="modal-content">
+      <div class="modal-header warning">
+        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+        <h3>Confirmation de suppression</h3>
+        <button class="close-btn" (click)="closeDeleteConfirmModal()">
+          ❌
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Êtes-vous sûr de vouloir supprimer cette session ?</p>
+        <p class="warning-text">
+          Cette action est irréversible et supprimera également toutes les
+          inscriptions associées.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeDeleteConfirmModal()">
+          Annuler
+        </button>
+        <button class="btn btn-danger" (click)="confirmDeleteSession()">
+          <i class="fa fa-trash" aria-hidden="true"></i> Supprimer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

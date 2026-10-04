@@ -1,0 +1,698 @@
+<div class="dashboard-container">
+  <!-- Navigation des modes de vue avec design amélioré -->
+
+  <!-- Main Content avec design amélioré -->
+  <main class="content-area">
+    <header class="page-header">
+      <div class="header-content">
+        <h1>Gestion des Inscriptions</h1>
+        <div class="header-actions">
+          <button class="floating-button" (click)="openAddModal()">➕</button>
+          <button
+            class="btn btn-outline"
+            (click)="exportToCSV()"
+            [disabled]="!dataLoaded"
+          >
+            <i class="fas fa-file-export"></i> Exporter
+          </button>
+          <button class="btn btn-outline" (click)="loadAllData()">
+            <i
+              class="fas"
+              [ngClass]="{
+                'fa-sync-alt': !isLoading,
+                'fa-spinner fa-spin': isLoading
+              }"
+            ></i>
+            Actualiser
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Tableau de bord moderne -->
+    <div class="dashboard-view" *ngIf="viewMode === 'dashboard'" @fadeAnimation>
+      <div class="stat-cards">
+        <div class="stat-card card-total">
+          <div class="stat-icon">
+            <i class="fas fa-user-graduate"></i>
+          </div>
+          <div class="stat-info">
+            <h3>{{ stats.totalInscriptions }}</h3>
+            <p>Total Inscriptions</p>
+          </div>
+          <div class="stat-trend" *ngIf="stats.trendPercentage">
+            <i
+              [ngClass]="
+                stats.trendPercentage > 0
+                  ? 'fas fa-arrow-up trend-up'
+                  : 'fas fa-arrow-down trend-down'
+              "
+            ></i>
+            <span
+              [ngClass]="stats.trendPercentage > 0 ? 'trend-up' : 'trend-down'"
+              >{{ stats.trendPercentage }}%</span
+            >
+          </div>
+        </div>
+
+        <div class="stat-card card-pending">
+          <div class="stat-icon">
+            <i class="fas fa-clock"></i>
+          </div>
+          <div class="stat-info">
+            <h3>{{ stats.enAttente }}</h3>
+            <p>En attente</p>
+          </div>
+        </div>
+
+        <div class="stat-card card-confirmed">
+          <div class="stat-icon">
+            <i class="fas fa-check"></i>
+          </div>
+          <div class="stat-info">
+            <h3>{{ stats.confirmees }}</h3>
+            <p>Confirmées</p>
+          </div>
+        </div>
+
+        <div class="stat-card card-cancelled">
+          <div class="stat-icon">
+            <i class="fas fa-times"></i>
+          </div>
+          <div class="stat-info">
+            <h3>{{ stats.annulees }}</h3>
+            <p>Annulées</p>
+          </div>
+        </div>
+
+        <div class="stat-card card-completed">
+          <div class="stat-icon">
+            <i class="fas fa-graduation-cap"></i>
+          </div>
+          <div class="stat-info">
+            <h3>{{ stats.terminees }}</h3>
+            <p>Terminées</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-container">
+        <div class="chart-row">
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>Inscriptions par formation</h3>
+              <div class="chart-actions">
+                <button class="btn-icon" title="Télécharger">
+                  <i class="fas fa-download"></i>
+                </button>
+                <button class="btn-icon" title="Plus d'options">
+                  <i class="fas fa-ellipsis-v"></i>
+                </button>
+              </div>
+            </div>
+            <div class="chart-body">
+              <!-- Intégration de charts.js ou autres librairies de graphiques ici -->
+              <canvas id="formationsChart"></canvas>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>Évolution des inscriptions</h3>
+              <div class="chart-actions">
+                <button class="btn-icon" title="Télécharger">
+                  <i class="fas fa-download"></i>
+                </button>
+                <button class="btn-icon" title="Plus d'options">
+                  <i class="fas fa-ellipsis-v"></i>
+                </button>
+              </div>
+            </div>
+            <div class="chart-body">
+              <canvas id="evolutionChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search & Filter améliorés (visible en vue liste et calendrier) -->
+    <div class="filters-panel" *ngIf="viewMode !== 'dashboard'" @fadeAnimation>
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input
+          type="text"
+          placeholder="Rechercher par nom, formation ou statut..."
+          [(ngModel)]="filterKeyword"
+          (keyup)="filterInscriptions()"
+        />
+        <button
+          *ngIf="filterKeyword"
+          class="clear-search"
+          (click)="clearSearch()"
+        >
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <div class="filter-controls">
+        <div class="filter-dropdown">
+          <button class="filter-toggle" (click)="toggleFilterMenu()">
+            <i class="fas fa-filter"></i> Filtres
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="filter-menu" *ngIf="showFilterMenu">
+            <div class="filter-group">
+              <label>Formation</label>
+              <select
+                [(ngModel)]="selectedFormationId"
+                (change)="onFormationSelect()"
+              >
+                <option [ngValue]="null">Toutes les formations</option>
+                <option
+                  *ngFor="let formation of formations"
+                  [ngValue]="formation.id"
+                >
+                  {{ formation.titre }}
+                </option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <label>Statut</label>
+              <div class="checkbox-group">
+                <div class="checkbox-item" *ngFor="let status of statusOptions">
+                  <input
+                    type="checkbox"
+                    [id]="'status-' + status"
+                    [(ngModel)]="statusFilters[status]"
+                    (change)="filterInscriptions()"
+                  />
+                  <label [for]="'status-' + status">{{ status }}</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="filter-group">
+              <label>Période</label>
+              <div class="date-range">
+                <input
+                  type="date"
+                  [(ngModel)]="dateRange.start"
+                  (change)="filterInscriptions()"
+                />
+                <span>à</span>
+                <input
+                  type="date"
+                  [(ngModel)]="dateRange.end"
+                  (change)="filterInscriptions()"
+                />
+              </div>
+            </div>
+
+            <div class="filter-actions">
+              <button class="btn btn-sm" (click)="resetFilters()">
+                Réinitialiser
+              </button>
+              <button class="btn btn-primary btn-sm" (click)="applyFilters()">
+                Appliquer
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="view-controls">
+          <button
+            class="btn-icon"
+            [ngClass]="{ active: displayMode === 'cards' }"
+            (click)="setDisplayMode('cards')"
+            title="Vue cartes"
+          >
+            <i class="fas fa-th-large"></i>
+          </button>
+          <button
+            class="btn-icon"
+            [ngClass]="{ active: displayMode === 'table' }"
+            (click)="setDisplayMode('table')"
+            title="Vue tableau"
+          >
+            <i class="fas fa-list"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- List View avec design amélioré -->
+    <div class="inscriptions-list" *ngIf="viewMode === 'list'" @fadeAnimation>
+      <!-- État de chargement amélioré -->
+      <div class="loader-overlay" *ngIf="isLoading">
+        <div class="loader-content">
+          <div class="loader-spinner"></div>
+          <p>Chargement des données...</p>
+        </div>
+      </div>
+
+      <!-- État vide amélioré -->
+      <div
+        class="empty-state"
+        *ngIf="filteredInscriptions.length === 0 && !isLoading"
+      >
+        <div class="empty-illustration">
+          <i class="fas fa-clipboard-list"></i>
+        </div>
+        <h3>Aucune inscription trouvée</h3>
+        <p>Aucune inscription ne correspond à vos critères de recherche</p>
+        <div class="empty-actions">
+          <button class="btn btn-outline" (click)="resetFilters()">
+            Réinitialiser les filtres
+          </button>
+          <button class="btn btn-primary" (click)="openAddModal()">
+            Créer une inscription
+          </button>
+        </div>
+      </div>
+
+      <!-- Vue tableau améliorée -->
+      <div
+        class="table-container"
+        *ngIf="
+          filteredInscriptions.length > 0 &&
+          !isLoading &&
+          displayMode === 'table'
+        "
+      >
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th (click)="sortBy('id')" class="sortable">
+                ID
+                <i
+                  class="fas"
+                  *ngIf="sortColumn === 'id'"
+                  [ngClass]="
+                    sortDirection === 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'
+                  "
+                ></i>
+              </th>
+              <th (click)="sortBy('etudiant')" class="sortable">
+                Étudiant
+                <i
+                  class="fas"
+                  *ngIf="sortColumn === 'etudiant'"
+                  [ngClass]="
+                    sortDirection === 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'
+                  "
+                ></i>
+              </th>
+              <th (click)="sortBy('formation')" class="sortable">
+                Formation
+                <i
+                  class="fas"
+                  *ngIf="sortColumn === 'formation'"
+                  [ngClass]="
+                    sortDirection === 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'
+                  "
+                ></i>
+              </th>
+              <th (click)="sortBy('dateInscription')" class="sortable">
+                Date d'inscription
+                <i
+                  class="fas"
+                  *ngIf="sortColumn === 'dateInscription'"
+                  [ngClass]="
+                    sortDirection === 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'
+                  "
+                ></i>
+              </th>
+              <th (click)="sortBy('statut')" class="sortable">
+                Statut
+                <i
+                  class="fas"
+                  *ngIf="sortColumn === 'statut'"
+                  [ngClass]="
+                    sortDirection === 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'
+                  "
+                ></i>
+              </th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let inscription of filteredInscriptions"
+              [ngClass]="{ highlight: currentInscriptionId === inscription.id }"
+              (click)="selectInscription(inscription)"
+            >
+              <td>{{ inscription.id }}</td>
+              <td>{{ getEtudiantName(inscription.utilisateurId ?? 0) }}</td>
+              <td>{{ getFormationForSession(inscription.sessionId ?? 0) }}</td>
+              <td>{{ inscription.dateInscription | date }}</td>
+              <td>
+                <span
+                  class="status-badge"
+                  [ngClass]="inscription.statut?.toLowerCase()"
+                >
+                  {{ inscription.statut }}
+                </span>
+              </td>
+              <td class="actions">
+                <button
+                  class="btn-icon"
+                  title="Modifier"
+                  (click)="openEditModal(inscription)"
+                >
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button
+                  class="btn-icon danger"
+                  (click)="confirmDelete(inscription); $event.stopPropagation()"
+                  title="Supprimer"
+                >
+                  <i class="fas fa-trash"></i>
+                </button>
+                <button
+                  class="btn-icon info"
+                  (click)="viewDetails(inscription); $event.stopPropagation()"
+                  title="Détails"
+                >
+                  <i class="fas fa-eye"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Pagination améliorée -->
+        <div class="pagination">
+          <button
+            class="btn-icon"
+            [disabled]="currentPage === 1"
+            (click)="goToPage(currentPage - 1)"
+          >
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <div class="page-numbers">
+            <button
+              class="page-number"
+              *ngFor="let page of getPageNumbers()"
+              [ngClass]="{ active: page === currentPage }"
+              (click)="goToPage(page)"
+            >
+              {{ page }}
+            </button>
+          </div>
+          <button
+            class="btn-icon"
+            [disabled]="currentPage === totalPages"
+            (click)="goToPage(currentPage + 1)"
+          >
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Vue cartes améliorée -->
+      <div
+        class="cards-container"
+        *ngIf="
+          filteredInscriptions.length > 0 &&
+          !isLoading &&
+          displayMode === 'cards'
+        "
+      >
+        <div
+          class="inscription-card"
+          *ngFor="let inscription of filteredInscriptions"
+          [ngClass]="{ highlight: currentInscriptionId === inscription.id }"
+        >
+          <div class="card-header">
+            <span
+              class="status-badge"
+              [ngClass]="inscription.statut?.toLowerCase()"
+            >
+              {{ inscription.statut }}
+            </span>
+            <div class="card-actions">
+              <button
+                class="btn-icon"
+                title="Modifier"
+                (click)="openEditModal(inscription); $event.stopPropagation()"
+              >
+                <i class="fas fa-edit"></i>
+              </button>
+              <button
+                class="btn-icon danger"
+                (click)="confirmDelete(inscription, $event)"
+                title="Supprimer"
+              >
+                <i class="fas fa-trash"></i>
+              </button>
+
+            </div>
+          </div>
+          <div class="card-body" (click)="viewDetails(inscription, $event)">
+            <div class="student-info">
+              <div
+                class="avatar photo"
+                *ngIf="shouldShowPhoto(inscription.utilisateurId ?? 0)"
+              >
+                <img
+                  [src]="getStudentPhoto(inscription.utilisateurId ?? 0)"
+                  alt="Photo de l'étudiant"
+                />
+              </div>
+              <h4>{{ getEtudiantName(inscription.utilisateurId ?? 0) }}</h4>
+            </div>
+            <div class="formation-info">
+              <p class="formation-title">
+                {{ getFormationForSession(inscription.sessionId ?? 0) }}
+              </p>
+              <p class="session-date">
+                Session du
+                {{ getSessionDate(inscription.sessionId ?? 0) | date }}
+              </p>
+            </div>
+            <div class="card-footer">
+              <div class="inscription-date">
+                <i class="fas fa-calendar"></i>
+                <span>Inscrit le {{ inscription.dateInscription | date }}</span>
+              </div>
+              <button
+                class="btn-link"
+                (click)="viewDetails(inscription); $event.stopPropagation()"
+              >
+                Voir détails <i class="fas fa-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- MODALES -->
+
+<!-- Modale de confirmation de suppression -->
+<div class="modal" [ngClass]="{ show: showDeleteModal }" id="deleteModal">
+  <div class="modal-backdrop" (click)="cancelDelete()"></div>
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Confirmation</h3>
+        <button class="btn-close" (click)="cancelDelete()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="confirmation-message">
+          <i class="fas fa-exclamation-triangle warning-icon"></i>
+          <p>Êtes-vous sûr de vouloir supprimer cette inscription ?</p>
+          <p class="text-danger">Cette action est irréversible.</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" (click)="cancelDelete()">
+          Annuler
+        </button>
+        <button class="btn btn-danger" (click)="deleteInscription()">
+          <i class="fas fa-trash"></i> Supprimer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modale de détails d'inscription -->
+<div class="modal" [ngClass]="{ show: showDetailsModal }" id="detailsModal">
+  <div class="modal-backdrop" (click)="closeDetailsModal()"></div>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Détails de l'inscription</h3>
+        <button class="btn-close" (click)="closeDetailsModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body" *ngIf="selectedInscription">
+        <div class="details-header">
+          <div
+            class="status-badge large"
+            [ngClass]="selectedInscription.statut?.toLowerCase()"
+          >
+            {{ selectedInscription.statut }}
+          </div>
+          <div class="inscription-id">
+            <span>ID: {{ selectedInscription.id }}</span>
+          </div>
+        </div>
+
+        <div class="details-section">
+          <h4>Informations de l'étudiant</h4>
+          <div class="student-details">
+            <div
+              class="avatar large photo"
+              *ngIf="shouldShowPhoto(selectedInscription.utilisateurId ?? 0)"
+            >
+              <img
+                [src]="getStudentPhoto(selectedInscription.utilisateurId ?? 0)"
+                alt="Photo de l'étudiant"
+              />
+            </div>
+
+            <div class="student-data">
+              <h3>
+                {{ getEtudiantName(selectedInscription.utilisateurId ?? 0) }}
+              </h3>
+              <p
+                *ngIf="
+                  getStudentInfo(
+                    selectedInscription.utilisateurId ?? 0
+                  ) as student
+                "
+              >
+                <i class="fas fa-envelope"></i> {{ student.email }}
+              </p>
+              <p
+                *ngIf="
+                  getStudentInfo(
+                    selectedInscription.utilisateurId ?? 0
+                  ) as student
+                "
+              >
+                <i class="fas fa-phone"></i>
+                {{ student.telephone || "Non spécifié" }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="details-section">
+          <h4>Informations de la formation</h4>
+          <div class="formation-details">
+            <div class="detail-row">
+              <span class="detail-label">Formation:</span>
+              <span class="detail-value">{{
+                getFormationForSession(selectedInscription.sessionId ?? 0)
+              }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Session:</span>
+              <span class="detail-value"
+                >Du
+                {{
+                  getSessionStartDate(selectedInscription.sessionId ?? 0) | date
+                }}
+                au
+                {{
+                  getSessionEndDate(selectedInscription.sessionId ?? 0) | date
+                }}</span
+              >
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Formateur:</span>
+              <span class="detail-value">{{
+                getFormateurName(selectedInscription.sessionId ?? 0)
+              }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="details-section">
+          <h4>Historique des changements</h4>
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="timeline-icon">
+                <i class="fas fa-plus-circle"></i>
+              </div>
+              <div class="timeline-content">
+                <h5>Inscription créée</h5>
+                <p>
+                  {{ selectedInscription.dateInscription | date : "medium" }}
+                </p>
+              </div>
+            </div>
+            <!-- Ajouter d'autres événements de l'historique ici si disponibles -->
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" (click)="closeDetailsModal()">
+          Fermer
+        </button>
+        <button
+          class="btn btn-primary"
+          (click)="selectedInscription && openEditModal(selectedInscription)"
+        >
+          <i class="fas fa-edit"></i> Modifier</button
+        >>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast notifications -->
+<div class="toast-container">
+  <div *ngFor="let toast of toasts" class="toast" [ngClass]="toast.type">
+    <div class="toast-icon">
+      <i class="fas" [ngClass]="getToastIcon(toast.type)"></i>
+    </div>
+    <div class="toast-content">
+      <p>{{ toast.message }}</p>
+    </div>
+    <button class="toast-close" (click)="dismissToast(toast.id)">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+</div>
+<!-- Modal de notification -->
+<div
+  class="modal notification-modal"
+  [ngClass]="{ show: showNotificationModal }"
+>
+  <div class="modal-backdrop" (click)="closeNotificationModal()"></div>
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content" [ngClass]="currentNotification?.type">
+      <div class="modal-header">
+        <h3>
+          <i
+            class="fas"
+            [ngClass]="getNotificationIcon(currentNotification?.type)"
+          ></i>
+          {{ getNotificationTitle(currentNotification?.type) }}
+        </h3>
+        <button class="btn-close" (click)="closeNotificationModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>{{ currentNotification?.message }}</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" (click)="closeNotificationModal()">
+          OK
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

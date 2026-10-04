@@ -1,0 +1,174 @@
+<div class="container mt-4 hover-flip">
+  <h2 class="mb-4">
+    {{ isEditMode ? "Modifier le paiement" : "Nouveau paiement" }}
+  </h2>
+
+  <div *ngIf="loading" class="d-flex justify-content-center my-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Chargement...</span>
+    </div>
+  </div>
+
+  <form
+    *ngIf="!loading"
+    [formGroup]="paiementsForm"
+    (ngSubmit)="onSubmit()"
+    class="animate-form"
+  >
+    <div class="form-card">
+      <h4 class="mb-3">Informations principales</h4>
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label for="utilisateurId" class="form-label">Utilisateur</label>
+          <select
+            id="utilisateurId"
+            class="form-select"
+            formControlName="utilisateurId"
+            [ngClass]="{ 'is-invalid': estInvalide('utilisateurId') }"
+          >
+            <option [ngValue]="null">Sélectionner un utilisateur</option>
+            <option
+              *ngFor="let utilisateur of utilisateurs"
+              [value]="utilisateur.id"
+            >
+              {{ utilisateur.prenom }} {{ utilisateur.nom }}
+            </option>
+          </select>
+          <div class="invalid-feedback">
+            {{ getErrorMessage("utilisateurId") }}
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <label for="sessionsId" class="form-label">Session</label>
+          <select
+            id="sessionsId"
+            class="form-select"
+            formControlName="sessionsId"
+            [ngClass]="{ 'is-invalid': estInvalide('sessionsId') }"
+            (change)="onSessionChange($event)"
+          >
+            <option [ngValue]="null">Sélectionner une session</option>
+            <option
+              *ngFor="let session of sessions"
+              [value]="session.sessionId"
+              [disabled]="!hasAvailableSeats(session)"
+              [attr.data-availability]="getAvailabilityClass(session)"
+            >
+              {{ getFormationTitle(session.sessionId || 0) }}
+              ({{ session.dateDebut | date : "dd/MM/yyyy" }} -
+              {{ session.dateFin | date : "dd/MM/yyyy" }})
+              <span *ngIf="session.placesDisponibles">
+                - {{ session.placesDisponibles }} places disponibles</span
+              >
+            </option>
+          </select>
+          <div class="invalid-feedback">
+            {{ getErrorMessage("sessionsId") }}
+          </div>
+          <small
+            class="text-muted"
+            *ngIf="paiementsForm.get('sessionsId')?.value"
+          >
+            Formation:
+            {{
+              getFormationTitle((paiementsForm.get("sessionsId")?.value))
+            }}
+          </small>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <label for="datePaiement" class="form-label">Date de paiement*</label>
+        <input
+          type="date"
+          id="datePaiement"
+          class="form-control"
+          formControlName="datePaiement"
+          [ngClass]="{ 'is-invalid': estInvalide('datePaiement') }"
+        />
+        <div class="invalid-feedback">
+          {{ getErrorMessage("datePaiement") }}
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <label for="statut" class="form-label">Statut*</label>
+        <select
+          id="statut"
+          class="form-select"
+          formControlName="statut"
+          [ngClass]="{ 'is-invalid': estInvalide('statut') }"
+        >
+          <option *ngFor="let option of statutOptions" [value]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+        <div class="invalid-feedback">
+          {{ getErrorMessage("statut") }}
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <label for="modePaiement" class="form-label">Mode de paiement*</label>
+        <select
+          id="modePaiement"
+          class="form-select"
+          formControlName="modePaiement"
+          [ngClass]="{ 'is-invalid': estInvalide('modePaiement') }"
+        >
+          <option [ngValue]="null">Sélectionner un mode de paiement</option>
+          <option *ngFor="let mode of modesPaiement" [value]="mode.value">
+            {{ mode.label }}
+          </option>
+        </select>
+        <div class="invalid-feedback">
+          {{ getErrorMessage("modePaiement") }}
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <label for="montant" class="form-label">Montant*</label>
+        <div class="input-group">
+          <input
+            type="number"
+            id="montant"
+            class="form-control"
+            formControlName="montant"
+            [ngClass]="{ 'is-invalid': estInvalide('montant') }"
+            step="0.01"
+            min="0"
+          />
+          <span class="input-group-text">€</span>
+          <div class="invalid-feedback">
+            {{ getErrorMessage("montant") }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mt-4">
+      <div class="col-12">
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-primary">
+            {{ isEditMode ? "Mettre à Jour" : "Ajouter" }}
+          </button>
+          <button type="button" class="btn btn-secondary" (click)="resetForm()">
+            Réinitialiser
+          </button>
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            routerLink="/dashboard/paiements"
+          >
+            Retour
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

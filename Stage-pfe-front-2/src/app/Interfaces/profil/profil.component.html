@@ -1,0 +1,122 @@
+<div class="row m-3">
+  <!-- Card Profil -->
+  <div
+    class="card col-md-4 text-center mb-4 mb-md-0 shadow-sm rounded profile-card"
+  >
+    <div class="col">
+      <div class="mb-3 mt-3">
+        <button
+          (click)="fileInput.click()"
+          style="background-color: transparent; border: none"
+        >
+          <img
+            [src]="imgUrl"
+            class="rounded-circle"
+            width="200px"
+            height="200px"
+            alt="Image du client"
+          />
+          <input
+            hidden
+            type="file"
+            #fileInput
+            (change)="onFileInput(fileInput.files)"
+            accept="image/*"
+          />
+        </button>
+      </div>
+      <div class="mb-3">
+        <h3 class="font-weight-bold profile-name">
+          {{ connectedUser.nom }} {{ connectedUser.prenom }}
+        </h3>
+        <small class="form-text text-muted profile-role">
+          {{ connectedUser.role }}
+        </small>
+      </div>
+      
+      <!-- Photo save/cancel buttons - appear when file is selected -->
+      <div class="col mb-3 p-0" *ngIf="file">
+        <button
+          type="button"
+          class="btn btn-success mr-2"
+          (click)="savePhoto()"
+        >
+          <i class="fas fa-save"></i>&nbsp;Enregistrer la photo
+        </button>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="cancelClick()"
+        >
+          <i class="fas fa-times"></i>&nbsp;Annuler
+        </button>
+      </div>
+      
+      <!-- Error messages -->
+      <div class="alert alert-danger" *ngIf="errorMsg.length > 0">
+        <ul>
+          <li *ngFor="let error of errorMsg">{{ error }}</li>
+        </ul>
+      </div>
+      
+      <!-- Profile actions -->
+      <div class="col mb-3 p-0">
+        <button
+          type="button"
+          class="btn btn-modifier"
+          (click)="modifierProfil()"
+        >
+          <i class="fas fa-pencil-alt"></i>&nbsp;Modifier le profil
+        </button>
+        <button
+          type="button"
+          class="btn btn-changer-mot-de-passe"
+          (click)="modifierMotDePasse()"
+        >
+          <i class="fas fa-lock"></i>&nbsp;Changer le mot de passe
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card Détails utilisateur -->
+  <div class="card col-md-7 shadow-sm rounded details-card">
+    <div class="card-body">
+      <h5 class="card-title font-weight-bold mb-4 details-title">
+        Détails du profil
+      </h5>
+      <table class="table table-borderless">
+        <tbody>
+          <tr>
+            <th scope="row" class="details-label">Nom complet</th>
+            <td>{{ connectedUser.nom }} {{ connectedUser.prenom }}</td>
+          </tr>
+          <tr>
+            <th scope="row" class="details-label">Email</th>
+            <td>{{ connectedUser.email }}</td>
+          </tr>
+          <tr>
+            <th scope="row" class="details-label">Téléphone</th>
+            <td>{{ connectedUser.telephone }}</td>
+          </tr>
+          <tr>
+            <th scope="row" class="details-label">Date de naissance</th>
+            <td>{{ connectedUser.dateNaissance | date : "dd/MM/yyyy" }}</td>
+          </tr>
+          <tr>
+            <th scope="row" class="details-label">CIN</th>
+            <td>{{ connectedUser.cin }}</td>
+          </tr>
+          <tr>
+            <th scope="row" class="details-label">Établissement</th>
+            <td>{{ connectedUser.etablissement }}</td>
+          </tr>
+          <tr>
+            <th scope="row" class="details-label">Rôle</th>
+            <td>{{ connectedUser.role }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

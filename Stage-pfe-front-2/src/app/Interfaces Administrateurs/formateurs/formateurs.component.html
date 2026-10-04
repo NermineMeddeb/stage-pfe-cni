@@ -1,0 +1,115 @@
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <div class="header-content">
+      <h1>Liste des Formateurs</h1>
+      <div class="header-actions">
+        <div class="search-box">
+          <i class="fas fa-search me-2"></i>
+          <input
+            type="text"
+            placeholder="Rechercher un formateur..."
+            (input)="onSearch($any($event.target).value)"
+          />
+        </div>
+        <a class="btn btn-primary" routerLink="/dashboard/nouveau-formateur">
+          <i class="fas fa-plus me-2"></i>Ajouter un formateur
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alert Error -->
+  <div class="alert alert-danger alert-dismissible fade show" *ngIf="errorMsg">
+    <i class="fas fa-exclamation-circle me-2"></i>
+    ⚠️ {{ errorMsg }}
+    <button type="button" class="btn-close" (click)="errorMsg = ''"></button>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="loading">
+    <div class="loading-card" *ngFor="let i of [1, 2, 3]">
+      <div class="loading-avatar"></div>
+      <div class="loading-content">
+        <div class="loading-line"></div>
+        <div class="loading-line"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formateur Cards -->
+  <div class="students-grid" *ngIf="!loading">
+    <div class="student-card" *ngFor="let formateur of filteredformateurs">
+      <div class="card-header">
+        <div class="student-avatar">
+          <img
+            [src]="
+              formateur.photo
+                ? 'assets/' + formateur.photo
+                : 'assets/default-avatar.png'
+            "
+            alt="Photo formateur"
+          />
+        </div>
+        <div class="student-info">
+          <div class="name-role-wrapper">
+            <h3>{{ formateur.nom }} {{ formateur.prenom }}</h3>
+            <span
+              class="role-badge"
+              [ngClass]="{
+                'role-interne': formateur.role === 'INTERNE',
+                'role-externe': formateur.role === 'EXTERNE'
+              }"
+            >
+              {{ formateur.role }}
+            </span>
+          </div>
+          <p class="email">{{ formateur.email }}</p>
+          <div class="formateur-details">
+            <p><i class="fas fa-phone me-2"></i>{{ formateur.telephone }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="card-actions">
+        <button
+          class="btn btn-primary"
+          (click)="editformateur(formateur.id!)"
+          aria-label="Modifier formateur"
+        >
+          <i class="fas fa-edit"></i> <span>Modifier</span>
+        </button>
+
+        <button
+          class="btn btn-info"
+          (click)="viewDetails(formateur.id!)"
+          aria-label="Voir détails"
+        >
+          <i class="fas fa-search"></i> <span>Détails</span>
+        </button>
+
+        <!-- Modifié: Utiliser notre fonction personnalisée au lieu de data-bs-toggle -->
+        <button
+          class="btn btn-danger"
+          aria-label="Supprimer formateur"
+          (click)="onDelete(formateur.id)"
+        >
+          <i class="fas fa-trash-alt"></i> <span>Supprimer</span>
+        </button>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state" *ngIf="!loading && filteredformateurs.length === 0">
+        <i class="fas fa-user-graduate"></i>
+        <h3>🚫 Aucun formateur trouvé</h3>
+        <p>
+          🔄 Modifiez vos critères de recherche ou ajoutez de nouveaux
+          formateurs.
+        </p>
+      </div>
+
+      <!-- Pagination - Implement if needed -->
+      <div class="pagination-container" *ngIf="filteredformateurs.length > 0">
+        <!-- Implement pagination if needed -->
+      </div>
+    </div>
+  </div>
+</div>

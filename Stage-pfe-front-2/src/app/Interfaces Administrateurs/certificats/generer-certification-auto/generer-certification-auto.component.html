@@ -1,0 +1,277 @@
+<div class="certification-history-container">
+  <h1 class="page-title">Générer automatiquement des certifications</h1>
+
+  <!-- Section de génération de certificat -->
+  <div class="generate-section">
+    <h2>Générer un nouveau certificat</h2>
+    <div class="generation-form" [formGroup]="generationForm">
+      <div class="form-group">
+        <label for="inscriptionSelect">Sélectionner une inscription:</label>
+        <select
+          id="inscriptionSelect"
+          formControlName="inscriptionId"
+          class="form-control"
+        >
+          <option [ngValue]="null">
+            – Sélectionner une inscription sans certification générée –
+          </option>
+          <option
+            *ngFor="let inscription of inscriptions"
+            [ngValue]="inscription.id"
+          >
+            ID: {{ inscription.id }} -
+            {{ inscription.dateInscription | date : "dd/MM/yyyy" }}
+          </option>
+        </select>
+        <div
+          class="error-hint"
+          *ngIf="
+            generationForm.get('inscriptionId')?.invalid &&
+            generationForm.get('inscriptionId')?.touched
+          "
+        >
+          Veuillez sélectionner une inscription
+        </div>
+      </div>
+
+      <!-- Nouvelle section pour choisir la langue du certificat -->
+      <div class="language-selection">
+        <label class="language-label">Langue du certificat:</label>
+        <div class="language-options">
+          <label class="radio-option" for="certificateLanguageFrench">
+            <input
+              type="radio"
+              id="certificateLanguageFrench"
+              formControlName="generateInArabic"
+              [value]="false"
+              name="certificateLanguage"
+              aria-label="Générer le certificat en Français"
+            />
+            <span class="radio-custom"></span>
+            <span class="radio-text">
+              <i class="fa fa-file-text-o" aria-hidden="true"></i>
+              Français
+            </span>
+          </label>
+
+          <label class="radio-option" for="certificateLanguageArabic">
+            <input
+              type="radio"
+              id="certificateLanguageArabic"
+              formControlName="generateInArabic"
+              [value]="true"
+              name="certificateLanguage"
+              aria-label="Générer le certificat en Arabe"
+            />
+            <span class="radio-custom"></span>
+            <span class="radio-text">
+              <i class="fa fa-file-text" aria-hidden="true"></i>
+              العربية (Arabe)
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <button
+        class="btn-generate"
+        [disabled]="isGenerating || generationForm.invalid"
+        (click)="genererCertificat()"
+      >
+        <i
+          class="fa"
+          [ngClass]="isGenerating ? 'fa-spinner fa-spin' : 'fa-certificate'"
+        ></i>
+        {{ isGenerating ? "Génération en cours..." : "Générer un certificat" }}
+      </button>
+    </div>
+
+    <!-- Messages d'information -->
+    <div *ngIf="successMessage" class="success-message">
+      <i class="fa fa-check-circle"></i> {{ successMessage }}
+    </div>
+    <div *ngIf="errorMessage" class="error-message">
+      <i class="fa fa-exclamation-triangle"></i> {{ errorMessage }}
+    </div>
+  </div>
+
+  <!-- Section de recherche et filtres -->
+  <div class="search-filter-section" [formGroup]="filterForm">
+    <div class="search-bar">
+      <input
+        type="text"
+        formControlName="searchTerm"
+        placeholder="Rechercher par numéro, nom ou email..."
+        class="search-input"
+      />
+      <i class="fa fa-search search-icon"></i>
+    </div>
+
+    <div class="filters">
+      <div class="filter-group">
+        <label for="statut">Statut:</label>
+        <select id="statut" formControlName="statut">
+          <option value="">Tous</option>
+          <option [value]="certificatStatus.VALIDE">Validé</option>
+          <option [value]="certificatStatus.EN_ATTENTE">En attente</option>
+          <option [value]="certificatStatus.REJETE">Rejeté</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="dateDebut">De:</label>
+        <input type="date" id="dateDebut" formControlName="dateDebut" />
+      </div>
+
+      <div class="filter-group">
+        <label for="dateFin">À:</label>
+        <input type="date" id="dateFin" formControlName="dateFin" />
+      </div>
+
+      <button class="btn-reset" (click)="resetFilters()">
+        <i class="fa fa-refresh"></i> Réinitialiser
+      </button>
+      <button class="btn-apply" (click)="applyFilters()">
+        <i class="fa fa-filter"></i> Appliquer
+      </button>
+    </div>
+  </div>
+
+  <!-- Message de chargement -->
+  <div *ngIf="isLoading" class="loading-message">
+    <i class="fa fa-spinner fa-spin"></i> Chargement des certifications...
+  </div>
+
+  <!-- Tableau des résultats -->
+  <div
+    class="table-container"
+    *ngIf="!isLoading && filteredCertifications.length > 0"
+  >
+    <table class="certifications-table">
+      <thead>
+        <tr>
+          <th>Numéro de série</th>
+          <th>Participant</th>
+          <th>Date de génération</th>
+          <th>Langue</th>
+          <th>Statut</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of filteredCertifications">
+          <td>{{ item.certification.numeroSerie || "N/A" }}</td>
+          <td>
+            <div class="user-info" *ngIf="item.utilisateur">
+              <div class="user-name">
+                {{ item.utilisateur.nom }} {{ item.utilisateur.prenom }}
+              </div>
+              <div class="user-email">{{ item.utilisateur.email }}</div>
+            </div>
+            <div *ngIf="!item.utilisateur">Information non disponible</div>
+          </td>
+          <td>{{ item.certification.dateGeneration | date : "dd/MM/yyyy" }}</td>
+          <td>
+            <span
+              class="language-badge"
+              [ngClass]="
+                item.certification.file_url?.includes('-AR')
+                  ? 'arabic'
+                  : 'french'
+              "
+            >
+              <i
+                class="fa"
+                [ngClass]="
+                  item.certification.file_url?.includes('-AR')
+                    ? 'fa-file-text'
+                    : 'fa-file-text-o'
+                "
+                aria-hidden="true"
+              ></i>
+              {{
+                item.certification.file_url?.includes("-AR")
+                  ? "العربية"
+                  : "Français"
+              }}
+            </span>
+          </td>
+          <td>
+            <span
+              class="status-badge"
+              [ngClass]="item.certification.statut?.toLowerCase()"
+            >
+              {{ item.certification.statut }}
+            </span>
+          </td>
+          <td class="actions-cell">
+            <button
+              class="btn-action view"
+              title="Voir le certificat"
+              (click)="voirCertificat(item.certification.file_url)"
+              [disabled]="!item.certification.file_url"
+            >
+              <i class="fa fa-eye" aria-hidden="true"></i>
+            </button>
+            <button
+              class="btn-action download"
+              title="Télécharger le certificat"
+              (click)="telechargerCertificat(item.certification.file_url)"
+              [disabled]="!item.certification.file_url"
+            >
+              <i class="fa fa-download" aria-hidden="true"></i>
+            </button>
+            <button
+              *ngIf="
+                item.certification.statut === certificatStatus.EN_ATTENTE &&
+                item.utilisateur?.id
+              "
+              class="btn-action validate"
+              title="Valider le certificat"
+              (click)="
+                item.utilisateur &&
+                  validerEtNotifier(item.utilisateur, item.certification)
+              "
+            >
+              <i class="fa fa-check" aria-hidden="true"></i>
+            </button>
+
+            <button
+              *ngIf="item.certification.statut === certificatStatus.EN_ATTENTE"
+              class="btn-action reject"
+              title="Rejeter le certificat"
+              (click)="
+                updateCertificatStatus(
+                  item.certification.id,
+                  certificatStatus.REJETE
+                )
+              "
+            >
+              <i class="fa fa-times" aria-hidden="true"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Message si aucun résultat -->
+  <div
+    *ngIf="!isLoading && !errorMessage && filteredCertifications.length === 0"
+    class="no-results"
+  >
+    <i class="fa fa-info-circle"></i> Aucune certification ne correspond à vos
+    critères.
+  </div>
+
+  <!-- Popup de confirmation -->
+  <div *ngIf="showConfirmationPopup" class="confirmation-popup">
+    <div class="popup-content">
+      <h3>Confirmation</h3>
+      <p>{{ confirmationMessage }}</p>
+      <div class="popup-buttons">
+        <button class="btn-confirm" (click)="confirmAction()">Confirmer</button>
+        <button class="btn-cancel" (click)="cancelAction()">Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>
