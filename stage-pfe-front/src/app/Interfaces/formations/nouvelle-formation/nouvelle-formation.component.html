@@ -1,0 +1,262 @@
+<!-- new-formation.component.html -->
+<div class="container-fluid p-4">
+    <div class="card shadow">
+      <div class="card-header ">
+        <h2 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Ajouter une nouvelle formation</h2>
+      </div>
+      
+      <div class="card-body">
+        <form [formGroup]="formationForm" (ngSubmit)="onSubmit()">
+          <div class="row">
+            <!-- Colonne de gauche -->
+            <div class="col-md-8">
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="titre" class="form-label">Titre <span class="text-danger">*</span></label>
+                  <input 
+                    type="text" 
+                    id="titre" 
+                    formControlName="titre" 
+                    class="form-control" 
+                    [ngClass]="{'is-invalid': formationForm.get('titre')?.invalid && (formationForm.get('titre')?.dirty || formationForm.get('titre')?.touched)}"
+                  />
+                  <div class="invalid-feedback">
+                    {{ getFormControlError('titre') }}
+                  </div>
+                </div>
+                
+                <div class="col-md-6">
+                  <label for="themeId" class="form-label">Thème <span class="text-danger">*</span></label>
+                  <select 
+                    id="themeId" 
+                    formControlName="themeId" 
+                    class="form-select"
+                    [ngClass]="{'is-invalid': formationForm.get('themeId')?.invalid && (formationForm.get('themeId')?.dirty || formationForm.get('themeId')?.touched)}"
+                  >
+                    <option [ngValue]="null" disabled>Sélectionner un thème</option>
+                    <option *ngFor="let theme of themes" [ngValue]="theme.id">{{ theme.nom }}</option>
+                  </select>
+                  <div class="invalid-feedback">
+                    {{ getFormControlError('themeId') }}
+                  </div>
+                </div>
+              </div>
+              
+              <div class="row mb-3">
+                <div class="col-md-4">
+                  <label for="duree" class="form-label">Durée (semaines) <span class="text-danger">*</span></label>
+                  <input 
+                    type="number" 
+                    id="duree" 
+                    formControlName="duree" 
+                    class="form-control" 
+                    min="1"
+                    [ngClass]="{'is-invalid': formationForm.get('duree')?.invalid && (formationForm.get('duree')?.dirty || formationForm.get('duree')?.touched)}"
+                  />
+                  <div class="invalid-feedback">
+                    {{ getFormControlError('duree') }}
+                  </div>
+                </div>
+                
+                <div class="col-md-4">
+                  <label for="prix" class="form-label">Prix (DT) <span class="text-danger">*</span></label>
+                  <input 
+                    type="number" 
+                    id="prix" 
+                    formControlName="prix" 
+                    class="form-control" 
+                    min="0"
+                    step="0.01"
+                    [ngClass]="{'is-invalid': formationForm.get('prix')?.invalid && (formationForm.get('prix')?.dirty || formationForm.get('prix')?.touched)}"
+                  />
+                  <div class="invalid-feedback">
+                    {{ getFormControlError('prix') }}
+                  </div>
+                </div>
+                
+                <div class="col-md-4">
+                  <label for="placesMax" class="form-label">Places maximum <span class="text-danger">*</span></label>
+                  <input 
+                    type="number" 
+                    id="placesMax" 
+                    formControlName="placesMax" 
+                    class="form-control" 
+                    min="1"
+                    [ngClass]="{'is-invalid': formationForm.get('placesMax')?.invalid && (formationForm.get('placesMax')?.dirty || formationForm.get('placesMax')?.touched)}"
+                  />
+                  <div class="invalid-feedback">
+                    {{ getFormControlError('placesMax') }}
+                  </div>
+                </div>
+              </div>
+              
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="niveau" class="form-label">Niveau <span class="text-danger">*</span></label>
+                  <select 
+                    id="niveau" 
+                    formControlName="niveau" 
+                    class="form-select"
+                    [ngClass]="{'is-invalid': formationForm.get('niveau')?.invalid && (formationForm.get('niveau')?.dirty || formationForm.get('niveau')?.touched)}"
+                  >
+                    <option [ngValue]="''" disabled>Sélectionner un niveau</option>
+                    <option *ngFor="let niveau of niveaux" [value]="niveau">{{ niveau }}</option>
+                  </select>
+                  <div class="invalid-feedback">
+                    {{ getFormControlError('niveau') }}
+                  </div>
+                </div>
+                
+                <div class="col-md-6">
+                  <label for="statut" class="form-label">Statut <span class="text-danger">*</span></label>
+                  <select 
+                    id="statut" 
+                    formControlName="statut" 
+                    class="form-select"
+                    [ngClass]="{'is-invalid': formationForm.get('statut')?.invalid && (formationForm.get('statut')?.dirty || formationForm.get('statut')?.touched)}"
+                  >
+                    <option *ngFor="let statut of statuts" [value]="statut">{{ statut }}</option>
+                  </select>
+                  <div class="invalid-feedback">
+                    {{ getFormControlError('statut') }}
+                  </div>
+                </div>
+              </div>
+              
+              <div class="mb-3">
+                <label for="description" class="form-label">Description <span class="text-danger">*</span></label>
+                <textarea 
+                  id="description" 
+                  formControlName="description" 
+                  class="form-control" 
+                  rows="3"
+                  [ngClass]="{'is-invalid': formationForm.get('description')?.invalid && (formationForm.get('description')?.dirty || formationForm.get('description')?.touched)}"
+                ></textarea>
+                <div class="invalid-feedback">
+                  {{ getFormControlError('description') }}
+                </div>
+              </div>
+              
+              <div class="mb-3">
+                <label for="prerequis" class="form-label">Prérequis</label>
+                <textarea 
+                  id="prerequis" 
+                  formControlName="prerequis" 
+                  class="form-control" 
+                  rows="3"
+                ></textarea>
+              </div>
+              
+              <div class="mb-3">
+                <label for="objectifsFormation" class="form-label">Objectifs de formation</label>
+                <textarea 
+                  id="objectifsFormation" 
+                  formControlName="objectifsFormation" 
+                  class="form-control" 
+                  rows="3"
+                ></textarea>
+              </div>
+              
+              <div class="mb-3">
+                <label for="programmeDetaille" class="form-label">Programme détaillé</label>
+                <textarea 
+                  id="programmeDetaille" 
+                  formControlName="programmeDetaille" 
+                  class="form-control" 
+                  rows="5"
+                ></textarea>
+              </div>
+            </div>
+            
+            <!-- Colonne de droite - Prévisualisation -->
+            <div class="col-md-4">
+              <div class="card h-100">
+                <div class="card-header bg-light">
+                  <h5 class="mb-0">Photo de la formation</h5>
+                </div>
+                <div class="card-body d-flex flex-column align-items-center">
+                  <div class="image-preview mb-3 border rounded p-2 text-center">
+                    <img 
+                      [src]="imagePreview ? imagePreview : 'assets/produit.png'" 
+                      alt="Prévisualisation" 
+                      class="img-fluid" 
+                      style="max-height: 200px;"
+                    />
+                  </div>
+                  <div class="custom-file-upload">
+                    <input 
+                      type="file" 
+                      id="photo" 
+                      (change)="onFileChange($event)" 
+                      accept="image/*" 
+                      class="form-control mb-2"
+                    />
+                  </div>
+                  <small class="text-muted">Formats acceptés: .jpg, .png, .webp (max: 2Mo)</small>
+                  
+                  <!-- Prévisualisation de la carte formation -->
+                  <div class="formation-preview mt-4">
+                    <h5 class="mb-3">Aperçu de la carte</h5>
+                    <div class="formation-card compact-card border shadow-sm">
+                      <div class="card-image position-relative">
+                        <img 
+                          [src]="imagePreview ? imagePreview : 'assets/produit.png'" 
+                          class="img-fluid rounded product-image"
+                        />
+                        <span class="badge bg-success position-absolute" style="top: 10px; right: 10px;" *ngIf="formationForm.get('statut')?.value === 'Actif'">
+                          Places disponibles
+                        </span>
+                      </div>
+                      <div class="card-content p-3">
+                        <h5 class="formation-title">{{ formationForm.get('titre')?.value || 'Titre de la formation' }}</h5>
+                        
+                        <div class="formation-details d-flex flex-wrap gap-2 mb-2">
+                          <div class="detail-item d-flex align-items-center me-2">
+                            <i class="fas fa-clock me-1 text-primary"></i>
+                            <small>{{ formationForm.get('duree')?.value || '0' }} semaines</small>
+                          </div>
+                          <div class="detail-item d-flex align-items-center me-2">
+                            <i class="fas fa-graduation-cap me-1 text-primary"></i>
+                            <small>{{ formationForm.get('niveau')?.value || 'Niveau' }}</small>
+                          </div>
+                          <div class="detail-item d-flex align-items-center">
+                            <i class="fas fa-users me-1 text-primary"></i>
+                            <small>{{ formationForm.get('placesMax')?.value || '0' }} places</small>
+                          </div>
+                        </div>
+                        
+                        <p class="description small text-muted mb-2">
+                          {{ (formationForm.get('description')?.value | slice:0:100) || 'Description de la formation...' }}
+                          {{ formationForm.get('description')?.value?.length > 100 ? '...' : '' }}
+                        </p>
+                        
+                        <div class="price-container">
+                          <span class="price fw-bold text-primary">
+                            <i class="fas fa-tag me-1"></i>
+                            {{ formationForm.get('prix')?.value || '0' }} DT
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Boutons d'action -->
+          <div class="d-flex justify-content-end gap-2 mt-4">
+            <button type="button" class="btn btn-outline-secondary" (click)="cancel()">
+              <i class="fas fa-times me-1"></i>Annuler
+            </button>
+            <button type="button" class="btn btn-outline-warning" (click)="resetForm()">
+              <i class="fas fa-redo me-1"></i>Réinitialiser
+            </button>
+            <button type="submit" class="btn btn-primary" [disabled]="formationForm.invalid">
+              <i class="fas fa-save me-1"></i>Enregistrer
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,102 @@
+/* Reset CSS */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    line-height: 1.6;
+    padding: 20px;
+  }
+  
+  /* Conteneur principal */
+  .certifications-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Titre principal */
+  .main-title {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    color: #2c3e50;
+  }
+  
+  /* Liste des certifications */
+  .certification-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  /* Carte de certification */
+  .certification-card {
+    display: flex;
+    align-items: center;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    padding: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .certification-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Icône de certification */
+  .certification-icon {
+    font-size: 2rem;
+    color: #3498db;
+    margin-right: 20px;
+  }
+  
+  /* Détails de la certification */
+  .certification-details {
+    flex: 1;
+  }
+  
+  .certification-title {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    color: #2c3e50;
+  }
+  
+  .certification-date,
+  .certification-status,
+  .certification-description {
+    margin-bottom: 8px;
+    font-size: 1rem;
+    color: #555;
+  }
+  
+  .certification-date i,
+  .certification-status i {
+    margin-right: 8px;
+  }
+  
+  .certification-status .fa-check-circle {
+    color: #27ae60;
+  }
+  
+  .certification-status .fa-times-circle {
+    color: #e74c3c;
+  }
+  
+  /* Animation pour les icônes */
+  .certification-icon i {
+    transition: transform 0.3s ease;
+  }
+  
+  .certification-card:hover .certification-icon i {
+    transform: rotate(15deg);
+  }

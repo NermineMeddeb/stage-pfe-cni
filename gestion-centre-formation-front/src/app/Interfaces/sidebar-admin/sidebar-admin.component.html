@@ -1,0 +1,34 @@
+<div class="sidebar">
+    <div class="sidebar-header">
+      <img src="assets/logo.png" alt="MTS Plus Logo" class="sidebar-logo">
+    </div>
+  
+    <ul class="sidebar-menu">
+      <li *ngFor="let menu of menuProperties" class="menu-item">
+        <!-- Ajout de la classe active sur le bouton -->
+        <button 
+          class="menu-btn" 
+          [class.active]="menu.active"
+          (click)="toggleMenu(menu)">
+          <img [src]="menu.icon" alt="{{ menu.titre }}" class="menu-icon" />
+          <span>{{ menu.titre }}</span>
+        </button>
+  
+        <!-- Afficher le sous-menu uniquement s'il existe -->
+        <div class="submenu" [class.show]="menu.active" *ngIf="menu.sousMenu && menu.sousMenu.length > 0">
+          <ul>
+            <li *ngFor="let sousMenu of menu.sousMenu">
+              <a 
+                class="submenu-link" 
+                [class.active]="sousMenu.active"
+                (click)="navigate(sousMenu)">
+                <img [src]="sousMenu.icon" alt="{{ sousMenu.titre }}" class="menu-icon" />
+
+                <span>{{ sousMenu.titre }}</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </li>
+    </ul>
+  </div>

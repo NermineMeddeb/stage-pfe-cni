@@ -1,0 +1,34 @@
+<!-- salles.component.html -->
+<div class="app-container">
+  <header class="header">
+    <h1>📅 Gestion des Salles</h1>
+  </header>
+
+  <button class="floating-button">➕</button>
+
+  <main class="main-content">
+    <!-- Chargement -->
+    <div *ngIf="loading" class="loading">
+      🔄 Chargement des salles...
+    </div>
+
+    <!-- Aucun résultat -->
+    <div *ngIf="!loading && salles.length === 0" class="no-data">
+      🚫 Aucune salle disponible.
+    </div>
+
+    <!-- Cartes des salles -->
+    <div *ngFor="let salle of salles" class="room-card">
+      <div class="room-header">
+        <h2>{{ salle.nom }}</h2>
+        <span class="room-status status-{{ salle.statut?.toLowerCase() }}">
+          {{ salle.statut }}
+        </span>
+      </div>
+      <div class="room-info">
+        <div class="info-item">👥 Capacité: {{ salle.capacite }} personnes</div>
+        <div class="info-item">💻 Équipement: {{ salle.equipement }}</div>
+      </div>
+    </div>
+  </main>
+</div>

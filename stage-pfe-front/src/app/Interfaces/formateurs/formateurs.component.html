@@ -1,0 +1,60 @@
+<!-- clients.component.html -->
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <div class="header-content">
+      <h1>🎓 Liste des étudiants</h1>
+      <div class="header-actions">
+        <div class="search-box">
+          <i class="fas fa-search me-2"></i>
+
+          <input
+            type="text"
+            placeholder="🔍 Rechercher un étudiant..."
+            (input)="onSearch($any($event.target).value)"
+          />
+        </div>
+        <app-action-button></app-action-button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alert Error -->
+  <div class="alert alert-danger alert-dismissible fade show" *ngIf="errorMsg">
+    <i class="fas fa-exclamation-circle me-2"></i>
+    ⚠️ {{ errorMsg }}
+    <button type="button" class="btn-close" (click)="errorMsg = ''"></button>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="loading">
+    <div class="loading-card" *ngFor="let i of [1, 2, 3]">
+      <div class="loading-avatar"></div>
+      <div class="loading-content">
+        <div class="loading-line"></div>
+        <div class="loading-line"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Student Cards -->
+  <div class="students-grid" *ngIf="!loading">
+    <app-details-clients
+      *ngFor="let client of filteredClients"
+      [UtilisateursDto]="client"
+      (suppressionResult)="handleSuppression($event)"
+    >
+    </app-details-clients>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!loading && filteredClients.length === 0">
+    <i class="fas fa-user-graduate"></i>
+    <h3>🚫 Aucun étudiant trouvé</h3>
+    <p>🔄 Modifiez vos critères de recherche ou ajoutez de nouveaux étudiants.</p>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination-container">
+    <app-pagination></app-pagination>
+  </div>
+</div>

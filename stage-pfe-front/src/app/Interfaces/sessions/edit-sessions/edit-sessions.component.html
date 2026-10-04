@@ -1,0 +1,75 @@
+<!-- session-edit.component.html -->
+<div class="edit-container">
+  <div class="page-header">
+    <h1>{{ isNewSession ? "Nouvelle Session" : "Modifier la Session" }}</h1>
+    <div class="action-bar">
+      <button class="btn btn-secondary" (click)="goBack()">← Retour</button>
+    </div>
+  </div>
+
+  <!-- État de chargement -->
+  <div *ngIf="loading" class="loading-overlay">
+    <div class="spinner">
+      <span>🔄 Chargement en cours...</span>
+    </div>
+  </div>
+
+  <!-- Message d'erreur -->
+  <div *ngIf="error" class="alert alert-danger">
+    🚨 {{ errorMessage || "Une erreur est survenue." }}
+  </div>
+
+  <!-- Message de succès -->
+  <div *ngIf="successMessage" class="alert alert-success">
+    ✅ {{ successMessage }}
+  </div>
+
+  <div class="form-container" *ngIf="!loading">
+    <form
+      [formGroup]="sessionForm"
+      (ngSubmit)="onSubmit()"
+      (change)="validateDates(); validatePlaces()"
+    >
+      <div class="card">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="formationId">📚 Formation *</label>
+                <select
+                  id="formationId"
+                  class="form-control"
+                  formControlName="formationId"
+                  [ngClass]="{ 'is-invalid': isFieldInvalid('formationId') }"
+                >
+                  <option value="" disabled selected>
+                    Sélectionnez une formation
+                  </option>
+                  <option
+                    *ngFor="let formation of formations"
+                    [value]="formation.id"
+                  >
+                    {{ formation.titre }}
+                  </option>
+                </select>
+                <div
+                  *ngIf="isFieldInvalid('formationId')"
+                  class="invalid-feedback"
+                >
+                  {{ getErrorMessage("formationId") }}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="statut">📊 Statut *</label>
+                <select id="statut" class="form-control"></select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,6 @@
+*.jar
+*.rar
+target/
+.idea/
+node_modules/
+.angular/

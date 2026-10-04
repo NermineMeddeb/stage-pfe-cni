@@ -1,0 +1,182 @@
+<div class="catalog-container">
+  <app-action-button (click)="nouvelleformation()"></app-action-button>
+  <header class="catalog-header">
+    <h1>Catalogue des Formations</h1>
+    <div class="search-bar">
+      <input
+        type="text"
+        [value]="searchInput"
+        (input)="onSearch($event)"
+        placeholder="Rechercher une formation..."
+      />
+      <button><i class="fas fa-search"></i></button>
+    </div>
+  </header>
+
+  <!-- Error message display -->
+  <div *ngIf="errorMsg" class="error-message">
+    {{ errorMsg }}
+  </div>
+
+  <!-- Theme filters -->
+  <div class="filters">
+    <button
+      *ngFor="let theme of themes"
+      class="filter-btn"
+      [class.active]="selectedTheme === theme.nom"
+      (click)="applyFilter(theme.nom || '')"
+    >
+      {{ theme.nom }}
+    </button>
+  </div>
+
+  <!-- Loading state -->
+  <div *ngIf="loading" class="loading">Chargement des formations...</div>
+
+  <!-- Formations grid -->
+  <div class="catalog-grid" *ngIf="formationsAffichees.length && !loading">
+    <div class="formation-card" *ngFor="let formation of formationsAffichees">
+      <app-details-formation-admin
+        [FormationsDto]="formation"
+      ></app-details-formation-admin>
+      <!-- Edit button -->
+      <button class="edit-btn" (click)="editFormation(formation)">
+        Modifier
+      </button>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <app-pagination
+    *ngIf="formationsAffichees.length"
+    [currentPage]="currentPage"
+    [totalItems]="totalItems"
+    [itemsPerPage]="itemsPerPage"
+    (pageChange)="onPageChange($event)"
+  >
+  </app-pagination>
+
+  <!-- Edit Modal -->
+  <div
+    class="modal"
+    [ngClass]="{ 'modal-open': editModalVisible }"
+    tabindex="-1"
+    role="dialog"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">
+            {{ isEditMode ? "Modifier la formation" : "Ajouter une formation" }}
+          </h5>
+          <button
+            type="button"
+            class="close"
+            (click)="closeModal()"
+            aria-label="Fermer"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="formationForm" (ngSubmit)="saveFormation()">
+            <input type="hidden" formControlName="id" />
+
+            <div class="form-group">
+              <label for="name">Nom</label>
+              <input
+                type="text"
+                id="name"
+                class="form-control"
+                formControlName="name"
+              />
+              <div
+                *ngIf="
+                  formationForm.get('name')?.invalid &&
+                  formationForm.get('name')?.touched
+                "
+                class="text-danger"
+              >
+                Le nom est requis
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="description">Description</label>
+              <textarea
+                id="description"
+                class="form-control"
+                formControlName="description"
+                rows="3"
+              ></textarea>
+              <div
+                *ngIf="
+                  formationForm.get('description')?.invalid &&
+                  formationForm.get('description')?.touched
+                "
+                class="text-danger"
+              >
+                La description est requise
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="duration">Durée</label>
+              <input
+                type="text"
+                id="duration"
+                class="form-control"
+                formControlName="duration"
+              />
+              <div
+                *ngIf="
+                  formationForm.get('duration')?.invalid &&
+                  formationForm.get('duration')?.touched
+                "
+                class="text-danger"
+              >
+                La durée est requise
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="price">Prix</label>
+              <input
+                type="number"
+                id="price"
+                class="form-control"
+                formControlName="price"
+              />
+              <div
+                *ngIf="
+                  formationForm.get('price')?.invalid &&
+                  formationForm.get('price')?.touched
+                "
+                class="text-danger"
+              >
+                Le prix est requis et doit être positif
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                (click)="closeModal()"
+              >
+                Annuler
+              </button>
+              <button
+                type="submit"
+                class="btn btn-primary"
+                [disabled]="formationForm.invalid"
+              >
+                Enregistrer
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,186 @@
+<div
+  class="dashboard-container"
+  [ngClass]="{ 'dark-theme': currentTheme === 'dark' }"
+>
+  <div class="dashboard-header">
+    <!-- Sessions Section -->
+    <div
+      class="dashboard-section"
+      [class.collapsed]="!visibleSections.sessions"
+    >
+      <div class="section-header" (click)="toggleSection('sessions')">
+        <h2>Sessions</h2>
+        <i
+          [ngClass]="{
+            'fas fa-chevron-down': visibleSections.sessions,
+            'fas fa-chevron-right': !visibleSections.sessions
+          }"
+        ></i>
+      </div>
+
+      <div *ngIf="visibleSections.sessions" class="section-content">
+        <div class="session-cards">
+          <div *ngFor="let session of upcomingSessions" class="session-card">
+            <div class="session-header">
+              <h3>{{ session.name }}</h3>
+              <span class="place-badge">{{ session.extra.lieu }}</span>
+            </div>
+            <div class="session-details">
+              <div class="detail-item">
+                <i class="fas fa-calendar"></i>
+                <span
+                  >{{ session.extra.dateDebut | date : "dd/MM/yyyy" }} -
+                  {{ session.extra.dateFin | date : "dd/MM/yyyy" }}</span
+                >
+              </div>
+              <div class="detail-item">
+                <i class="fas fa-users"></i>
+                <span
+                  >{{ session.extra.nbInscrits }} /
+                  {{ session.value }} places</span
+                >
+              </div>
+              <div class="detail-item">
+                <i class="fas fa-user-tie"></i>
+                <span>{{ session.extra.formateur }}</span>
+              </div>
+            </div>
+            <div class="session-progress">
+              <div class="progress-text">
+                <span>Taux de remplissage</span>
+                <span
+                  >{{
+                    ((session.extra.nbInscrits / session.value) * 100).toFixed(
+                      0
+                    )
+                  }}%</span
+                >
+              </div>
+              <div class="progress-bar">
+                <div
+                  class="progress"
+                  [style.width.%]="
+                    (session.extra.nbInscrits / session.value) * 100
+                  "
+                ></div>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="upcomingSessions.length === 0" class="no-sessions">
+            <i class="fas fa-calendar-times"></i>
+            <p>Aucune session à venir</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class="btn theme-btn" (click)="toggleTheme()">
+      <i
+        [ngClass]="{
+          'fas fa-moon': currentTheme === 'light',
+          'fas fa-sun': currentTheme === 'dark'
+        }"
+      ></i>
+    </button>
+    <!-- Users Section -->
+    <div class="dashboard-section" [class.collapsed]="!visibleSections.users">
+      <div class="section-header" (click)="toggleSection('users')">
+        <h2>Utilisateurs</h2>
+        <i
+          [ngClass]="{
+            'fas fa-chevron-down': visibleSections.users,
+            'fas fa-chevron-right': !visibleSections.users
+          }"
+        ></i>
+      </div>
+
+      <div *ngIf="visibleSections.users" class="section-content">
+        <div class="charts-row">
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>Distribution des Utilisateurs</h3>
+            </div>
+            <div class="chart-content">
+              <ngx-charts-pie-chart
+                [view]="viewPie"
+                [results]="userDistribution"
+                [gradient]="gradient"
+                [legend]="showLegend"
+                [labels]="true"
+                [doughnut]="false"
+                [scheme]="colorSchemeMulti"
+                (select)="onSelect($event)"
+              >
+              </ngx-charts-pie-chart>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>Progression des Étudiants</h3>
+            </div>
+            <div class="chart-content">
+              <ngx-charts-line-chart
+                [view]="viewLine"
+                [results]="[
+                  { name: 'Taux de complétion', series: studentProgressByMonth }
+                ]"
+                [gradient]="gradient"
+                [xAxis]="showXAxis"
+                [yAxis]="showYAxis"
+                [legend]="true"
+                [showXAxisLabel]="showXAxisLabel"
+                [showYAxisLabel]="showYAxisLabel"
+                [xAxisLabel]="'Mois'"
+                [yAxisLabel]="'Taux (%)'"
+                [scheme]="colorSchemeGreen"
+                [curve]="'linear'"
+                (select)="onSelect($event)"
+              >
+              </ngx-charts-line-chart>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Insights Section -->
+    <div
+      class="dashboard-section"
+      [class.collapsed]="!visibleSections.insights"
+    >
+      <div class="section-header" (click)="toggleSection('insights')">
+        <h2>Statistiques Avancées</h2>
+        <i
+          [ngClass]="{
+            'fas fa-chevron-down': visibleSections.insights,
+            'fas fa-chevron-right': !visibleSections.insights
+          }"
+        ></i>
+      </div>
+
+      <div *ngIf="visibleSections.insights" class="section-content">
+        <div class="charts-row">
+          <div class="chart-card full-width">
+            <div class="chart-header">
+              <h3>Revenus par Mois</h3>
+            </div>
+            <div class="chart-content">
+              <ngx-charts-bar-vertical
+                [view]="viewLine"
+                [results]="revenueByMonth"
+                [gradient]="gradient"
+                [xAxis]="showXAxis"
+                [yAxis]="showYAxis"
+                [legend]="false"
+                [showXAxisLabel]="showXAxisLabel"
+                [showYAxisLabel]="showYAxisLabel"
+                [xAxisLabel]="'Mois'"
+              ></ngx-charts-bar-vertical>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

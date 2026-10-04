@@ -1,0 +1,37 @@
+{
+  "name": "gestion-centre-formation-front",
+  "version": "0.0.0",
+  "scripts": {
+    "preinstall": "npx npm-force-resolutions",
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test",
+    "start:local": "npm run cni-api && ng serve -- --proxyConfig=proxy.conf.json",
+    "cni-api": "npm run cni-api:create-dist && npm run cni-api:download && npm run cni-api:extract && npm run cni-api:swagger-gen",
+    "cni-api:create-dist": "mkdirp tools/swagger/dist && mkdirp tools/swagger/src",
+    "cni-api:download": "cmd /c copy D:\\stage_pfe_cni\\Crud-version-cni\\target\\Gestion_centre_formation_backend-0.0.1-SNAPSHOT.jar tools\\swagger\\dist\\ && cmd /c copy D:\\stage_pfe_cni\\Crud-version-cni\\target\\swagger.json tools\\swagger\\src\\",
+    "cni-api:extract": "node ./tools/swagger/src/swagger.json",
+    "cni-api:swagger-gen": "npx ng-swagger-gen -i ./tools/swagger/src/swagger.json -o src/cni-api/src"
+  },
+  "private": true,
+ "dependencies": {
+  "@angular/animations": "14.2.13",
+  "@angular/common": "14.2.13",
+  "@angular/compiler": "14.2.13",
+  "@angular/core": "14.2.13",
+  "@angular/forms": "14.2.13",
+  "@angular/platform-browser": "14.2.13",
+  "@angular/platform-browser-dynamic": "14.2.13",
+  "@angular/router": "14.2.13",
+  "rxjs": "6.6.7"
+},
+"devDependencies": {
+"@angular-devkit/architect": "^0.1402.13",
+  "@angular-devkit/build-angular": "14.2.13",
+  "@angular/cli": "14.2.13",
+  "@angular/compiler-cli": "14.2.13",
+  "typescript": "4.7.4"
+}
+}

@@ -1,0 +1,94 @@
+<!-- details-formation.component.html -->
+<div class="formation-card" *ngIf="FormationsDto">
+  <div class="card-image">
+    <img
+    [src]="FormationsDto?.photo ? 'assets/' + FormationsDto.photo : 'assets/icons/formation.png'"
+    class="img-fluid rounded product-image"
+  />
+  
+    <div class="card-overlay">
+      <button
+        class="preview-btn"
+        (click)="voirApercu(FormationsDto.id)"
+        *ngIf="FormationsDto.id"
+      >
+        Aperçu du programme
+      </button>
+    </div>
+    <span class="card-badge" *ngIf="FormationsDto.statut === 'Actif'">
+      Places disponibles
+    </span>
+  </div>
+
+  <div class="card-content">
+    <h3 class="formation-title">{{ FormationsDto.titre }}</h3>
+
+    <div class="formation-details">
+      <div class="detail-item">
+        <img
+          [src]="'assets/duree.png'"
+          alt="Durée"
+          style="width: 25px; height: auto"
+        />
+        <span>{{ FormationsDto.duree }} semaines</span>
+      </div>
+      <div class="detail-item">
+        <img
+          [src]="'assets/niveau.png'"
+          alt="Durée"
+          style="width: 25px; height: auto"
+        />
+        <span>{{ FormationsDto.niveau }}</span>
+      </div>
+      <div class="detail-item">
+        <img
+          [src]="'assets/places.png'"
+          alt="Durée"
+          style="width: 25px; height: auto"
+        />
+        <span>{{ FormationsDto.placesMax }} places</span>
+      </div>
+      <div class="detail-item">
+        <img
+          [src]="'assets/icons/certificat.png'"
+          alt="Durée"
+          style="width: 25px; height: auto"
+        />
+        <span>Certification</span>
+      </div>
+    </div>
+
+    <p class="description">
+      <img
+        [src]="'assets/description.png'"
+        alt="Durée"
+        style="width: 25px; height: auto"
+      />{{ FormationsDto.description }}
+    </p>
+
+    <!--   <div class="skill-tags">
+        <span *ngFor="let objectif of getObjectifs()">{{ objectif }}</span>
+      </div>
+    </div> -->
+
+    <div class="card-footer">
+      <div class="price-container">
+        <span class="price">
+          <img
+            [src]="'assets/prix.png'"
+            alt="Durée"
+            style="width: 25px; height: auto"
+          />  {{ FormationsDto.prix }}DT</span
+        >
+      </div>
+      <button class="enroll-btn">
+        <img
+          [src]="'assets/sinscrire.png'"
+          alt="Durée"
+          style="width: 25px; height: auto"
+        />
+        S'inscrire
+      </button>
+    </div>
+  </div>
+</div>

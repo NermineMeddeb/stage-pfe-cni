@@ -1,0 +1,148 @@
+<!-- session-details.component.html -->
+<div class="details-container">
+    <div class="page-header">
+      <h1>Détails de la Session</h1>
+      <div class="action-bar">
+        <button class="btn btn-secondary" (click)="goBack()">
+          ← Retour
+        </button>
+      </div>
+    </div>
+  
+    <!-- État de chargement -->
+    <div *ngIf="loading" class="loading-overlay">
+      <div class="spinner">
+        <span>🔄 Chargement en cours...</span>
+      </div>
+    </div>
+  
+    <!-- Message d'erreur -->
+    <div *ngIf="error" class="alert alert-danger">
+      🚨 {{ errorMessage || "Une erreur est survenue lors du chargement des données." }}
+    </div>
+  
+    <div *ngIf="!loading && !error && session" class="details-content">
+      <div class="card main-info-card">
+        <div class="card-header">
+          <h2 class="session-title">
+            <span *ngIf="formation">{{ formation.titre }}</span>
+            <span *ngIf="!formation">Formation #{{ session.formationId }}</span>
+            <span class="session-id">#{{ session.sessionId }}</span>
+          </h2>
+          <div class="badge" [ngClass]="'badge-' + getStatusClass()">
+            {{
+              getStatusClass() === "success"
+                ? "🟢 Places disponibles"
+                : getStatusClass() === "warning"
+                ? "🟡 Places limitées"
+                : "🔴 Presque complet"
+            }}
+          </div>
+        </div>
+        
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="info-block">
+                <h3>📅 Dates</h3>
+                <div class="dates-container">
+                  <div class="date-item">
+                    <span class="label">Date de début:</span>
+                    <span class="value">{{ formatDate(session.dateDebut) }}</span>
+                  </div>
+                  <div class="date-item">
+                    <span class="label">Date de fin:</span>
+                    <span class="value">{{ formatDate(session.dateFin) }}</span>
+                  </div>
+                  <div class="date-item" *ngIf="session.dateDebut && session.dateFin">
+                    <span class="label">Durée:</span>
+                    <span class="value">
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-md-6">
+              <div class="info-block">
+                <h3>🎯 Capacité</h3>
+                <div class="capacity-container">
+                  <div class="progress-container">
+                    <div class="progress-bar">
+                      <div
+                        class="progress"
+                        [ngClass]="'bg-' + getStatusClass()"
+                        [style.width.%]="getOccupancyPercentage()"
+                      ></div>
+                    </div>
+                    <div class="capacity-percentages">
+                      <span>{{ getOccupancyPercentage().toFixed(0) }}% occupé</span>
+                    </div>
+                  </div>
+                  <div class="capacity-details">
+                    <div class="capacity-item">
+                      <span class="label">Capacité totale:</span>
+                      <span class="value">{{ session.capacite || 0 }}</span>
+                    </div>
+                    <div class="capacity-item">
+                      <span class="label">Places disponibles:</span>
+                      <span class="value">{{ session.placesDisponibles || 0 }}</span>
+                    </div>
+                    <div class="capacity-item">
+                      <span class="label">Places occupées:</span>
+                      <span class="value">{{ (session.capacite || 0) - (session.placesDisponibles || 0) }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="row mt-4">
+            <div class="col-12">
+              <div class="info-block">
+                <h3>📋 Informations sur la formation</h3>
+                <div class="formation-details" *ngIf="formation">
+                  <div class="formation-item">
+                    <span class="label">Titre:</span>
+                    <span class="value">{{ formation.titre }}</span>
+                  </div>
+                  <div class="formation-item" *ngIf="formation.description">
+                    <span class="label">Description:</span>
+                    <span class="value">{{ formation.description }}</span>
+                  </div>
+                  <div class="formation-item" *ngIf="formation.duree">
+                    <span class="label">Durée standard:</span>
+                    <span class="value">{{ formation.duree }} heures</span>
+                  </div>
+                </div>
+                <div *ngIf="!formation" class="formation-not-found">
+                  <p>Informations de formation non disponibles</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card-footer">
+          <div class="actions">
+            <button class="btn btn-primary" (click)="goToEdit()">
+              ✏️ Modifier
+            </button>
+            <button class="btn btn-danger" (click)="deleteSession()">
+              🗑️ Supprimer
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Message si session non trouvée -->
+    <div *ngIf="!loading && !error && !session" class="not-found-message">
+      <div class="alert alert-warning">
+        <h3>⚠️ Session non trouvée</h3>
+        <p>La session demandée n'existe pas ou a été supprimée.</p>
+        <button class="btn btn-primary" (click)="goBack()">Retourner à la liste</button>
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,190 @@
+.calendar-container {
+  width: 100%;
+  max-width: 1000px; /* Réduire la largeur maximale */
+  margin: 0 auto;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 0.9em; /* Réduire la taille de la police globale */
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px; /* Réduire la marge */
+  padding: 8px 0; /* Réduire le padding */
+  border-bottom: 1px solid #eaeaea; /* Épaisseur de bordure réduite */
+}
+
+.month-title {
+  font-size: 1.2rem; /* Taille de police réduite */
+  margin: 0;
+  text-transform: capitalize;
+}
+
+.month-nav-btn {
+  background: none;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 6px 12px; /* Padding réduit */
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem; /* Taille de police réduite */
+}
+
+.month-nav-btn:hover {
+  background-color: #f0f0f0;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px; /* Espacement réduit entre les jours */
+}
+
+.weekday-header {
+  font-weight: bold;
+  text-align: center;
+  padding: 8px; /* Padding réduit */
+  background-color: #f5f5f5;
+  border-radius: 4px 4px 0 0;
+  font-size: 0.85rem; /* Taille de police réduite */
+}
+
+.calendar-day {
+  min-height: 80px; /* Hauteur réduite */
+  border: 1px solid #eaeaea;
+  border-radius: 4px;
+  padding: 6px; /* Padding réduit */
+  background-color: #fff;
+  transition: all 0.3s ease;
+}
+
+.calendar-day:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Ombre plus subtile */
+}
+
+.empty-day {
+  background-color: #f9f9f9;
+  border: 1px dashed #eaeaea;
+}
+
+.today {
+  background-color: #fffde7;
+  border: 2px solid #fbc02d;
+}
+
+.day-number {
+  font-weight: bold;
+  text-align: right;
+  margin-bottom: 4px; /* Marge réduite */
+  color: #555;
+  font-size: 0.9rem; /* Taille de police réduite */
+}
+
+.today .day-number {
+  color: #f57f17;
+}
+
+.session-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px; /* Espacement réduit entre les sessions */
+  overflow-y: auto;
+}
+
+.formation-session {
+  padding: 4px 6px; /* Padding réduit */
+  border-radius: 4px;
+  font-size: 0.75em; /* Taille de police réduite */
+  color: #000;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); /* Ombre plus subtile */
+}
+
+.formation-session:hover {
+  transform: translateY(-1px); /* Effet de survol plus subtil */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+/* Modal de détails d'événement */
+.event-details-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.event-details-content {
+  width: 90%;
+  max-width: 400px; /* Largeur réduite */
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.event-header {
+  padding: 12px; /* Padding réduit */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.event-header h3 {
+  margin: 0;
+  color: #000;
+  font-size: 1rem; /* Taille de police réduite */
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.2rem; /* Taille de police réduite */
+  cursor: pointer;
+  color: #000;
+  opacity: 0.7;
+}
+
+.close-btn:hover {
+  opacity: 1;
+}
+
+.event-body {
+  padding: 16px; /* Padding réduit */
+}
+
+.event-body p {
+  margin: 6px 0; /* Marge réduite */
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .calendar-grid {
+    gap: 2px; /* Espacement réduit */
+  }
+
+  .calendar-day {
+    min-height: 60px; /* Hauteur réduite */
+    padding: 4px; /* Padding réduit */
+  }
+
+  .formation-session {
+    padding: 3px; /* Padding réduit */
+    font-size: 0.7em; /* Taille de police réduite */
+  }
+
+  .weekday-header {
+    font-size: 0.75rem; /* Taille de police réduite */
+    padding: 4px 2px; /* Padding réduit */
+  }
+}

@@ -1,0 +1,71 @@
+/* details-clients.component.css */
+.student-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 16px 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.student-avatar {
+  font-size: 24px;
+  margin-right: 16px;
+  color: #007bff;
+}
+
+.student-info h3 {
+  margin: 0;
+  font-size: 20px;
+  color: #333;
+}
+
+.student-info p {
+  margin: 4px 0;
+  color: #666;
+}
+
+.role-badge {
+  margin-left: auto;
+  padding: 8px 12px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #555;
+}
+
+.card-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.card-actions button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-actions .btn-primary {
+  background-color: #bad4ef;
+  border-color: #007bff;
+}
+
+.card-actions .btn-info {
+  background-color: #8ac9d2;
+  border-color: #17a2b8;
+}
+
+.card-actions .btn-danger {
+  background-color: #f68f99;
+  border-color: #dc3545;
+}
+
+.card-actions .btn:hover {
+  opacity: 0.9;
+}

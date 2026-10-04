@@ -1,0 +1,28 @@
+<div class="container-fluid p-0">
+    <div class="row">
+      <!-- Sidebar -->
+      <div class="col-md-2 sidebar">
+        <app-sidebar-admin></app-sidebar-admin>
+      </div>
+  
+      <!-- Main Content -->
+      <div class="col-md-10">
+        <!-- Header -->
+        <div class="header">
+          <app-header></app-header>
+        </div>
+  
+        <!-- Dashboard Content -->
+        <div class="content">
+          <router-outlet></router-outlet>
+        </div>
+
+        <!-- Footer avec icônes sociales -->
+        <div class="footer mt-4">
+            <app-footer></app-footer>
+ 
+        </div>
+      </div>
+    </div>
+  </div>
+  

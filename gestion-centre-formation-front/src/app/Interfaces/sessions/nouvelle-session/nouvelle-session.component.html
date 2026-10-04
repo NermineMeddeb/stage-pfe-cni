@@ -1,0 +1,95 @@
+<div class="new-session-container">
+    <h2>Créer une nouvelle session</h2>
+    <form [formGroup]="sessionForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="capacite">Capacité</label>
+        <input
+          type="number"
+          id="capacite"
+          class="form-control"
+          formControlName="capacite"
+          placeholder="Entrez la capacité"
+          min="1"
+        />
+        <small class="text-danger" *ngIf="sessionForm.get('capacite')?.invalid && sessionForm.get('capacite')?.touched">
+          La capacité est requise et doit être un nombre positif.
+        </small>
+      </div>
+  
+      <div class="form-group">
+        <label for="dateDebut">Date de début</label>
+        <input type="date" id="dateDebut" class="form-control" formControlName="dateDebut" />
+        <small class="text-danger" *ngIf="sessionForm.get('dateDebut')?.invalid && sessionForm.get('dateDebut')?.touched">
+          La date de début est requise.
+        </small>
+      </div>
+  
+      <div class="form-group">
+        <label for="dateFin">Date de fin</label>
+        <input type="date" id="dateFin" class="form-control" formControlName="dateFin" />
+        <small class="text-danger" *ngIf="sessionForm.get('dateFin')?.invalid && sessionForm.get('dateFin')?.touched">
+          La date de fin est requise.
+        </small>
+      </div>
+  
+      <div class="form-group">
+        <label for="placesDisponibles">Places disponibles</label>
+        <input
+          type="number"
+          id="placesDisponibles"
+          class="form-control"
+          formControlName="placesDisponibles"
+          placeholder="Entrez le nombre de places disponibles"
+          min="0"
+        />
+        <small class="text-danger" *ngIf="sessionForm.get('placesDisponibles')?.invalid && sessionForm.get('placesDisponibles')?.touched">
+          Le nombre de places disponibles est requis et doit être un nombre positif.
+        </small>
+      </div>
+  
+      <div class="form-group">
+        <label for="formationId">Formation</label>
+        <select id="formationId" class="form-control" formControlName="formationId">
+          <option value="">Sélectionnez une formation</option>
+          <option *ngFor="let formation of formations" [value]="formation.id">
+            {{ formation.titre }}
+          </option>
+        </select>
+        <small class="text-danger" *ngIf="sessionForm.get('formationId')?.invalid && sessionForm.get('formationId')?.touched">
+          La formation est requise.
+        </small>
+      </div>
+  
+      <div class="form-group">
+        <label for="salleId">Salle</label>
+        <select id="salleId" class="form-control" formControlName="salleId">
+          <option value="">Sélectionnez une salle</option>
+          <option *ngFor="let salle of salles" [value]="salle.id">
+            {{ salle.nom }}
+          </option>
+        </select>
+        <small class="text-danger" *ngIf="sessionForm.get('salleId')?.invalid && sessionForm.get('salleId')?.touched">
+          La salle est requise.
+        </small>
+      </div>
+  
+      <div class="form-group">
+        <label for="utilisateurId">Utilisateur</label>
+        <select id="utilisateurId" class="form-control" formControlName="utilisateurId">
+          <option value="">Sélectionnez un utilisateur</option>
+          <option *ngFor="let utilisateur of utilisateurs" [value]="utilisateur.id">
+            {{ utilisateur.nom }}
+          </option>
+        </select>
+        <small class="text-danger" *ngIf="sessionForm.get('utilisateurId')?.invalid && sessionForm.get('utilisateurId')?.touched">
+          L'utilisateur est requis.
+        </small>
+      </div>
+  
+      <div class="form-group">
+        <button type="submit" class="btn btn-primary" [disabled]="sessionForm.invalid">Créer la session</button>
+        <button type="button" class="btn btn-secondary" (click)="onCancel()">Annuler</button>
+      </div>
+    </form>
+  </div>
+  

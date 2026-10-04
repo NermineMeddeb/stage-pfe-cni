@@ -1,0 +1,14 @@
+<div [ngClass]="{'col-md-2': isSidebarOpen, 'col-md-1 sidebar-collapsed': !isSidebarOpen}" class="sidebar">
+  <app-sidebar-admin></app-sidebar-admin>
+</div>
+<div [ngClass]="{'col-md-10': isSidebarOpen, 'col-md-11': !isSidebarOpen}" class="main-content-container">
+  <div class="header">
+    <app-header></app-header>
+  </div>
+  <div class="content-area">
+    <router-outlet></router-outlet>
+  </div>
+  <div class="footer mt-4">
+    <app-footer></app-footer>
+  </div>
+</div>

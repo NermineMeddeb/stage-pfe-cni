@@ -1,0 +1,59 @@
+.d-flex {
+    display: flex;
+    justify-content: flex-end; /* Aligne les boutons à droite */
+    align-items: center; /* Centre verticalement */
+    gap: 5px; /* Réduit l'espace entre les boutons */
+    padding-right: 10px; /* Optionnel : ajoute un petit espace par rapport au bord droit */
+  }
+  
+  .p-2 {
+    padding: 5px; /* Réduit l'espace autour des boutons */
+  }
+  
+  button {
+    width: 100%; /* Fait en sorte que les boutons remplissent l'espace disponible */
+    font-size: 16px; /* Taille du texte */
+    font-weight: bold; /* Texte en gras */
+    border-radius: 5px; /* Coins arrondis */
+    transition: all 0.3s ease; /* Effet fluide lors du survol */
+  }
+  
+  button i {
+    font-size: 18px; /* Ajuste la taille des icônes */
+  }
+  
+  button:hover {
+    transform: scale(1.05); /* Effet d'agrandissement au survol */
+  }
+  
+  /* Ajustement spécifique aux boutons */
+  .btn-warning {
+    background-color: #ffc107;
+    border: none;
+    color: white;
+  }
+  
+  .btn-warning:hover {
+    background-color: #e0a800;
+  }
+  
+  .btn-success {
+    background-color: #28a745;
+    border: none;
+    color: white;
+  }
+  
+  .btn-success:hover {
+    background-color: #218838;
+  }
+  
+  .btn-primary {
+    background-color: #007bff;
+    border: none;
+    color: white;
+  }
+  
+  .btn-primary:hover {
+    background-color: #0056b3;
+  }
+  

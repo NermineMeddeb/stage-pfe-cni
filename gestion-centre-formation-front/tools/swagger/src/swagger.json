@@ -1,0 +1,971 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "Swagger API documentation for Gestion de stock application",
+    "version" : "0.0.1-SNAPSHOT",
+    "title" : "Swagger API Documentation for Gestion de stock application",
+    "contact" : {
+      "name" : "Ali Bouali",
+      "url" : "https://www.udemy.com/user/bouali-ali/",
+      "email" : "bouali.social@gmail.com"
+    }
+  },
+  "basePath" : "http://localhost:8080",
+  "paths" : {
+    "/api/commentaires/all" : {
+      "get" : {
+        "operationId" : "findAll",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/CommentairesDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/commentaires/create" : {
+      "post" : {
+        "operationId" : "save",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/CommentairesDto"
+            }
+          }
+        }
+      }
+    },
+    "/api/commentaires/{id}" : {
+      "get" : {
+        "operationId" : "findById",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/CommentairesDto"
+            }
+          }
+        }
+      },
+      "delete" : {
+        "operationId" : "delete",
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/api/formations/all" : {
+      "get" : {
+        "operationId" : "findAllFormations",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/FormationsDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/formations/delete/{id}" : {
+      "delete" : {
+        "operationId" : "deleteFormation",
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/api/formations/formations/count" : {
+      "get" : {
+        "operationId" : "countFormations",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "integer",
+              "format" : "int64"
+            }
+          }
+        }
+      }
+    },
+    "/api/formations/formations/sortByDuree" : {
+      "get" : {
+        "operationId" : "sortFormationsByDuree",
+        "parameters" : [ {
+          "name" : "ascending",
+          "in" : "query",
+          "required" : false,
+          "type" : "boolean",
+          "default" : true
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/FormationsDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/formations/id/{id}" : {
+      "get" : {
+        "operationId" : "findFormationById",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/FormationsDto"
+            }
+          }
+        }
+      }
+    },
+    "/api/formations/niveau/{niveau}" : {
+      "get" : {
+        "operationId" : "findByNiveau",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/FormationsDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/formations/prix" : {
+      "get" : {
+        "operationId" : "findByPrixBetween",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/FormationsDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/formations/save" : {
+      "post" : {
+        "operationId" : "saveFormation",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/FormationsDto"
+            }
+          }
+        }
+      }
+    },
+    "/api/formations/search" : {
+      "get" : {
+        "operationId" : "searchFormations",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/FormationsDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/formations/statut/{statut}" : {
+      "get" : {
+        "operationId" : "findByStatut",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/FormationsDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/formations/theme/{themeId}" : {
+      "get" : {
+        "operationId" : "findByThemeId",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/FormationsDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/inscriptions/all" : {
+      "get" : {
+        "operationId" : "findAll",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/InscriptionDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/salles/all" : {
+      "get" : {
+        "operationId" : "getAllSalles",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/SallesDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sessions/all" : {
+      "get" : {
+        "operationId" : "findAll",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/SessionsDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sessions/date-range" : {
+      "get" : {
+        "operationId" : "findByDateBetween",
+        "parameters" : [ {
+          "name" : "startDate",
+          "in" : "query",
+          "required" : true,
+          "type" : "string",
+          "format" : "date"
+        }, {
+          "name" : "endDate",
+          "in" : "query",
+          "required" : true,
+          "type" : "string",
+          "format" : "date"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/SessionsDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sessions/formation/{formationId}" : {
+      "get" : {
+        "operationId" : "findByFormation",
+        "parameters" : [ {
+          "name" : "formationId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/SessionsDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sessions/save" : {
+      "post" : {
+        "operationId" : "save",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/SessionsDto"
+            }
+          }
+        }
+      }
+    },
+    "/api/sessions/upcoming" : {
+      "get" : {
+        "operationId" : "findUpcomingSessions",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/SessionsDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sessions/{id}" : {
+      "get" : {
+        "operationId" : "findById",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/SessionsDto"
+            }
+          }
+        }
+      },
+      "delete" : {
+        "operationId" : "delete",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/api/sessions/{sessionId}/available-places" : {
+      "get" : {
+        "operationId" : "getAvailablePlaces",
+        "parameters" : [ {
+          "name" : "sessionId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "integer",
+              "format" : "int32"
+            }
+          }
+        }
+      }
+    },
+    "/api/themes" : {
+      "get" : {
+        "operationId" : "findAll",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ThemesDto"
+              }
+            }
+          }
+        }
+      },
+      "post" : {
+        "operationId" : "save",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/ThemesDto"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ThemesDto"
+            }
+          }
+        }
+      }
+    },
+    "/api/themes/exists" : {
+      "get" : {
+        "operationId" : "themeExists",
+        "parameters" : [ {
+          "name" : "name",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "boolean"
+            }
+          }
+        }
+      }
+    },
+    "/api/themes/formation/{formationId}" : {
+      "get" : {
+        "operationId" : "findThemesByFormation",
+        "parameters" : [ {
+          "name" : "formationId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ThemesDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/themes/search" : {
+      "get" : {
+        "operationId" : "findByName",
+        "parameters" : [ {
+          "name" : "name",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ThemesDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/themes/{id}" : {
+      "get" : {
+        "operationId" : "findById",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ThemesDto"
+            }
+          }
+        }
+      },
+      "put" : {
+        "operationId" : "updateTheme",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/ThemesDto"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ThemesDto"
+            }
+          }
+        }
+      },
+      "delete" : {
+        "operationId" : "delete",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/api/themes/{themeId}/formation/{formationId}" : {
+      "post" : {
+        "operationId" : "assignThemeToFormation",
+        "parameters" : [ {
+          "name" : "themeId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "formationId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ThemesDto"
+            }
+          }
+        }
+      }
+    },
+    "/api/utilisateurs/administrateurs" : {
+      "get" : {
+        "operationId" : "findAdministrateurs",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/UtilisateursDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/utilisateurs/all" : {
+      "get" : {
+        "operationId" : "findAll",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/UtilisateursDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/utilisateurs/create" : {
+      "post" : {
+        "operationId" : "save",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/UtilisateursDto"
+            }
+          }
+        }
+      }
+    },
+    "/api/utilisateurs/delete/{idUtilisateur}" : {
+      "delete" : {
+        "operationId" : "delete",
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/api/utilisateurs/etudiants" : {
+      "get" : {
+        "operationId" : "findEtudiants",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/UtilisateursDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/utilisateurs/find/{email}" : {
+      "get" : {
+        "operationId" : "findByEmail",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/UtilisateursDto"
+            }
+          }
+        }
+      }
+    },
+    "/api/utilisateurs/formateurs" : {
+      "get" : {
+        "operationId" : "findFormateur",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/UtilisateursDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/utilisateurs/update/password" : {
+      "post" : {
+        "operationId" : "changerMotDePasse",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/UtilisateursDto"
+            }
+          }
+        }
+      }
+    },
+    "/api/utilisateurs/{idUtilisateur}" : {
+      "get" : {
+        "operationId" : "findById",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/UtilisateursDto"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "CommentairesDto" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "utilisateurId" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "formationId" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "note" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "commentaire" : {
+          "type" : "string"
+        },
+        "date" : {
+          "type" : "string",
+          "format" : "date-time"
+        }
+      }
+    },
+    "FormationsDto" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "titre" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "duree" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "prix" : {
+          "type" : "number",
+          "format" : "double"
+        },
+        "niveau" : {
+          "type" : "string"
+        },
+        "prerequis" : {
+          "type" : "string"
+        },
+        "statut" : {
+          "type" : "string"
+        },
+        "placesMax" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "objectifsFormation" : {
+          "type" : "string"
+        },
+        "photo" : {
+          "type" : "string"
+        },
+        "programmeDetaille" : {
+          "type" : "string"
+        },
+        "themeId" : {
+          "type" : "integer",
+          "format" : "int32"
+        }
+      }
+    },
+    "InscriptionDto" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "sessionId" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "dateInscription" : {
+          "type" : "string",
+          "format" : "date"
+        },
+        "statut" : {
+          "type" : "string"
+        },
+        "certificatGenere" : {
+          "type" : "boolean"
+        },
+        "dateDebut" : {
+          "type" : "string",
+          "format" : "date"
+        },
+        "dateFin" : {
+          "type" : "string",
+          "format" : "date"
+        }
+      }
+    },
+    "RolesDto" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "roleName" : {
+          "type" : "string"
+        }
+      }
+    },
+    "SallesDto" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "nom" : {
+          "type" : "string"
+        },
+        "capacite" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "equipement" : {
+          "type" : "string"
+        },
+        "statut" : {
+          "type" : "string"
+        }
+      }
+    },
+    "SessionsDto" : {
+      "type" : "object",
+      "properties" : {
+        "sessionId" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "formationId" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "utilisateurId" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "salleId" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "dateDebut" : {
+          "type" : "string",
+          "format" : "date"
+        },
+        "dateFin" : {
+          "type" : "string",
+          "format" : "date"
+        },
+        "capacite" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "placesDisponibles" : {
+          "type" : "integer",
+          "format" : "int32"
+        }
+      }
+    },
+    "ThemesDto" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "nom" : {
+          "type" : "string"
+        },
+        "formationsIds" : {
+          "type" : "array",
+          "items" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }
+      }
+    },
+    "UtilisateursDto" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "nom" : {
+          "type" : "string"
+        },
+        "prenom" : {
+          "type" : "string"
+        },
+        "email" : {
+          "type" : "string"
+        },
+        "motDePasse" : {
+          "type" : "string"
+        },
+        "telephone" : {
+          "type" : "string"
+        },
+        "roles" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/RolesDto"
+          }
+        },
+        "photo" : {
+          "type" : "string"
+        },
+        "adresse" : {
+          "type" : "string"
+        },
+        "dateNaissance" : {
+          "type" : "string",
+          "format" : "date"
+        }
+      }
+    }
+  }
+}

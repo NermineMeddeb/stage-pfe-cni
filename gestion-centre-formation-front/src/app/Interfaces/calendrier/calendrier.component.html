@@ -1,0 +1,46 @@
+<div class="calendar-container">
+  <div class="calendar-header">
+    <button class="month-nav-btn" (click)="changeMonth('prev')">&laquo;</button>
+    <h2 class="month-title">{{ getMonthName() }}</h2>
+    <button class="month-nav-btn" (click)="changeMonth('next')">&raquo;</button>
+  </div>
+  
+  <div class="calendar-grid">
+    <div class="weekday-header" *ngFor="let day of weekDays">{{ day }}</div>
+    
+    <ng-container *ngFor="let day of daysInMonth">
+      <div class="calendar-day" 
+           [class.empty-day]="day.day === 0"
+           [class.today]="day.isToday">
+        <div class="day-number" *ngIf="day.day !== 0">{{ day.day }}</div>
+        <div class="session-list" *ngIf="day.date !== null">
+          <ng-container *ngFor="let event of getEventsForDate(day.date)">
+            <div 
+              class="formation-session"
+              [style.background-color]="event.color"
+              (click)="selectEvent(event)"
+            >
+              {{ event.title }}
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+  
+  <!-- Modal pour les détails d'un événement -->
+  <div class="event-details-modal" *ngIf="selectedEvent" (click)="closeEventDetails()">
+    <div class="event-details-content" (click)="$event.stopPropagation()">
+      <div class="event-header" [style.background-color]="selectedEvent.color">
+        <h3>{{ selectedEvent.title }}</h3>
+        <button class="close-btn" (click)="closeEventDetails()">&times;</button>
+      </div>
+      <div class="event-body">
+        <p><strong>Date de début:</strong> {{ selectedEvent.startDate | date:'longDate' }}</p>
+        <p><strong>Date de fin:</strong> {{ selectedEvent.endDate | date:'longDate' }}</p>
+        <p><strong>ID de formation:</strong> {{ selectedEvent.formationId }}</p>
+        <p><strong>ID de session:</strong> {{ selectedEvent.id }}</p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,36 @@
+<div class="student-card">
+  <div class="card-header">
+    <div class="student-avatar">
+      <i class="fas fa-user-graduate"></i> <!-- Icône de l'utilisateur -->
+    </div>
+    <div class="student-info">
+      <h3>👤 {{ UtilisateursDto.nom }} {{ UtilisateursDto.prenom }}</h3>
+      <p class="email">📧 {{ UtilisateursDto.email }}</p>
+      <p class="telephone">📞 {{ UtilisateursDto.telephone || 'Non renseigné' }}</p>
+    </div>
+    <div class="role-badge">
+      🛡️ Rôles : {{ UtilisateursDto.roles ? getFormattedRoles(UtilisateursDto.roles) : 'Non renseigné' }}
+    </div>
+  </div>
+
+  <div class="card-actions">
+    <button class="btn btn-primary" (click)="modifierClient()">
+      <i class="fas fa-pencil-alt"></i>
+      <span>✏️ Modifier</span>
+    </button>
+
+    <button class="btn btn-info" (click)="AfficherDetailsSupplimentaire()">
+      <i class="fas fa-info-circle"></i>
+      <span>🔍 Détails</span>
+    </button>
+
+    <button
+      class="btn btn-danger"
+      data-bs-toggle="modal"
+      [attr.data-bs-target]="'#deleteModal' + UtilisateursDto.id"
+    >
+      <i class="fas fa-trash-alt"></i>
+      <span>🗑️ Supprimer</span>
+    </button>
+  </div>
+</div>

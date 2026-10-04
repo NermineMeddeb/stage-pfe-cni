@@ -1,0 +1,719 @@
+<div class="dashboard-container" [ngClass]="currentTheme">
+  <!-- Entête du tableau de bord -->
+  <header class="dashboard-header">
+    <div class="header-content">
+      <h1>Tableau de bord des formations</h1>
+      <div class="header-actions">
+        <button (click)="toggleTheme()" class="theme-toggle">
+          <i
+            class="fas"
+            [ngClass]="currentTheme === 'light' ? 'fa-moon' : 'fa-sun'"
+          ></i>
+          {{ currentTheme === "light" ? "Mode sombre" : "Mode clair" }}
+        </button>
+        <button (click)="printDashboard()" class="action-button">
+          <i class="fas fa-print"></i> Imprimer
+        </button>
+      </div>
+    </div>
+  </header>
+  <!-- Section des filtres -->
+  <section class="filters-section">
+    <div class="section-header">
+      <h2>Filtres</h2>
+      <i class="fas fa-chevron-down"></i>
+    </div>
+    <div class="section-content">
+      <div class="filters-grid">
+        <div class="filter-group">
+          <label for="theme-filter">Thème</label>
+          <select id="theme-filter" [(ngModel)]="selectedThemeFilter">
+            <option [ngValue]="null">Tous les thèmes</option>
+            <option *ngFor="let theme of themesList" [value]="theme.id">
+              {{ theme.nom }}
+            </option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="niveau-filter">Niveau</label>
+          <select id="niveau-filter" [(ngModel)]="selectedNiveauFilter">
+            <option [ngValue]="null">Tous les niveaux</option>
+            <option *ngFor="let niveau of niveauxList" [value]="niveau">
+              {{ niveau }}
+            </option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="status-filter">Statut</label>
+          <select id="status-filter" [(ngModel)]="selectedStatusFilter">
+            <option [ngValue]="null">Tous les statuts</option>
+            <option *ngFor="let status of statusList" [value]="status">
+              {{ status }}
+            </option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="formateur-filter">Formateur</label>
+          <select id="formateur-filter" [(ngModel)]="selectedFormateurFilter">
+            <option [ngValue]="null">Tous les formateurs</option>
+            <option
+              *ngFor="let formateur of formateursList"
+              [value]="formateur.id"
+            >
+              {{ formateur.nom }}
+            </option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="salle-filter">Salle</label>
+          <select id="salle-filter" [(ngModel)]="selectedSalleFilter">
+            <option [ngValue]="null">Toutes les salles</option>
+            <option *ngFor="let salle of sallesList" [value]="salle.id">
+              {{ salle.nom }}
+            </option>
+          </select>
+        </div>
+        <div>
+          <label>Prix minimum</label>
+          <input
+            type="number"
+            [(ngModel)]="selectedPrixMin"
+            (change)="applyFilters()"
+          />
+
+          <label>Prix maximum</label>
+          <input
+            type="number"
+            [(ngModel)]="selectedPrixMax"
+            (change)="applyFilters()"
+          />
+        </div>
+      </div>
+    </div>
+    <div class="filters-actions">
+      <button (click)="applyFilters()" class="primary-button">
+        Appliquer les filtres
+      </button>
+      <button (click)="resetFilters()" class="secondary-button">
+        Réinitialiser
+      </button>
+    </div>
+  </section>
+  <div *ngIf="loading" class="loading-indicator">
+    <div class="spinner"></div>
+    <p>Chargement des données...</p>
+  </div>
+  <div *ngIf="error" class="error-message">
+    <i class="fas fa-exclamation-triangle"></i>
+    <p>{{ error }}</p>
+  </div>
+  <section
+    *ngIf="!loading && !error && visibleSections.overview"
+    class="dashboard-section"
+  >
+    <div class="section-header" (click)="toggleSection('overview')">
+      <h2>Vue d'ensemble</h2>
+      <i
+        class="fas"
+        [ngClass]="
+          visibleSections.overview ? 'fa-chevron-up' : 'fa-chevron-down'
+        "
+      ></i>
+    </div>
+    <div class="section-content" *ngIf="visibleSections.overview">
+      <div class="kpi-cards">
+        <div class="kpi-card">
+          <div class="kpi-icon">
+            <i class="fas fa-chalkboard-teacher"></i>
+          </div>
+          <div class="kpi-data">
+            <h3>{{ dashboardStats.totalFormations }}</h3>
+            <p>Formations</p>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon">
+            <i class="fas fa-calendar-alt"></i>
+          </div>
+          <div class="kpi-data">
+            <h3>{{ dashboardStats.totalSessions }}</h3>
+            <p>Sessions</p>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon">
+            <i class="fas fa-users"></i>
+          </div>
+          <div class="kpi-data">
+            <h3>{{ dashboardStats.totalStudents }}</h3>
+            <p>Participants</p>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon">
+            <i class="fas fa-user-tie"></i>
+          </div>
+          <div class="kpi-data">
+            <h3>{{ dashboardStats.totalInstructors }}</h3>
+            <p>Total Formateurs</p>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon">
+            <i class="fas fa-user-graduate"></i>
+          </div>
+          <div class="kpi-data">
+            <h3>{{ dashboardStats.totalInstructorsexterne }}</h3>
+            <p>Externes</p>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon">
+            <i class="fas fa-user-graduate"></i>
+          </div>
+          <div class="kpi-data">
+            <h3>{{ dashboardStats.totalInstructorsinterne }}</h3>
+            <p>Internes</p>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon">
+            <i class="fas fa-building"></i>
+          </div>
+          <div class="kpi-data">
+            <h3>{{ dashboardStats.totalPersonnelCNI }}</h3>
+            <p>Personnel CNI</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- Section des formations -->
+  <section
+    *ngIf="!loading && !error && visibleSections.formations"
+    class="dashboard-section"
+  >
+    <div class="section-header" (click)="toggleSection('formations')">
+      <h2>Analyse des formations</h2>
+      <i
+        class="fas"
+        [ngClass]="
+          visibleSections.formations ? 'fa-chevron-up' : 'fa-chevron-down'
+        "
+      ></i>
+    </div>
+    <div class="section-content" *ngIf="visibleSections.formations">
+      <div class="chart-grid">
+        <div class="chart-card">
+          <h3>Formations par thème</h3>
+          <ngx-charts-bar-vertical
+            [view]="viewBar"
+            [scheme]="colorSchemeBlue"
+            [results]="formationsByTheme"
+            [gradient]="gradient"
+            [xAxis]="showXAxis"
+            [yAxis]="showYAxis"
+            [legend]="showLegend"
+            [showXAxisLabel]="showXAxisLabel"
+            [showYAxisLabel]="showYAxisLabel"
+            [xAxisLabel]="'Thème'"
+            [yAxisLabel]="'Nombre'"
+          >
+          </ngx-charts-bar-vertical>
+        </div>
+        <div class="chart-card">
+          <h3>Formations par niveau</h3>
+          <ngx-charts-pie-chart
+            [view]="viewPie"
+            [scheme]="colorSchemeMulti"
+            [results]="formationsByNiveau"
+            [gradient]="gradient"
+            [legend]="showLegend"
+            [legendPosition]="legendPosition"
+            [labels]="true"
+            [doughnut]="true"
+          >
+          </ngx-charts-pie-chart>
+        </div>
+        <div class="chart-card">
+          <h3>Formations par durée</h3>
+          <ngx-charts-bar-horizontal
+            [view]="viewBar"
+            [scheme]="colorSchemeBlue"
+            [results]="formationsByDuree"
+            [gradient]="gradient"
+            [xAxis]="showXAxis"
+            [yAxis]="showYAxis"
+            [legend]="false"
+            [showXAxisLabel]="showXAxisLabel"
+            [showYAxisLabel]="showYAxisLabel"
+            [xAxisLabel]="'Nombre'"
+            [yAxisLabel]="'Durée'"
+          >
+          </ngx-charts-bar-horizontal>
+        </div>
+        <div class="chart-card">
+          <h3>Formations par mois</h3>
+          <ngx-charts-bar-vertical
+            [view]="viewBar"
+            [scheme]="colorSchemeGreen"
+            [results]="sessionsByMonth"
+            [gradient]="gradient"
+            [xAxis]="showXAxis"
+            [yAxis]="showYAxis"
+            [legend]="false"
+            [showXAxisLabel]="showXAxisLabel"
+            [showYAxisLabel]="showYAxisLabel"
+            [xAxisLabel]="'Mois'"
+            [yAxisLabel]="'Nombre'"
+          >
+          </ngx-charts-bar-vertical>
+        </div>
+        <div class="chart-card">
+          <h3>Formations par année</h3>
+          <ngx-charts-bar-vertical
+            [view]="viewBar"
+            [scheme]="colorSchemeMulti"
+            [results]="sessionsByyear"
+            [gradient]="gradient"
+            [xAxis]="showXAxis"
+            [yAxis]="showYAxis"
+            [legend]="false"
+            [showXAxisLabel]="showXAxisLabel"
+            [showYAxisLabel]="showYAxisLabel"
+            [xAxisLabel]="'Année'"
+            [yAxisLabel]="'Nombre'"
+          >
+          </ngx-charts-bar-vertical>
+        </div>
+        <div class="chart-card">
+          <h3>Formations par salle</h3>
+          <ngx-charts-bar-horizontal
+            [view]="viewBar"
+            [scheme]="colorSchemeWarm"
+            [results]="formationsBySalle"
+            [gradient]="gradient"
+            [xAxis]="showXAxis"
+            [yAxis]="showYAxis"
+            [legend]="false"
+            [showXAxisLabel]="showXAxisLabel"
+            [showYAxisLabel]="showYAxisLabel"
+            [xAxisLabel]="'Nombre'"
+            [yAxisLabel]="'Salle'"
+          >
+          </ngx-charts-bar-horizontal>
+        </div>
+        <div class="chart-card.wide">
+          <h3>Évolution des sessions de formation</h3>
+          <ngx-charts-line-chart
+            [view]="viewLine"
+            [scheme]="colorRed"
+            [results]="formationsTendance"
+            [gradient]="gradient"
+            [xAxis]="showXAxis"
+            [yAxis]="showYAxis"
+            [legendPosition]="legendPosition"
+            [showXAxisLabel]="showXAxisLabel"
+            [showYAxisLabel]="showYAxisLabel"
+            [xAxisLabel]="'Période'"
+            [yAxisLabel]="'Nombre de sessions'"
+            [timeline]="timeline"
+          >
+          </ngx-charts-line-chart>
+        </div>
+        <!--    <div class="chart-card">
+          <h3>Formations par statut</h3>
+          <ngx-charts-pie-chart
+            [view]="viewPie"
+            [scheme]="colorSchemeWarm"
+            [results]="formationsByStatut"
+            [gradient]="gradient"
+            [legend]="showLegend"
+            [legendPosition]="legendPosition"
+            [labels]="true"
+            [doughnut]="false"
+          >
+          </ngx-charts-pie-chart>
+        </div> -->
+      </div>
+    </div>
+    <div class="formations-tables">
+      <div class="table-section">
+        <div class="table-header">
+          <h3>Formations les plus populaires</h3>
+          <button
+            (click)="exportToCSV(popularFormations, 'formations_populaires')"
+            class="export-btn"
+          >
+            <i class="fas fa-download"></i> Exporter
+          </button>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>id</th>
+                <th>Titre</th>
+                <th>Thème</th>
+                <th>Niveau</th>
+                <th>Type</th>
+                <th>Participants</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let formation of popularFormations">
+                <td>{{ formation.reference }}</td>
+                <td>{{ formation.name }}</td>
+                <td>{{ formation.theme }}</td>
+                <td>{{ formation.niveau }}</td>
+                <td>{{ formation.type }}</td>
+                <td>{{ formation.participants }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="table-section">
+        <div class="table-header">
+          <h3>Formations à venir</h3>
+          <button
+            (click)="exportToCSV(formationsAvenir, 'formations_a_venir')"
+            class="export-btn"
+          >
+            <i class="fas fa-download"></i> Exporter
+          </button>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>id Formation</th>
+                <th>id Session</th>
+                <th>Titre</th>
+                <th>Date</th>
+                <th>Heure</th>
+                <th>Formateur</th>
+                <th>Salle</th>
+                <th>Inscrits</th>
+                <th>Taux d'inscription</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let session of formationsAvenir">
+                <td>{{ session.reference }}</td>
+                <td>{{ session.referenceSession }}</td>
+                <td>{{ session.titre }}</td>
+                <td>{{ session.dateDebut | date : "dd/MM/yyyy" }}</td>
+                <td>{{ session.dateFin | date : "dd/MM/yyyy" }}</td>
+                <td>
+                  <span
+                    *ngFor="let formateur of session.formateur.split(', ')"
+                    class="badge"
+                  >
+                    {{ formateur }}
+                  </span>
+                </td>
+
+                <td>{{ session.salle }}</td>
+                <td>{{ session.nbInscrits }}/{{ session.capaciteMax }}</td>
+                <td>
+                  <div class="progress-bar">
+                    <div
+                      class="progress"
+                      [style.width.%]="session.tauxInscription"
+                      [ngClass]="{
+                        low: session.tauxInscription < 33,
+                        medium:
+                          session.tauxInscription >= 33 &&
+                          session.tauxInscription < 66,
+                        high: session.tauxInscription >= 66
+                      }"
+                    ></div>
+                    <span>{{ session.tauxInscription }}%</span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="table-section wide">
+        <div class="table-header">
+          <h3>Données détaillées des formations</h3>
+          <button
+            (click)="exportToCSV(formationsDetailedData, 'formations_details')"
+            class="export-btn"
+          >
+            <i class="fas fa-download"></i> Exporter
+          </button>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>NUMERO FORMATION</th>
+                <th>ANNEE FORMATION</th>
+                <th>MOIS</th>
+                <th>REFERENCE FORMATION</th>
+                <th>TYPE FORMATION</th>
+                <th>THEME FORMATION</th>
+                <th>DATE DEBUT FORMATION</th>
+                <th>DATE FIN FORMATION</th>
+                <th>NOMBRE DE JOURS</th>
+                <th>FORMATEURS</th>
+                <th>SALLE FORMATION</th>
+                <th>TARIF</th>
+                <th>NBR PERSONNES EXTERNES</th>
+                <th>NBR PERSONNEL CNI</th>
+                <th>CHIFFRE AFFAIRE FORMATION</th>
+                <th>NOTE SATISFACTION GLOBALE</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let formation of formationsDetailedData">
+                <td>{{ formation.id }}</td>
+                <td>{{ formation.anneeFormation }}</td>
+                <td>{{ formation.mois }}</td>
+                <td>{{ formation.reference }}</td>
+                <td>{{ formation.type }}</td>
+                <td>{{ formation.theme }}</td>
+                <td>{{ formation.dateDebut | date : "dd/MM/yyyy" }}</td>
+                <td>{{ formation.dateFin | date : "dd/MM/yyyy" }}</td>
+                <td>{{ formation.nombreJours }}</td>
+                <td>{{ formation.formateur }}</td>
+                <td>{{ formation.salle }}</td>
+                <td>{{ formation.tarif }}€</td>
+                <td>{{ formation.nbExternes }}</td>
+                <td>{{ formation.nbCNI }}</td>
+                <td>{{ formation.chiffreAffaire }}</td>
+                <td>{{ formation.noteSatisfactionGlobale }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- Section des compétences -->
+  <section
+    *ngIf="!loading && !error && visibleSections.competences"
+    class="dashboard-section"
+  >
+    <div class="section-header" (click)="toggleSection('competences')">
+      <h2>Compétences couvertes</h2>
+      <i
+        class="fas"
+        [ngClass]="
+          visibleSections.competences ? 'fa-chevron-up' : 'fa-chevron-down'
+        "
+      ></i>
+    </div>
+    <div class="section-content" *ngIf="visibleSections.competences">
+      <div class="chart-grid">
+        <div class="chart-card wide">
+          <h3>Top 10 compétences couvertes</h3>
+          <ngx-charts-bar-horizontal
+            [view]="viewLine"
+            [scheme]="colorSchemeMulti"
+            [results]="competencesCouvertes"
+            [gradient]="gradient"
+            [xAxis]="showXAxis"
+            [yAxis]="showYAxis"
+            [legend]="false"
+            [showXAxisLabel]="showXAxisLabel"
+            [showYAxisLabel]="showYAxisLabel"
+            [xAxisLabel]="'Nombre de formations'"
+            [yAxisLabel]="'Compétence'"
+          >
+          </ngx-charts-bar-horizontal>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- Section des finances -->
+  <section
+    *ngIf="!loading && !error && visibleSections.finances"
+    class="dashboard-section"
+  >
+    <div class="section-header" (click)="toggleSection('finances')">
+      <h2>Données financières</h2>
+      <i
+        class="fas"
+        [ngClass]="
+          visibleSections.finances ? 'fa-chevron-up' : 'fa-chevron-down'
+        "
+      ></i>
+    </div>
+    <div class="section-content" *ngIf="visibleSections.finances">
+      <div class="chart-grid">
+        <div class="chart-card">
+          <h3>Tarif moyen par type de formation</h3>
+          <ngx-charts-bar-vertical
+            [view]="viewBar"
+            [scheme]="colorSchemeGreen"
+            [results]="tarifMoyenByType"
+            [gradient]="gradient"
+            [xAxis]="showXAxis"
+            [yAxis]="showYAxis"
+            [legend]="false"
+            [showXAxisLabel]="showXAxisLabel"
+            [showYAxisLabel]="showYAxisLabel"
+            [xAxisLabel]="'Type'"
+            [yAxisLabel]="'Tarif moyen (€)'"
+          >
+          </ngx-charts-bar-vertical>
+        </div>
+      </div>
+    </div>
+    <div class="table-section wide">
+      <div class="table-header">
+        <h3>Données financières par formation</h3>
+        <button
+          (click)="exportToCSV(formationsFinancialData, 'finances_formations')"
+          class="export-btn"
+        >
+          <i class="fas fa-download"></i> Exporter
+        </button>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Référence</th>
+              <th>Titre</th>
+              <th>Thème</th>
+              <th>Tarif</th>
+              <th>Revenus estimés</th>
+              <th>Revenus externes</th>
+              <th>Revenus internes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let formation of formationsFinancialData">
+              <td>{{ formation.reference }}</td>
+              <td>{{ formation.titre }}</td>
+              <td>{{ formation.theme }}</td>
+              <td>{{ formation.tarif }}€</td>
+              <td>{{ formation.revenuEstime }}€</td>
+              <td>{{ formation.revenuExternes }}€</td>
+              <td>{{ formation.revenuInterne }}€</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+  <!-- Section de participation -->
+  <section
+    *ngIf="!loading && !error && visibleSections.participation"
+    class="dashboard-section"
+  >
+    <div class="section-header" (click)="toggleSection('participation')">
+      <h2>Analyse de la participation</h2>
+      <i
+        class="fas"
+        [ngClass]="
+          visibleSections.participation ? 'fa-chevron-up' : 'fa-chevron-down'
+        "
+      ></i>
+    </div>
+    <div class="section-content" *ngIf="visibleSections.participation">
+      <div class="chart-grid">
+        <div class="chart-card">
+          <h3>Répartition des participants</h3>
+          <ngx-charts-pie-chart
+            [view]="viewPie"
+            [scheme]="colorSchemeMulti"
+            [results]="formationsByParticipationType"
+            [gradient]="gradient"
+            [legend]="showLegend"
+            [legendPosition]="legendPosition"
+            [labels]="true"
+            [doughnut]="true"
+          >
+          </ngx-charts-pie-chart>
+        </div>
+
+        <div class="chart-card wide">
+          <h3>Évolution des participants par année</h3>
+          <ngx-charts-line-chart
+            [view]="viewLine"
+            [scheme]="colorSchemeBlue"
+            [results]="participantsByYear"
+            [gradient]="gradient"
+            [xAxis]="showXAxis"
+            [yAxis]="showYAxis"
+            [legend]="showLegend"
+            [showXAxisLabel]="showXAxisLabel"
+            [showYAxisLabel]="showYAxisLabel"
+            [xAxisLabel]="'Année'"
+            [yAxisLabel]="'Nombre de participants'"
+            [timeline]="timeline"
+          >
+          </ngx-charts-line-chart>
+        </div>
+      </div>
+      <div class="table-section wide">
+        <div class="table-header">
+          <h3>Formations par taux de participation</h3>
+          <button
+            (click)="
+              exportToCSV(formationsParticipants, 'formations_participation')
+            "
+            class="export-btn"
+          >
+            <i class="fas fa-download"></i> Exporter
+          </button>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Référence</th>
+                <th>Titre</th>
+                <th>Thème</th>
+                <th>Type</th>
+                <th>Niveau</th>
+                <th>Durée (j)</th>
+                <th>Participants</th>
+                <th>Externes</th>
+                <th>CNI</th>
+                <th>Taux de remplissage</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let formation of formationsParticipants">
+                <td>{{ formation.reference }}</td>
+                <td>{{ formation.titre }}</td>
+                <td>{{ formation.theme }}</td>
+                <td>{{ formation.type }}</td>
+                <td>{{ formation.niveau }}</td>
+                <td>{{ formation.duree }}</td>
+                <td>{{ formation.nbParticipants }}</td>
+                <td>{{ formation.nbExternes }}</td>
+                <td>{{ formation.nbCNI }}</td>
+                <td>
+                  <div class="progress-bar">
+                    <div
+                      class="progress"
+                      [style.width.%]="formation.tauxRemplissage"
+                      [ngClass]="{
+                        low: formation.tauxRemplissage < 33,
+                        medium:
+                          formation.tauxRemplissage >= 33 &&
+                          formation.tauxRemplissage < 66,
+                        high: formation.tauxRemplissage >= 66
+                      }"
+                    ></div>
+                    <span>{{ formation.tauxRemplissage }}%</span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

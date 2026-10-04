@@ -1,0 +1,213 @@
+<!-- planning-formateur.component.html -->
+<div class="planning-container">
+  <!-- Header Section -->
+  <div class="planning-header">
+    <div class="header-title">
+      <h1>📅 Planning des Formateurs</h1>
+    </div>
+    
+    <div class="header-controls">
+      <!-- Search -->
+      <div class="search-box">
+        <input 
+          type="text" 
+          [ngModel]="searchTerm"
+          (ngModelChange)="onSearchChange($event)"
+          placeholder="🔍 Rechercher un formateur ou une formation..."
+          class="search-input"
+        >
+      </div>
+
+      <!-- View Controls -->
+      <!-- <div class="view-controls">
+        <button 
+          class="view-btn" 
+          [class.active]="viewMode === 'list'"
+          (click)="viewMode = 'list'"
+        >
+          📋 Liste
+        </button>
+        <button 
+          class="view-btn" 
+          [class.active]="viewMode === 'calendar'"
+          (click)="viewMode = 'calendar'"
+        >
+          📅 Calendrier
+        </button>
+      </div> -->
+
+      <!-- Filter Controls -->
+      <div class="filter-controls">
+        <label class="filter-label">
+          <input 
+            type="checkbox" 
+            [(ngModel)]="filterOptions.showUpcoming"
+            (change)="filterAndSortData()"
+          > 
+          🔜 À venir
+        </label>
+        <label class="filter-label">
+          <input 
+            type="checkbox" 
+            [(ngModel)]="filterOptions.showOngoing"
+            (change)="filterAndSortData()"
+          > 
+          ⏳ En cours
+        </label>
+        <label class="filter-label">
+          <input 
+            type="checkbox" 
+            [(ngModel)]="filterOptions.showCompleted"
+            (change)="filterAndSortData()"
+          > 
+          ✅ Terminées
+        </label>
+      </div>
+
+      <!-- Sort Controls -->
+      <div class="sort-controls">
+        <select [(ngModel)]="sortOption" (change)="filterAndSortData()" class="sort-select">
+          <option value="name">👤 Trier par nom</option>
+          <option value="sessions">📊 Trier par nombre de sessions</option>
+          <option value="upcoming">🔜 Trier par sessions à venir</option>
+        </select>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button 
+          class="refresh-btn" 
+          (click)="refreshData()" 
+          [disabled]="isLoading"
+          title="Actualiser les données"
+        >
+          🔄 Actualiser
+        </button>
+        <button 
+          class="auto-refresh-btn" 
+          [class.active]="autoRefreshEnabled"
+          (click)="toggleAutoRefresh()"
+          title="Activer/Désactiver l'actualisation automatique"
+        >
+          ⚡ Auto
+        </button>
+        <button 
+          class="export-btn" 
+          (click)="exportToCSV()"
+          title="Exporter en CSV"
+        >
+          📥 Exporter
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div class="loading-container" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>🔄 Chargement des données...</p>
+  </div>
+
+  <!-- Error Message -->
+  <div class="error-message" *ngIf="errorMessage">
+    <i class="fa fa-exclamation-triangle"></i> ⚠️ {{ errorMessage }}
+    <button class="retry-btn" (click)="refreshData()">🔄 Réessayer</button>
+  </div>
+
+  <!-- List View -->
+  <div class="formateurs-list" *ngIf="viewMode === 'list' && formateursSessions.length > 0 && !isLoading">
+    <div class="formateur-card" *ngFor="let formateurData of formateursSessions">
+      <!-- Formateur Header -->
+      <div class="formateur-header">
+        <h2 class="formateur-name">👨‍🏫 {{ formateurData.formateur.nom }}</h2>
+        <div class="formateur-stats">
+          <span class="total-sessions">📊 Total: {{ formateurData.totalSessions }}</span>
+          <span class="upcoming-sessions">🔜 À venir: {{ formateurData.upcomingSessions }}</span>
+        </div>
+        <div class="formateur-info">
+          <span *ngIf="formateurData.formateur.email" class="email">
+            ✉️ {{ formateurData.formateur.email }}
+          </span>
+          <span *ngIf="formateurData.formateur.telephone" class="phone">
+            📞 {{ formateurData.formateur.telephone }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Sessions List -->
+      <div class="sessions-list">
+        <div 
+          *ngFor="let item of formateurData.sessions"
+          class="session-item"
+          [class.upcoming]="getSessionStatus(item.session) === 'upcoming'"
+          [class.ongoing]="getSessionStatus(item.session) === 'ongoing'"
+          [class.completed]="getSessionStatus(item.session) === 'completed'"
+          [style.border-left-color]="item.formation.color"
+          (click)="selectEvent(createCalendarEvent(item, formateurData.formateur))"
+        >
+          <div class="session-status">
+            <span [ngSwitch]="getSessionStatus(item.session)">
+              <span *ngSwitchCase="'upcoming'">🔜</span>
+              <span *ngSwitchCase="'ongoing'">⏳</span>
+              <span *ngSwitchCase="'completed'">✅</span>
+            </span>
+          </div>
+          <div class="session-dates">
+            🗓️ {{ formatDateRange(item.session.dateDebut, item.session.dateFin) }}
+          </div>
+          <div class="session-title">
+            📚 {{ item.formation.titre }}
+          </div>
+         
+        </div>
+      </div>
+
+      <!-- No Sessions Message -->
+      <div *ngIf="formateurData.sessions.length === 0" class="no-sessions">
+        ❌ Aucune session programmée
+      </div>
+    </div>
+  </div>
+
+  <!-- Calendar View -->
+  <div class="calendar-view" *ngIf="viewMode === 'calendar' && !isLoading">
+    <!-- Implement calendar view here if needed -->
+    <div class="calendar-placeholder">
+      📅 Vue calendrier en développement
+    </div>
+  </div>
+
+  <!-- No Data Message -->
+  <div class="no-data-message" *ngIf="formateursSessions.length === 0 && !isLoading && !errorMessage">
+    🚫 Aucun formateur avec des sessions n'a été trouvé.
+  </div>
+
+  <!-- Event Details Modal -->
+  <div class="event-details-modal" *ngIf="selectedEvent" (click)="closeEventDetails()">
+    <div class="event-details-content" (click)="$event.stopPropagation()">
+      <div class="event-header" [style.background-color]="selectedEvent.color">
+        <h3>{{ selectedEvent.title }}</h3>
+        <button class="close-btn" (click)="closeEventDetails()">❌</button>
+      </div>
+      <div class="event-body">
+        <div class="event-info">
+          <p><strong>👨‍🏫 Formateur:</strong> {{ selectedEvent.formateurNom }}</p>
+          <p><strong>🗓️ Date de début:</strong> {{ selectedEvent.startDate | date:'longDate' }}</p>
+          <p><strong>🗓️ Date de fin:</strong> {{ selectedEvent.endDate | date:'longDate' }}</p>
+          <p *ngIf="selectedEvent.lieu"><strong>📍 Lieu:</strong> {{ selectedEvent.lieu }}</p>
+          <p *ngIf="selectedEvent.participants"><strong>👥 Participants:</strong> {{ selectedEvent.participants }}</p>
+          <p *ngIf="selectedEvent.description"><strong>📝 Description:</strong> {{ selectedEvent.description }}</p>
+        </div>
+        <div class="event-status">
+          <p><strong>État:</strong> 
+            <span [ngSwitch]="selectedEvent.status" class="status-badge">
+              <span *ngSwitchCase="'upcoming'" class="upcoming">🔜 À venir</span>
+              <span *ngSwitchCase="'ongoing'" class="ongoing">⏳ En cours</span>
+              <span *ngSwitchCase="'completed'" class="completed">✅ Terminée</span>
+            </span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,149 @@
+<div class="session-container">
+  <div class="session-header">
+    <h2><i class="fas fa-chalkboard-teacher"></i> Nouvelle Session de Formation</h2>
+    <p class="subtitle">Configurez tous les détails pour organiser une nouvelle session de formation</p>
+  </div>
+
+  <form [formGroup]="sessionForm" (ngSubmit)="onSubmit()" class="session-form">
+    <!-- Section Informations générales -->
+    <div class="form-section">
+      <h3 class="form-section-title"><i class="fas fa-info-circle"></i> Informations générales</h3>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <select id="formationId" class="form-control" formControlName="formationId" placeholder=" ">
+            <option value="" disabled selected hidden></option>
+            <option *ngFor="let formation of formations" [value]="formation.id">
+              {{ formation.titre }}
+            </option>
+          </select>
+          <label for="formationId"><i class="fas fa-book"></i> Formation</label>
+          <div class="error-message" *ngIf="formControls['formationId'].invalid && formControls['formationId'].touched">
+            <i class="fas fa-exclamation-triangle"></i> Veuillez sélectionner une formation
+          </div>
+        </div>
+
+        <div class="form-group">
+          <select id="utilisateurId" class="form-control" formControlName="utilisateurId" placeholder=" ">
+            <option value="" disabled selected hidden></option>
+            <option *ngFor="let utilisateur of utilisateurs" [value]="utilisateur.id">
+              {{ utilisateur.nom }}
+            </option>
+          </select>
+          <label for="utilisateurId"><i class="fas fa-user-tie"></i> Formateur</label>
+          <div class="error-message" *ngIf="formControls['utilisateurId'].invalid && formControls['utilisateurId'].touched">
+            <i class="fas fa-exclamation-triangle"></i> Veuillez sélectionner un formateur
+          </div>
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <select id="salleId" class="form-control" formControlName="salleId" placeholder=" ">
+            <option value="" disabled selected hidden></option>
+            <option *ngFor="let salle of salles" [value]="salle.id">
+              {{ salle.nom }}
+            </option>
+          </select>
+          <label for="salleId"><i class="fas fa-map-marker-alt"></i> Lieu de formation</label>
+          <div class="error-message" *ngIf="formControls['salleId'].invalid && formControls['salleId'].touched">
+            <i class="fas fa-exclamation-triangle"></i> Veuillez sélectionner une salle
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section Planning -->
+    <div class="form-section">
+      <h3 class="form-section-title"><i class="fas fa-calendar-alt"></i> Planning de la session</h3>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <input type="date" id="dateDebut" class="form-control" formControlName="dateDebut" placeholder=" " >
+          <label for="dateDebut"><i class="fas fa-calendar-day"></i> Date de début</label>
+          <div class="error-message" *ngIf="formControls['dateDebut'].invalid && formControls['dateDebut'].touched">
+            <i class="fas fa-exclamation-triangle"></i> Veuillez sélectionner une date de début valide
+          </div>
+        </div>
+
+        <div class="form-group">
+          <input type="date" id="dateFin" class="form-control" formControlName="dateFin" placeholder=" ">
+          <label for="dateFin"><i class="fas fa-calendar-check"></i> Date de fin</label>
+          <div class="error-message" *ngIf="formControls['dateFin'].invalid && formControls['dateFin'].touched">
+            <i class="fas fa-exclamation-triangle"></i> Veuillez sélectionner une date de fin valide
+          </div>
+          <div class="error-message" *ngIf="sessionForm.errors?.['dateInvalid']">
+            <i class="fas fa-exclamation-triangle"></i> La date de fin doit être postérieure à la date de début
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section Capacité -->
+    <div class="form-section">
+      <h3 class="form-section-title"><i class="fas fa-users"></i> Gestion des places</h3>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <input type="number" id="capacite" class="form-control" formControlName="capacite" placeholder=" " min="1" (change)="onCapaciteChange()">
+          <label for="capacite"><i class="fas fa-user-plus"></i> Capacité maximale</label>
+          <div class="error-message" *ngIf="formControls['capacite'].errors?.['required'] && formControls['capacite'].touched">
+            <i class="fas fa-exclamation-triangle"></i> La capacité est requise
+          </div>
+          <div class="error-message" *ngIf="formControls['capacite'].errors?.['min'] && formControls['capacite'].touched">
+            <i class="fas fa-exclamation-triangle"></i> La capacité doit être d'au moins 1 participant
+          </div>
+        </div>
+
+        <div class="form-group">
+          <input type="number" id="placesDisponibles" class="form-control" formControlName="placesDisponibles" placeholder=" " min="0" [max]="sessionForm.get('capacite')?.value || 999">
+          <label for="placesDisponibles"><i class="fas fa-chair"></i> Places disponibles</label>
+          <div class="error-message" *ngIf="formControls['placesDisponibles'].errors?.['required'] && formControls['placesDisponibles'].touched">
+            <i class="fas fa-exclamation-triangle"></i> Le nombre de places disponibles est requis
+          </div>
+          <div class="error-message" *ngIf="formControls['placesDisponibles'].errors?.['min'] && formControls['placesDisponibles'].touched">
+            <i class="fas fa-exclamation-triangle"></i> Le nombre de places ne peut pas être négatif
+          </div>
+          <div class="error-message" *ngIf="formControls['placesDisponibles'].errors?.['max'] && formControls['placesDisponibles'].touched">
+            <i class="fas fa-exclamation-triangle"></i> Le nombre de places ne peut pas dépasser la capacité
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="form-actions">
+      <button type="button" class="btn btn-secondary" (click)="onCancel()">
+        <i class="fas fa-arrow-left"></i> Annuler
+      </button>
+      
+      <button type="submit" class="btn btn-primary" [disabled]="sessionForm.invalid || isSubmitting">
+        <ng-container *ngIf="!isSubmitting">
+          <i class="fas fa-save"></i> Créer la session
+        </ng-container>
+     
+      </button>
+    </div>
+  </form>
+  
+  <!-- Popup de confirmation -->
+  <div class="success-popup" *ngIf="showSuccessPopup">
+    <div class="popup-content">
+      <div class="popup-header">
+        <i class="fas fa-check-circle success-icon"></i>
+        <h3>Succès</h3>
+      </div>
+      <div class="popup-body">
+        <p>{{ successMessage }}</p>
+      </div>
+      <div class="popup-footer">
+        <button class="btn btn-success" (click)="closeSuccessPopup()">
+          <i class="fas fa-check"></i> OK
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Overlay pour le popup -->
+  <div class="popup-overlay" *ngIf="showSuccessPopup" (click)="closeSuccessPopup()"></div>
+</div>

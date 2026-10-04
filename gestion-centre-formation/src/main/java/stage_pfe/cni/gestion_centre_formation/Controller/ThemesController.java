@@ -1,0 +1,79 @@
+/* package stage_pfe.cni.gestion_centre_formation.Controller;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import stage_pfe.cni.gestion_centre_formation.Controller.Api.ThemesApi;
+import stage_pfe.cni.gestion_centre_formation.Dto.SessionsDto;
+import stage_pfe.cni.gestion_centre_formation.Dto.ThemesDto;
+import stage_pfe.cni.gestion_centre_formation.Services.SessionsServices;
+import stage_pfe.cni.gestion_centre_formation.Services.ThemesServices;
+
+@RestController
+@RequestMapping("/api/themes")
+public class ThemesController implements ThemesApi {
+
+    private final ThemesServices themesServices;
+
+    @Autowired
+    public ThemesController(ThemesServices themesServices) {
+        this.themesServices = themesServices;
+    }
+
+    public ThemesDto save(@RequestBody ThemesDto dto) {
+        return themesServices.save(dto);
+    }
+
+    // ✅ Récupérer un thème par ID
+    public ThemesDto findById(@PathVariable Long id) {
+        return themesServices.findById(id);
+    }
+
+    // ✅ Récupérer tous les thèmes
+    public List<ThemesDto> findAll() {
+        return themesServices.findAll();
+    }
+
+    // ✅ Rechercher un thème par nom
+    public List<ThemesDto> findByName(@RequestParam String name) {
+        return themesServices.findByName(name);
+    }
+
+    public ThemesDto assignThemeToFormation(@PathVariable Long themeId, @PathVariable Long formationId) {
+        return themesServices.assignThemeToFormation(themeId, formationId);
+    }
+
+    public List<ThemesDto> findThemesByFormation(@PathVariable Long formationId) {
+        return themesServices.findThemesByFormation(formationId);
+    }
+
+    public ThemesDto updateTheme(@PathVariable Long id, @RequestBody ThemesDto dto) {
+        return themesServices.update(id, dto);
+    }
+
+    public void delete(@PathVariable Long id) {
+        themesServices.delete(id);
+    }
+
+    /*
+     * public List<SessionsDto> getSessionsByTheme(@PathVariable Long themeId) {
+     * return themesServices.getSessionsByTheme(themeId);
+     * }
+     */
+
+/*     public Boolean themeExists(@PathVariable String name) {
+        return themesServices.themeExists(name);
+    }
+}
+ */ 
